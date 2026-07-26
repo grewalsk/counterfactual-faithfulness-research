@@ -1,0 +1,91 @@
+{
+  "status": "PASS",
+  "states": 36,
+  "actions_per_state": 10,
+  "candidate_library_size": 22,
+  "horizons": [
+    1,
+    3,
+    6
+  ],
+  "state_strata": {
+    "near": 18,
+    "far": 18
+  },
+  "initial_render_exact_across_branches": true,
+  "selection_protocol": "fixed state-relative library indices frozen before model evaluation",
+  "fixed_library_indices": [
+    0,
+    2,
+    4,
+    6,
+    8,
+    11,
+    14,
+    16,
+    17,
+    18
+  ],
+  "pair_contact_counts": {
+    "neither": 707,
+    "one": 863,
+    "both": 3290
+  },
+  "contact_fraction_by_horizon": [
+    0.6111111111111112,
+    0.8361111111111111,
+    0.85
+  ],
+  "no_op_oracle_fraction_by_horizon": [
+    0.3888888888888889,
+    0.027777777777777776,
+    0.05555555555555555
+  ],
+  "no_op_positive_regret_fraction_by_horizon": [
+    0.6111111111111112,
+    0.9722222222222222,
+    0.9444444444444444
+  ],
+  "median_physical_cost_spread_by_horizon": [
+    0.024962660474306703,
+    0.1176304802375085,
+    0.28065792281001656
+  ],
+  "minimum_physical_cost_spread_by_horizon": [
+    0.0,
+    0.040754207160926814,
+    0.07072335101770869
+  ],
+  "oracle_screened_comparison": {
+    "pair_contact_counts": {
+      "neither": 556,
+      "one": 508,
+      "both": 3796
+    },
+    "contact_fraction_by_horizon": [
+      0.6222222222222222,
+      0.9305555555555556,
+      0.9472222222222222
+    ],
+    "no_op_oracle_fraction_by_horizon": [
+      0.3888888888888889,
+      0.027777777777777776,
+      0.0
+    ],
+    "no_op_positive_regret_fraction_by_horizon": [
+      0.6111111111111112,
+      0.9722222222222222,
+      1.0
+    ],
+    "median_physical_cost_spread_by_horizon": [
+      0.023720315580378043,
+      0.11942595133710551,
+      0.2889224392727318
+    ],
+    "minimum_physical_cost_spread_by_horizon": [
+      0.0,
+      0.03477026469028954,
+      0.09719303112409182
+    ]
+  }
+}

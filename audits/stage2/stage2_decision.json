@@ -1,0 +1,31 @@
+{
+  "status": "INCONCLUSIVE",
+  "primary_outcome": "physical_normalized_regret",
+  "counterfactual_block": [
+    "normalized_paired_effect_rmse",
+    "one_minus_paired_effect_cosine"
+  ],
+  "base_predictors": [
+    "ordinary_rmse",
+    "horizon",
+    "model",
+    "ground_truth_effect_rms",
+    "contact_fraction",
+    "design_stratum"
+  ],
+  "median_repeated_cv_delta_r2": 0.0033589101258127,
+  "fraction_repeats_positive_delta_r2": 1.0,
+  "cluster_bootstrap": {
+    "mse_improvement": {
+      "estimate": 0.0007825749255961356,
+      "low": -0.0007000721237023676,
+      "high": 0.002375767743859187
+    },
+    "delta_r2": {
+      "estimate": 0.004927690180256961,
+      "low": -0.0045747058389023175,
+      "high": 0.01496027966634765
+    }
+  },
+  "interpretation_guardrail": "Simulator evidence about controlled Push-T interventions and executable planning; it does not establish real-robot reliability."
+}
