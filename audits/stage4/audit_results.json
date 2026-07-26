@@ -1,0 +1,98 @@
+{
+  "bundle": "/Users/kabirgrewal/Documents/Codex/2026-07-25/files-mentioned-by-the-user-execution/work/stage4-local-full",
+  "checks": {
+    "failure_trace_none": true,
+    "unit_rows_72000": true,
+    "unit_key_unique": true,
+    "environments_exact": true,
+    "state_clusters_40_each": true,
+    "two_interventions": true,
+    "five_severities": true,
+    "five_intervention_seeds": true,
+    "matched_pose_rms": true,
+    "integrity_pass": true,
+    "all_primary_intervals_reproduced": true,
+    "all_slope_intervals_reproduced": true,
+    "both_environment_gates_pass": true,
+    "decision_cross_environment": true,
+    "primary_direction_positive_12_of_12": true,
+    "result_manifest_complete": true,
+    "summary_rows_20": true
+  },
+  "all_checks_pass": true,
+  "maximum_matched_pose_rms_difference": 2.7755575615628914e-16,
+  "reproduced_primary_intervals": {
+    "PushT": {
+      "specific_regret_damage": {
+        "estimate": 0.17936044861295505,
+        "low": 0.12875783277426187,
+        "high": 0.22873681698278409,
+        "n_clusters": 40,
+        "n_bootstrap": 2000
+      },
+      "specific_ranking_damage": {
+        "estimate": 0.2409486347138733,
+        "low": 0.20320172136889733,
+        "high": 0.2766069747795375,
+        "n_clusters": 40,
+        "n_bootstrap": 2000
+      }
+    },
+    "Wall": {
+      "specific_regret_damage": {
+        "estimate": 0.2103247366068872,
+        "low": 0.18916295585828824,
+        "high": 0.2303750057019262,
+        "n_clusters": 40,
+        "n_bootstrap": 2000
+      },
+      "specific_ranking_damage": {
+        "estimate": 0.4234845752982426,
+        "low": 0.4084805044497035,
+        "high": 0.4385596966984763,
+        "n_clusters": 40,
+        "n_bootstrap": 2000
+      }
+    }
+  },
+  "reproduced_slope_intervals": {
+    "PushT": {
+      "specific_regret_slope": {
+        "estimate": 0.19216502398385849,
+        "low": 0.13104826212976955,
+        "high": 0.2465290589146766,
+        "n_clusters": 40,
+        "n_bootstrap": 2000
+      },
+      "specific_ranking_slope": {
+        "estimate": 0.2601418158915777,
+        "low": 0.22059599311185743,
+        "high": 0.29858263255164375,
+        "n_clusters": 40,
+        "n_bootstrap": 2000
+      }
+    },
+    "Wall": {
+      "specific_regret_slope": {
+        "estimate": 0.19333136440953513,
+        "low": 0.17169955694181688,
+        "high": 0.2134580433227656,
+        "n_clusters": 40,
+        "n_bootstrap": 2000
+      },
+      "specific_ranking_slope": {
+        "estimate": 0.4558900867919053,
+        "low": 0.44076495933346255,
+        "high": 0.47127371729661255,
+        "n_clusters": 40,
+        "n_bootstrap": 2000
+      }
+    }
+  },
+  "positive_subgroup_cells": {
+    "specific_regret_damage": 12,
+    "specific_ranking_damage": 12,
+    "specific_top1_damage": 12,
+    "task_margin_specificity": 11
+  }
+}
