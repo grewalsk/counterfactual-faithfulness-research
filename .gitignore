@@ -1,0 +1,15 @@
+.DS_Store
+.pytest_cache/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+dist/
+build/
+*.egg-info/
+
+# Colab/runtime intermediates are intentionally not committed.
+intermediate/
+cf_faithfulness_cache/
+
