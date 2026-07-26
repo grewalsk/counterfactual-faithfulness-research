@@ -190,6 +190,33 @@ simulation and model phases are reused. If only the downloaded Stage 3 bundle
 remains, a full reconstruction is required because that bundle omitted the
 regression-train unit table.
 
+## Stage 4 matched action-structure intervention
+
+Notebook: `04_matched_action_structure_intervention.ipynb`
+
+Stage 3B returned `CROSS_ENV_PLANNING_SIGNAL_ONLY`. Stage 4 tests the missing
+mechanism by comparing two exactly magnitude-matched interventions on the
+untouched Stage 3B final-test decoded poses: corruption of action-specific
+residual structure and a shared common-mode pose displacement.
+
+1. Open the Stage 4 notebook in a fresh Google Colab runtime.
+2. Leave the frozen configuration unchanged.
+3. A CPU runtime is sufficient; no GPU or Drive mount is required.
+4. Run all eleven cells in order.
+5. Return `stage4_result_bundle.zip`, which downloads automatically.
+
+The notebook downloads the compact frozen Stage 3B result bundle from this
+public repository. It does not download checkpoints or rerun a simulator. It
+evaluates five pre-specified severities and five deterministic intervention
+seeds, verifies exact perturbation-magnitude matching, clusters uncertainty by
+the 40 final-test states per environment, and emits the frozen Stage 4
+decision. Expected runtime is several minutes on a standard Colab CPU.
+
+The completed deterministic run returned
+`CROSS_ENV_ACTION_STRUCTURE_CAUSAL_SIGNAL`. Re-running the notebook is a
+reproducibility check; its archived bundle and independent audit are in
+`../results/bundles/` and `../audits/stage4/`.
+
 ## Stage 1 historical instructions
 
 1. Open `01_model_and_environment_smoke_test.ipynb` in a fresh Colab runtime.
