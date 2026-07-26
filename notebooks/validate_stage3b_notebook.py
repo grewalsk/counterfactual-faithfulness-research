@@ -5,6 +5,8 @@ from __future__ import annotations
 
 import ast
 import json
+import tempfile
+import zipfile
 from pathlib import Path
 
 import numpy as np
@@ -67,6 +69,7 @@ def synthetic_checks(notebook):
     assert pair_count[:, 0].tolist() == [1, 2]
 
     function_names = {
+        "write_json",
         "standardize_fit",
         "bootstrap_mean",
         "regression_design",
@@ -75,6 +78,7 @@ def synthetic_checks(notebook):
         "regression_metrics",
         "held_out_regression",
         "rank_values",
+        "package_results",
     }
     definitions = {}
     for cell in notebook["cells"]:
@@ -87,6 +91,9 @@ def synthetic_checks(notebook):
     assert set(definitions) == function_names
     namespace = {
         "np": np,
+        "json": json,
+        "Path": Path,
+        "zipfile": zipfile,
         "ENVIRONMENT": ["PushT", "Wall"],
         "HORIZONS": [1, 3, 6],
         "REGRESSION_RIDGE": 1e-3,
@@ -94,6 +101,7 @@ def synthetic_checks(notebook):
         "SEED": 71,
     }
     for name in [
+        "write_json",
         "standardize_fit",
         "bootstrap_mean",
         "regression_design",
@@ -102,6 +110,7 @@ def synthetic_checks(notebook):
         "regression_metrics",
         "held_out_regression",
         "rank_values",
+        "package_results",
     ]:
         module = ast.Module(body=[definitions[name]], type_ignores=[])
         exec(compile(module, NOTEBOOK.name, "exec"), namespace)
@@ -179,6 +188,37 @@ def synthetic_checks(notebook):
     assert np.isnan(ranks[1])
     assert ranks.tolist()[2] == 1
 
+    with tempfile.TemporaryDirectory() as temporary:
+        output_dir = Path(temporary) / "stage3b"
+        probe_dir = output_dir / "probes"
+        probe_dir.mkdir(parents=True)
+        expected_files = {
+            "FAILURE_TRACE.txt": "NONE\n",
+            "metrics_summary.json": '{"status": "SUCCESS"}\n',
+            "unit_metrics.csv": "metric\n1\n",
+            "stage3b_decision.json": '{"status": "TEST"}\n',
+            "stage3b_revision.json": '{"revision": "TEST"}\n',
+        }
+        for name, content in expected_files.items():
+            (output_dir / name).write_text(content)
+        namespace.update(
+            {
+                "OUT": output_dir,
+                "PROBE_DIR": probe_dir,
+                "MOUNT_DRIVE": True,
+            }
+        )
+        archive = namespace["package_results"]()
+        assert archive.exists()
+        with zipfile.ZipFile(archive) as handle:
+            included = set(handle.namelist())
+        assert set(expected_files).issubset(included)
+        assert "result_zip_manifest.json" in included
+        manifest = json.loads(
+            (output_dir / "result_zip_manifest.json").read_text()
+        )
+        assert set(expected_files).issubset(set(manifest["included"]))
+
 
 def main() -> int:
     notebook = json.loads(NOTEBOOK.read_text())
@@ -188,12 +228,25 @@ def main() -> int:
     assert notebook["cells"][0]["cell_type"] == "code"
     config = "".join(notebook["cells"][0]["source"])
     assert 'RUN_MODE = "full"' in config
+    write_json_call_count = 0
     for index, cell in enumerate(notebook["cells"]):
         if cell["cell_type"] == "code":
-            ast.parse(
+            tree = ast.parse(
                 "".join(cell["source"]),
                 filename=f"{NOTEBOOK.name}:cell_{index}",
             )
+            for node in ast.walk(tree):
+                if (
+                    isinstance(node, ast.Call)
+                    and isinstance(node.func, ast.Name)
+                    and node.func.id == "write_json"
+                ):
+                    write_json_call_count += 1
+                    assert len(node.args) == 2, (
+                        "write_json must receive exactly path and payload"
+                    )
+                    assert not node.keywords
+    assert write_json_call_count >= 10
 
     source = "\n".join(
         "".join(cell["source"]) for cell in notebook["cells"]
@@ -228,7 +281,8 @@ def main() -> int:
     print(
         f"PASS: {NOTEBOOK.name} has {len(notebook['cells'])} cells; "
         "all code parses, finite-row handling and door-crossing safeguards "
-        "are present, unit metrics are packaged, and synthetic checks pass."
+        "are present, every write_json call has valid arity, and the synthetic "
+        "result bundle packages successfully."
     )
     return 0
 
