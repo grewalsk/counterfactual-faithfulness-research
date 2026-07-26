@@ -34,6 +34,8 @@ smaller execution-facing mirror and is not the evidence archive.
   interaction correction, and NaN-safe ranking rules.
 - `docs/STAGE4_MATCHED_INTERVENTION_PROTOCOL.md` — pre-specified matched-error
   causal test of action-specific decoded prediction structure.
+- `docs/STAGE5_COUNTERFACTUAL_TRAINING_PROTOCOL.md` — prospective equal-data,
+  equal-update training test of a counterfactual decision readout on new tasks.
 - `src/cf_faithfulness/` — tested NumPy metric and grouped-analysis code.
 - `tests/` — synthetic and exact-state restoration tests.
 - `notebooks/01_model_and_environment_smoke_test.ipynb` — Stage 1 Colab.
@@ -49,6 +51,8 @@ smaller execution-facing mirror and is not the evidence archive.
   repair with automatic result download.
 - `notebooks/04_matched_action_structure_intervention.ipynb` — CPU-only
   matched decoded-pose intervention with automatic source and result download.
+- `notebooks/05_counterfactual_decision_readout_training.ipynb` — prospective
+  PushT/Wall counterfactual readout-training experiment with new final tasks.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.
 - `audits/` — independent post-run audits and supporting summaries.
 - `results/bundles/` — original Stage 1 through Stage 3 Colab ZIP bundles.
@@ -86,9 +90,11 @@ common-mode corruption in both environments. The independent audit reproduced
 all primary intervals and found the primary direction in all 12 descriptive
 environment-by-model-by-horizon cells.
 
-The current boundary is a new equal-data, equal-compute training experiment.
-It must test whether an explicit counterfactual-difference objective improves
-held-out action ranking and planning at matched ordinary rollout error,
-relative to ordinary prediction, independent-pair, and shuffled-pair
-controls. Stage 4 establishes readout-level causal necessity; the training
-experiment must establish actionable learning value.
+Stage 5 is now pre-registered and implemented but has not been run. It freezes
+the public world models and trains same-architecture decision readouts under
+ordinary endpoint, independent-pair, correct same-state counterfactual, and
+shuffled-pair objectives. The full run generates numerically new tasks and
+uses untouched task-disjoint final sets. Its cross-environment gate requires
+better planning from the counterfactual objective at noninferior ordinary
+physical-pose error. Stage 4 establishes readout-level causal necessity; Stage
+5 tests actionable learning value.
