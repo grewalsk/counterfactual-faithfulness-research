@@ -32,6 +32,8 @@ smaller execution-facing mirror and is not the evidence archive.
   regression, integrity checks, and decision rule.
 - `docs/STAGE3B_ANALYSIS_REPAIR.md` — finite-row regression repair, Wall
   interaction correction, and NaN-safe ranking rules.
+- `docs/STAGE4_MATCHED_INTERVENTION_PROTOCOL.md` — pre-specified matched-error
+  causal test of action-specific decoded prediction structure.
 - `src/cf_faithfulness/` — tested NumPy metric and grouped-analysis code.
 - `tests/` — synthetic and exact-state restoration tests.
 - `notebooks/01_model_and_environment_smoke_test.ipynb` — Stage 1 Colab.
@@ -45,6 +47,8 @@ smaller execution-facing mirror and is not the evidence archive.
   counterfactual benchmark.
 - `notebooks/03b_stage3_analysis_repair.ipynb` — audited Stage 3 analysis
   repair with automatic result download.
+- `notebooks/04_matched_action_structure_intervention.ipynb` — CPU-only
+  matched decoded-pose intervention with automatic source and result download.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.
 - `audits/` — independent post-run audits and supporting summaries.
 - `results/bundles/` — original Stage 1 through Stage 3 Colab ZIP bundles.
@@ -70,9 +74,21 @@ latent counterfactual metrics. Stage 2C returned a fully audited
 advantage in PushT and Wall, while its task-margin regression was invalidated
 by unhandled no-decision rows with undefined normalized margins.
 
-The current boundary is Stage 3B. Run
-`03b_stage3_analysis_repair.ipynb` in Google Colab and return
-`stage3b_result_bundle.zip`. It preserves the Stage 3 protocol, applies a
-common finite-row sample to every held-out regression specification, counts
-Wall door crossings as interactions, makes model rankings NaN-safe, and
-exports the previously omitted unit-level table.
+Stage 3B completed successfully and returned
+`CROSS_ENV_PLANNING_SIGNAL_ONLY`: the linear physical-state readout improved
+planning in both environments, while task-margin error did not improve
+held-out prediction of natural planning regret.
+
+Stage 4 then returned `CROSS_ENV_ACTION_STRUCTURE_CAUSAL_SIGNAL`. Under exactly
+matched decoded-pose perturbation magnitude, corrupting action-specific
+consequence structure caused greater regret and ranking damage than
+common-mode corruption in both environments. The independent audit reproduced
+all primary intervals and found the primary direction in all 12 descriptive
+environment-by-model-by-horizon cells.
+
+The current boundary is a new equal-data, equal-compute training experiment.
+It must test whether an explicit counterfactual-difference objective improves
+held-out action ranking and planning at matched ordinary rollout error,
+relative to ordinary prediction, independent-pair, and shuffled-pair
+controls. Stage 4 establishes readout-level causal necessity; the training
+experiment must establish actionable learning value.
