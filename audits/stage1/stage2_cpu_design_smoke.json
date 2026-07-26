@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "states": 24,
+  "actions_per_state": 10,
+  "horizons": [
+    1,
+    3,
+    6
+  ],
+  "strata": {
+    "near": 12,
+    "far": 12
+  },
+  "pair_contact_counts": {
+    "neither": 2750,
+    "one": 341,
+    "both": 149
+  },
+  "contact_fraction_range": [
+    0.0,
+    1.0
+  ],
+  "initial_render_exact_across_branches": true
+}
