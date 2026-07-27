@@ -217,6 +217,59 @@ The completed deterministic run returned
 reproducibility check; its archived bundle and independent audit are in
 `../results/bundles/` and `../audits/stage4/`.
 
+## Stage 5 counterfactual decision-readout training
+
+Notebook: `05_counterfactual_decision_readout_training.ipynb`
+
+Stage 4 established that action-specific consequence structure is causally
+necessary for planning under matched decoded-pose error. Stage 5 prospectively
+tests a remedy: train compact physical-state decision readouts over frozen
+DINO-WM and JEPA-WM predictions using an explicit same-state counterfactual
+difference loss.
+
+1. Open the Stage 5 notebook in a fresh Google Colab runtime.
+2. Leave `RUN_MODE="full"` and the frozen configuration unchanged.
+3. Select an A100 if available. An L4 is a good alternative; a 16 GB T4 is
+   supported but substantially slower.
+4. Set `MOUNT_DRIVE=True` if you want simulator/model shards to survive a
+   disconnect. Drive is optional.
+5. Run all eleven cells in order. No runtime restart is expected.
+6. Return `stage5_result_bundle.zip`, which downloads automatically.
+
+The full run creates twelve numerically new tasks per environment and 240
+states per environment. Tasks are split 6/3/0/3 into readout training,
+descriptive calibration, unused regression, and untouched final testing. It
+evaluates horizons 1/3/6, ten candidates, two public model families per
+environment, and three projection/training seeds.
+
+Four same-architecture heads receive identical examples, initialization,
+minibatch schedules, and optimizer updates:
+
+- ordinary endpoint prediction;
+- independent-state pair differences;
+- correct same-state counterfactual differences;
+- shuffled same-state pair differences.
+
+Expected runtime:
+
+- A100: about 50–80 minutes;
+- L4: about 75–120 minutes;
+- T4: about 120–200 minutes.
+
+Allow approximately 7 GB of temporary/cache storage, or 9 GB in Drive for a
+conservative resumable run. The notebook downloads four public world-model
+checkpoints plus the shared encoder, approximately 1.1 GB total. Intermediate
+feature shards are excluded from the result ZIP; trained readout checkpoints,
+raw prediction/metric tables, clustered intervals, plots, logs, and the frozen
+decision are included.
+
+The primary gate requires lower normalized planning regret, better
+margin-weighted action ranking, and an upper 95% confidence bound no greater
+than 1.05 for the counterfactual/ordinary physical-pose-error ratio in both
+environments. The strongest result additionally requires superiority to both
+paired controls. This is a readout-level remedy over frozen world-model
+predictions, not full-backbone world-model fine-tuning.
+
 ## Stage 1 historical instructions
 
 1. Open `01_model_and_environment_smoke_test.ipynb` in a fresh Colab runtime.
