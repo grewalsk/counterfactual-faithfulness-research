@@ -270,6 +270,56 @@ environments. The strongest result additionally requires superiority to both
 paired controls. This is a readout-level remedy over frozen world-model
 predictions, not full-backbone world-model fine-tuning.
 
+The completed run passed every integrity condition and returned
+`NO_TRAINING_FIX`. The counterfactual objective was noninferior in pose error
+and produced modest planning improvements relative to endpoint-only training,
+but the two co-primary planning intervals did not both exclude zero in either
+environment. The independent-pair control was equally good or better, so the
+effect was not counterfactual-specific.
+
+## Stage 6 structured action-effect development
+
+Notebook: `06_structured_action_effect_development.ipynb`
+
+Stage 6 develops the stronger repair suggested by the Stage 5 audit. It uses a
+learned projection over raw pooled future features, processes all ten candidate
+actions jointly, decomposes a shared predicted endpoint from no-op-relative
+action effects, decodes action descriptors from centered future features, and
+adds a physical-cost-weighted ranking loss.
+
+1. Open the Stage 6 notebook in a fresh Google Colab runtime.
+2. Leave `RUN_MODE="full"` and the development configuration unchanged.
+3. Select an A100. An L4 is supported but the learned 6,144-to-128 projections
+   make it substantially slower; a T4 is not recommended for the full run.
+4. Set `MOUNT_DRIVE=True` if you want simulator, model, and completed-adapter
+   checkpoints to survive a disconnect.
+5. Run all eleven cells in order.
+6. Return `stage6_result_bundle.zip`, which downloads automatically.
+
+Stage 6 deliberately reuses the now-inspected Stage 5 task family. The original
+training and calibration tasks retain their roles, while the former final split
+is renamed `development_holdout`. It must not be represented as an untouched
+test set. Common checkpoints at epochs 80, 120, and 160 are scored on
+calibration tasks only; the development holdout is evaluated afterward.
+
+Six same-architecture training conditions isolate endpoint, action-decoding,
+ranking, same-state action-effect, and independent-state action-effect
+supervision. The proposed `counterfactual_action_effect` condition combines
+endpoint, no-op-relative effect, action-decoding, and ranking losses.
+
+Expected runtime:
+
+- A100: approximately 90–150 minutes;
+- L4: approximately 150–240 minutes.
+
+Allow approximately 9 GB of temporary/cache storage. Trained adapter
+checkpoints can make the downloaded result bundle substantially larger than
+Stage 5. The notebook resumes completed adapter heads when Drive is enabled and
+the run signature is unchanged.
+
+A positive Stage 6 result is a development result only. It nominates one frozen
+method for a later Stage 6B run on numerically new tasks.
+
 ## Stage 1 historical instructions
 
 1. Open `01_model_and_environment_smoke_test.ipynb` in a fresh Colab runtime.
