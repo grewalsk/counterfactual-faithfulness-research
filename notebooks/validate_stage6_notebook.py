@@ -7,6 +7,7 @@ import ast
 import hashlib
 import json
 import math
+import random
 from pathlib import Path
 
 import numpy as np
@@ -90,10 +91,13 @@ def synthetic_checks(notebook):
         "torch": torch,
         "math": math,
         "hashlib": hashlib,
+        "random": random,
         "NUM_STATES": 36,
         "ACTIONS_PER_STATE": 10,
         "HORIZONS": [1, 3, 6],
         "FRAMESKIP": 5,
+        "ADAPTER_BOTTLENECK_DIM": 16,
+        "ADAPTER_HIDDEN_DIM": 24,
         "PAIR_LEFT": np.triu_indices(10, k=1)[0],
         "PAIR_RIGHT": np.triu_indices(10, k=1)[1],
         "METHODS": methods,
@@ -110,6 +114,7 @@ def synthetic_checks(notebook):
     execute_nodes(
         notebook,
         [
+            "stable_seed",
             "build_action_descriptors",
             "ActionEffectAdapter",
             "differentiable_task_cost",
@@ -119,9 +124,43 @@ def synthetic_checks(notebook):
             "state_metric_map",
             "clustered_method_contrast",
             "clustered_pose_ratio",
+            "train_action_effect_adapter",
         ],
         namespace,
     )
+
+    class TrainingEntryReached(Exception):
+        pass
+
+    def adapter_sentinel(**_kwargs):
+        raise TrainingEntryReached
+
+    actual_adapter = namespace["ActionEffectAdapter"]
+    namespace["ActionEffectAdapter"] = adapter_sentinel
+    entry_units = {
+        "features": np.zeros((2, 10, 32), dtype=np.float32),
+        "pose": np.zeros((2, 10, 4), dtype=np.float32),
+        "action_descriptor": np.zeros((2, 10, 6), dtype=np.float32),
+    }
+    try:
+        namespace["train_action_effect_adapter"](
+            "PushT",
+            "synthetic_model",
+            6101,
+            "endpoint_only",
+            entry_units,
+            entry_units,
+            np.zeros(4, dtype=np.float32),
+            np.ones(4, dtype=np.float32),
+            np.zeros(6, dtype=np.float32),
+            np.ones(6, dtype=np.float32),
+        )
+    except TrainingEntryReached:
+        pass
+    else:
+        raise AssertionError("training entry did not reach adapter construction")
+    finally:
+        namespace["ActionEffectAdapter"] = actual_adapter
 
     action_bank = np.zeros((2, 10, 30, 2), dtype=np.float32)
     action_bank[:, 1, :12, 0] = 0.2
@@ -271,7 +310,7 @@ def main() -> int:
         "PROBE_SEEDS = [6101, 8101]",
         "ADAPTER_BOTTLENECK_DIM = 128",
         "ADAPTER_HIDDEN_DIM = 192",
-        'ADAPTER_IMPLEMENTATION_ID = "set_noop_effect_rank_v1"',
+        'ADAPTER_IMPLEMENTATION_ID = "set_noop_effect_rank_v2"',
         "TRAINING_EPOCHS = 160",
         "SELECTION_EPOCHS = [80, 120, 160]",
         "EFFECT_WEIGHT = 1.0",
@@ -292,6 +331,8 @@ def main() -> int:
         "stage5_final_tasks_reused_and_not_confirmatory",
         "development_holdout_used_for_selection",
         "ActionEffectAdapter",
+        "def stable_seed(*items):",
+        "PAIR_LEFT, PAIR_RIGHT = np.triu_indices(",
         "effect = raw_effect - raw_effect[:, :1]",
         "weighted_pairwise_ranking_loss",
         "calibration_selection_score",
