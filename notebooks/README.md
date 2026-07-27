@@ -380,6 +380,59 @@ Expected sanity outputs:
 Stage 7 reuses inspected tasks and is exploratory. Even a positive result must
 be frozen and tested later on numerically new tasks.
 
+## Stage 8 counterfactual decision energy
+
+Notebook: `08_counterfactual_decision_energy.ipynb`
+
+Stage 7 improved ordinary latent prediction without reliably improving
+planning. Stage 8 keeps every JEPA-WM prediction frozen and instead trains a
+small set-centered energy residual to order the ten candidate actions. The
+proposed head combines native/final goal features with correctly aligned
+no-op-relative features from all audited predictor layers.
+
+1. Open the Stage 8 notebook in the same active Colab runtime when possible.
+2. Leave `RUN_MODE="full"` and all scientific settings unchanged.
+3. Select an A100 with at least 40 GB.
+4. Keep `REUSE_STAGE7_CACHE=True`. If the compatible Stage 7 cache remains at
+   `/content/counterfactual_faithfulness_stage7`, the notebook reuses its
+   simulator and transition-token shards automatically.
+5. Run all eleven cells in order. A missing or incompatible Stage 7 cache
+   triggers a complete self-contained reconstruction.
+6. Return `stage8_result_bundle.zip`, which downloads automatically.
+
+The full run uses 96 states per environment, ten candidate actions, horizons
+1, 3, and 6, two head seeds, and four identically optimized energy heads:
+final-token, action-prior, wrong-state, and correctly aligned counterfactual
+energy. The public encoder and predictor are frozen and receive no gradient.
+
+Expected runtime when the complete Stage 7 cache is reused:
+
+- A100 40 GB or 80 GB: approximately 20–45 minutes.
+
+Without the cache, allow approximately the Stage 7 reconstruction time plus
+20–45 minutes for Stage 8 training and evaluation. The large simulator and
+token shards are excluded from the downloaded bundle.
+
+Expected sanity outputs:
+
+- printed cache compatibility/reuse decision;
+- bitwise-exact restoration for PushT and Wall;
+- confirmation of six-block `VisionTransformerAdaLN` predictors;
+- aligned feature tensors with three horizons, ten actions, and a fixed feature
+  manifest;
+- equal zero-initialization hashes across all four trained conditions;
+- calibration-only checkpoint selection for two head seeds;
+- development metrics, state-clustered intervals, and task-level descriptive
+  contrasts;
+- one of `DECISION_ENERGY_CANDIDATE_READY`,
+  `DECISION_ENERGY_GAIN_NOT_SPECIFIC`, `MIXED_DECISION_ENERGY_SIGNAL`,
+  `NO_DECISION_ENERGY_GAIN`, or `INCONCLUSIVE`;
+- `RUN_STATUS: SUCCESS`;
+- automatic download of `stage8_result_bundle.zip`.
+
+Stage 8 reuses inspected tasks and is exploratory. Any successful method must
+be frozen before a later run on numerically new tasks.
+
 ## Stage 1 historical instructions
 
 1. Open `01_model_and_environment_smoke_test.ipynb` in a fresh Colab runtime.

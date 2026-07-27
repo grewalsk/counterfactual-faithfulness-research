@@ -39,6 +39,9 @@ downloaded Colab result bundles.
   set-aware action-effect adapter development after the Stage 5 result.
 - `docs/STAGE7_RECURRENT_TRANSITION_PROTOCOL.md` — inference-path audit and
   recurrent, unpooled-token transition-adapter development protocol.
+- `docs/STAGE8_COUNTERFACTUAL_ENERGY_PROTOCOL.md` — frozen-dynamics,
+  task-disjoint calibration of decision energy with action-prior and
+  wrong-state controls.
 - `src/cf_faithfulness/` — tested NumPy metric and grouped-analysis code.
 - `tests/` — synthetic and exact-state restoration tests.
 - `notebooks/01_model_and_environment_smoke_test.ipynb` — Stage 1 Colab.
@@ -60,6 +63,8 @@ downloaded Colab result bundles.
   learned-projection, action-effect, and decision-ranking adapter development.
 - `notebooks/07_recurrent_counterfactual_transition_adapter.ipynb` —
   exploratory AdaLN-layer audit and recurrent transition-adapter experiment.
+- `notebooks/08_counterfactual_decision_energy.ipynb` — exploratory
+  counterfactual decision-energy calibration with frozen JEPA-WM rollouts.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.
 - `audits/` — independent post-run audits and supporting summaries.
 - `results/bundles/` — original Stage 1 through Stage 3 Colab ZIP bundles.
@@ -110,10 +115,18 @@ endpoint-only baseline or preserve pose-error noninferiority in either
 environment. This rules out that particular post-rollout repair, not
 counterfactual dynamics learning in general.
 
-Stage 7 therefore moves the intervention into the actual JEPA-WM inference
-path. It retains the 16×16 token grid, audits action-effect information after
-each of the six AdaLN blocks, trains a zero-initialized transition residual
-with controlled loss variants, and inserts the selected residual after every
-predictor call before recurrent feedback. Stage 7 still reuses inspected tasks
-and is development evidence only; any successful recipe must later be frozen
-and tested on numerically new tasks.
+Stage 7 completed and returned `NO_RECURRENT_DEVELOPMENT_GAIN`. Its recurrent
+counterfactual residual improved ordinary latent prediction on every
+development state in both environments, but did not pass the planning gate in
+either environment. Wall was especially diagnostic: ordinary latent error
+improved by about 12 percent even though regret and weighted pairwise accuracy
+worsened, while physical action effects were strongly decodable from internal
+predictor layers.
+
+Stage 8 therefore freezes the complete public JEPA-WM dynamics and learns only
+the decision energy used to order actions. A set-centered energy residual uses
+native goal distance, final-token goal features, and correctly aligned
+no-op-relative intermediate features. Final-token, action-prior, and
+wrong-state controls test whether any gain is actually due to state-specific
+world-model information. Stage 8 remains exploratory on the inspected task
+family; a successful recipe must be frozen before evaluation on new tasks.
