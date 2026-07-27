@@ -320,6 +320,66 @@ the run signature is unchanged.
 A positive Stage 6 result is a development result only. It nominates one frozen
 method for a later Stage 6B run on numerically new tasks.
 
+## Stage 7 recurrent counterfactual transition adapter
+
+Notebook: `07_recurrent_counterfactual_transition_adapter.ipynb`
+
+Stage 6 showed that terminal action-effect readouts can improve short-horizon
+development metrics without surviving reliably to horizon six. Stage 7 tests
+whether the loss occurs inside JEPA-WM inference. It audits unpooled tokens
+after all six AdaLN blocks and trains a small transition residual that is
+inserted after every predictor call before the prediction is recycled as the
+next context.
+
+1. Open the Stage 7 notebook in a fresh Google Colab runtime.
+2. Leave `RUN_MODE="full"` and all scientific settings unchanged.
+3. Select an A100 with at least 40 GB. An L4 is suitable for smoke mode but is
+   not recommended for the full unpooled-token run.
+4. Set `MOUNT_DRIVE=True` for the full run. It is technically optional, but
+   strongly recommended because the token caches are several gigabytes and
+   make the run resumable after a disconnect.
+5. Run all eleven cells in order. No runtime restart is expected.
+6. Return `stage7_result_bundle.zip`, which downloads automatically.
+
+The full run uses 96 exact states per environment, ten candidates, all six
+intermediate rollout steps, and the public PushT and Wall JEPA-WM checkpoints.
+It deliberately focuses on the AdaLN inference path before testing whether a
+successful recipe transfers to DINO-WM.
+
+Three identical recurrent residuals isolate ordinary latent correction,
+independent-state delta supervision, and correct same-state counterfactual
+delta supervision. The residual is zero-initialized, retains the 16×16 token
+grid, and receives no planning-ranking gradient.
+
+Expected runtime:
+
+- A100 40 GB or 80 GB: approximately 90–180 minutes;
+- L4 smoke mode: approximately 30–60 minutes.
+
+Allow approximately 10–14 GB of temporary or Drive storage. The notebook
+downloads two public world-model checkpoints plus the shared DINOv2 encoder,
+approximately 650 MB total. Intermediate simulator and unpooled-token shards
+are excluded from the downloaded result bundle.
+
+Expected sanity outputs:
+
+- Python, CUDA, PyTorch, and GPU versions;
+- bitwise-exact restoration for PushT and Wall;
+- confirmation of six-block `VisionTransformerAdaLN` predictors;
+- 96 transition-token shards per environment in full mode;
+- finite layerwise physical-effect audit rows;
+- equal initialization hashes across all adapter conditions;
+- selected calibration checkpoints for two adapter seeds;
+- recurrent metrics and clustered contrasts on the development holdout only;
+- one of `RECURRENT_COUNTERFACTUAL_CANDIDATE_READY`,
+  `RECURRENT_GAIN_NOT_SPECIFIC`, `MIXED_RECURRENT_SIGNAL`,
+  `NO_RECURRENT_DEVELOPMENT_GAIN`, or `INCONCLUSIVE`;
+- `RUN_STATUS: SUCCESS`;
+- automatic download of `stage7_result_bundle.zip`.
+
+Stage 7 reuses inspected tasks and is exploratory. Even a positive result must
+be frozen and tested later on numerically new tasks.
+
 ## Stage 1 historical instructions
 
 1. Open `01_model_and_environment_smoke_test.ipynb` in a fresh Colab runtime.
