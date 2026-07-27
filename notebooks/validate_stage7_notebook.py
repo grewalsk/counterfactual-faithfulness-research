@@ -221,6 +221,8 @@ def main() -> int:
         "Stage 7 establishes",
         "untouched Stage 7 final",
         "prospective task-disjoint training/calibration/final-test",
+        "FEATURE_POOL_GRID",
+        "def pool_visual",
         "RANK_WEIGHT",
     ]:
         assert forbidden not in source, forbidden
@@ -231,6 +233,30 @@ def main() -> int:
         ast.parse(
             "".join(cell["source"]),
             filename=f"{NOTEBOOK.name}:cell_{index}",
+        )
+
+    # Execute the configuration and shared-definition cells in a minimal
+    # namespace.  AST parsing alone does not resolve names used in function
+    # defaults, which is how the missing FEATURE_POOL_GRID regression escaped.
+    definition_namespace = {
+        "csv": __import__("csv"),
+        "hashlib": hashlib,
+        "json": json,
+        "math": math,
+        "np": np,
+        "Path": Path,
+        "random": random,
+        "torch": torch,
+        "torch_functional": torch_functional,
+    }
+    for cell_index in [0, 4]:
+        exec(
+            compile(
+                "".join(notebook["cells"][cell_index]["source"]),
+                f"{NOTEBOOK.name}:cell_{cell_index}",
+                "exec",
+            ),
+            definition_namespace,
         )
 
     synthetic_checks(notebook)
