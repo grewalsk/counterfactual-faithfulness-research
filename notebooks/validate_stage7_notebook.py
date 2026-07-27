@@ -72,6 +72,7 @@ def synthetic_checks(notebook):
         "METHOD_WEIGHTS": method_weights,
         "RANKING_TIE": 1e-9,
         "DEVELOPMENT_SPLIT": "development_holdout",
+        "ACTIONS_PER_STATE": 10,
     }
     execute_nodes(
         notebook,
@@ -81,6 +82,7 @@ def synthetic_checks(notebook):
             "CountSketchProjector",
             "stable_seed",
             "canonical_split_name",
+            "select_action_horizons",
             "TokenResidualAdapter",
             "dynamic_token_weights",
             "weighted_token_huber",
@@ -159,6 +161,15 @@ def synthetic_checks(notebook):
     )
     assert namespace["canonical_split_name"]("probe_train") == "probe_train"
 
+    cached = np.arange(2 * 10 * 6 * 4).reshape(2, 10, 6, 4)
+    selected = namespace["select_action_horizons"](
+        cached, 1, [0, 2, 5]
+    )
+    assert selected.shape == (10, 3, 4)
+    assert np.array_equal(selected[:, 0], cached[1, :, 0])
+    assert np.array_equal(selected[:, 1], cached[1, :, 2])
+    assert np.array_equal(selected[:, 2], cached[1, :, 5])
+
 
 def main() -> int:
     notebook = json.loads(NOTEBOOK.read_text())
@@ -198,6 +209,7 @@ def main() -> int:
         "former final split `development_holdout`",
         "EXPECTED_TASK_SPLIT_COUNTS",
         "canonical_split_name",
+        "select_action_horizons",
         "DEVELOPMENT_SPLIT,",
         "wanted = set(TARGET_STEPS)",
         "all_future_visual",
@@ -258,6 +270,7 @@ def main() -> int:
         "torch": torch,
         "torch_functional": torch_functional,
         "DEVELOPMENT_SPLIT": "development_holdout",
+        "ACTIONS_PER_STATE": 10,
     }
     for cell_index in [0, 4]:
         exec(
