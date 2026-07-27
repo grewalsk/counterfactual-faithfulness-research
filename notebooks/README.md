@@ -433,6 +433,58 @@ Expected sanity outputs:
 Stage 8 reuses inspected tasks and is exploratory. Any successful method must
 be frozen before a later run on numerically new tasks.
 
+## Stage 9 counterfactual value-equivalent AdaLN adaptation
+
+Notebook: `09_counterfactual_value_equivalent_adaln.ipynb`
+
+Stage 9 tests the first repair that changes JEPA-WM's transition function.
+The visual encoder, predictor attention/MLP content weights, proprio pathway,
+and output projection remain frozen. Only the action encoder and the six AdaLN
+modulation linear maps receive gradients.
+
+The matched method combines the original future-latent anchor with a compact
+goal-independent physical endpoint loss, an explicit same-state no-op-relative
+physical-effect loss, and a latent-displacement action decoder. Two controls
+update the identical parameters using latent prediction alone or shuffled
+within-state action/outcome correspondence. Temporary training heads are
+discarded before evaluation, the training projection is replaced by an
+independently seeded projection, and every predictor receives the same newly
+fitted linear physical-state readout.
+
+1. Open the Stage 9 notebook in the same active Colab runtime when possible.
+2. Leave `RUN_MODE="full"` and the scientific settings unchanged.
+3. Select an A100 with at least 40 GB. Backpropagation through recurrent,
+   unpooled-token rollouts makes an A100 substantially faster and safer than an
+   L4; a T4 is intended only for smoke mode.
+4. Keep `REUSE_STAGE7_CACHE=True`. A compatible Stage 7 truth/transition cache
+   is reused automatically; otherwise the notebook reconstructs it.
+5. Run all eleven cells in order.
+6. Return `stage9_result_bundle.zip`, which downloads automatically on success
+   or captured failure.
+
+The full run uses 96 exact states per environment, ten candidates, all six
+rollout steps, and calibration-only checkpoint selection at epochs 4, 8, and
+12. Candidate actions are split into null-anchored groups during training to
+bound activation memory. Evaluation uses the development holdout at horizons
+1, 3, and 6.
+
+Expected runtime with a complete Stage 7 cache:
+
+- A100 80 GB: approximately 60–120 minutes;
+- A100 40 GB: approximately 90–150 minutes;
+- L4 smoke mode: approximately 25–50 minutes.
+
+Without the Stage 7 cache, add the simulator/transition reconstruction time.
+The downloaded ZIP excludes the large intermediate token shards but includes
+adapted action-path checkpoints, fresh readout selections, raw development
+metrics, clustered contrasts, plots, logs, and the decision gate.
+
+Stage 9 is exploratory method development. Its success condition requires the
+correctly matched method to beat the frozen readout, latent-only adaptation,
+and shuffled-correspondence control in both environments at multiple horizons.
+Only then should the recipe be frozen for a numerically new, multi-seed task
+family.
+
 ## Stage 1 historical instructions
 
 1. Open `01_model_and_environment_smoke_test.ipynb` in a fresh Colab runtime.

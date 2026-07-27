@@ -42,6 +42,9 @@ downloaded Colab result bundles.
 - `docs/STAGE8_COUNTERFACTUAL_ENERGY_PROTOCOL.md` — frozen-dynamics,
   task-disjoint calibration of decision energy with action-prior and
   wrong-state controls.
+- `docs/STAGE9_COUNTERFACTUAL_VALUE_EQUIVALENCE_PROTOCOL.md` —
+  counterfactual, goal-independent adaptation of JEPA-WM's actual AdaLN
+  action-conditioning pathway.
 - `src/cf_faithfulness/` — tested NumPy metric and grouped-analysis code.
 - `tests/` — synthetic and exact-state restoration tests.
 - `notebooks/01_model_and_environment_smoke_test.ipynb` — Stage 1 Colab.
@@ -65,6 +68,9 @@ downloaded Colab result bundles.
   exploratory AdaLN-layer audit and recurrent transition-adapter experiment.
 - `notebooks/08_counterfactual_decision_energy.ipynb` — exploratory
   counterfactual decision-energy calibration with frozen JEPA-WM rollouts.
+- `notebooks/09_counterfactual_value_equivalent_adaln.ipynb` — exploratory
+  value-equivalent fine-tuning of the JEPA-WM action encoder and AdaLN
+  modulation maps, with latent-only and shuffled-outcome controls.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.
 - `audits/` — independent post-run audits and supporting summaries.
 - `results/bundles/` — original Stage 1 through Stage 3 Colab ZIP bundles.
@@ -123,10 +129,18 @@ improved by about 12 percent even though regret and weighted pairwise accuracy
 worsened, while physical action effects were strongly decodable from internal
 predictor layers.
 
-Stage 8 therefore freezes the complete public JEPA-WM dynamics and learns only
-the decision energy used to order actions. A set-centered energy residual uses
-native goal distance, final-token goal features, and correctly aligned
-no-op-relative intermediate features. Final-token, action-prior, and
-wrong-state controls test whether any gain is actually due to state-specific
-world-model information. Stage 8 remains exploratory on the inspected task
-family; a successful recipe must be frozen before evaluation on new tasks.
+Stage 8 returned `NO_DECISION_ENERGY_GAIN`. Wall weighted pairwise accuracy
+improved, but regret remained inconclusive and a wrong-state control nearly
+matched the learned energies. Margin calibration also degraded sharply. The
+result says that decision information is present but a direct high-capacity
+energy head can exploit task/candidate regularities without repairing
+state-specific counterfactual dynamics.
+
+Stage 9 therefore changes the transition model for the first time. It freezes
+the visual encoder and all state/content weights, then fine-tunes only the
+action encoder and six AdaLN modulation maps. Its same-state loss aligns
+no-op-relative predicted latent effects with goal-independent physical outcome
+effects while retaining the native latent target as an anchor. Temporary
+training heads are discarded; identical fresh linear readouts evaluate frozen,
+latent-only, shuffled-correspondence, and correctly matched predictors. Stage 9
+is exploratory on the inspected task family and has not yet been run.
