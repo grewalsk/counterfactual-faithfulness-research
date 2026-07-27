@@ -54,6 +54,7 @@ def synthetic_checks(notebook):
         [
             "stable_seed",
             "model_state_hash",
+            "random_projection",
             "PoseReadout",
             "objective_loss",
             "bootstrap_mean",
@@ -61,6 +62,14 @@ def synthetic_checks(notebook):
         ],
         namespace,
     )
+
+    projection = namespace["random_projection"](17, 11, 991)
+    assert projection.shape == (17, 11)
+    assert projection.dtype == np.float32
+    features = np.zeros((5, 17), dtype=np.float32)
+    projected = torch.from_numpy(features) @ torch.from_numpy(projection)
+    assert projected.dtype == torch.float32
+    assert projected.shape == (5, 11)
 
     torch.manual_seed(17)
     target = torch.randn(4, 10, 3)
@@ -215,6 +224,7 @@ def main() -> int:
         "objective_contrasts.png",
         "stage5_result_bundle.zip",
         "files.download(str(RESULT_ZIP))",
+        'device="cuda", dtype=torch.float32',
     ]:
         assert fragment in source, fragment
 
