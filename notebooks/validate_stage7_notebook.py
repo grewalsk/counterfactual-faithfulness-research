@@ -71,6 +71,7 @@ def synthetic_checks(notebook):
         "random": random,
         "METHOD_WEIGHTS": method_weights,
         "RANKING_TIE": 1e-9,
+        "DEVELOPMENT_SPLIT": "development_holdout",
     }
     execute_nodes(
         notebook,
@@ -79,6 +80,7 @@ def synthetic_checks(notebook):
             "ranking_metrics",
             "CountSketchProjector",
             "stable_seed",
+            "canonical_split_name",
             "TokenResidualAdapter",
             "dynamic_token_weights",
             "weighted_token_huber",
@@ -152,6 +154,10 @@ def synthetic_checks(notebook):
     assert namespace["stable_seed"]("x", 1) == namespace["stable_seed"](
         "x", 1
     )
+    assert namespace["canonical_split_name"]("final_test") == (
+        "development_holdout"
+    )
+    assert namespace["canonical_split_name"]("probe_train") == "probe_train"
 
 
 def main() -> int:
@@ -190,6 +196,9 @@ def main() -> int:
     for fragment in [
         "Stage 7: recurrent counterfactual transition adapter",
         "former final split `development_holdout`",
+        "EXPECTED_TASK_SPLIT_COUNTS",
+        "canonical_split_name",
+        "DEVELOPMENT_SPLIT,",
         "wanted = set(TARGET_STEPS)",
         "all_future_visual",
         "all_future_proprio",
@@ -248,6 +257,7 @@ def main() -> int:
         "random": random,
         "torch": torch,
         "torch_functional": torch_functional,
+        "DEVELOPMENT_SPLIT": "development_holdout",
     }
     for cell_index in [0, 4]:
         exec(
