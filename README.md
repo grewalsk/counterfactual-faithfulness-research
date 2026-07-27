@@ -37,6 +37,8 @@ downloaded Colab result bundles.
   equal-update training test of a counterfactual decision readout on new tasks.
 - `docs/STAGE6_ACTION_EFFECT_DEVELOPMENT_PROTOCOL.md` — exploratory,
   set-aware action-effect adapter development after the Stage 5 result.
+- `docs/STAGE7_RECURRENT_TRANSITION_PROTOCOL.md` — inference-path audit and
+  recurrent, unpooled-token transition-adapter development protocol.
 - `src/cf_faithfulness/` — tested NumPy metric and grouped-analysis code.
 - `tests/` — synthetic and exact-state restoration tests.
 - `notebooks/01_model_and_environment_smoke_test.ipynb` — Stage 1 Colab.
@@ -56,6 +58,8 @@ downloaded Colab result bundles.
   PushT/Wall counterfactual readout-training experiment with new final tasks.
 - `notebooks/06_structured_action_effect_development.ipynb` — exploratory
   learned-projection, action-effect, and decision-ranking adapter development.
+- `notebooks/07_recurrent_counterfactual_transition_adapter.ipynb` —
+  exploratory AdaLN-layer audit and recurrent transition-adapter experiment.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.
 - `audits/` — independent post-run audits and supporting summaries.
 - `results/bundles/` — original Stage 1 through Stage 3 Colab ZIP bundles.
@@ -100,10 +104,16 @@ did not pass both co-primary planning gates in either environment. More
 importantly, the independent-pair control was equally good or better, so the
 gain was not specific to correct same-state counterfactual supervision.
 
-Stage 6 is now implemented as an explicitly exploratory development stage. It
-reuses the already-inspected Stage 5 tasks, labels the former final split
-`development_holdout`, replaces the fixed random projection and independent
-per-action MLP with a learned set-aware action-effect adapter, and adds explicit
-action decoding plus decision-aligned ranking supervision. Any positive Stage
-6 outcome selects a candidate for a later Stage 6B experiment on a numerically
-new task family; it is not itself confirmatory evidence.
+Stage 6 completed as explicitly exploratory development and returned
+`NO_DEVELOPMENT_GAIN`. Its terminal set-aware readout did not beat the
+endpoint-only baseline or preserve pose-error noninferiority in either
+environment. This rules out that particular post-rollout repair, not
+counterfactual dynamics learning in general.
+
+Stage 7 therefore moves the intervention into the actual JEPA-WM inference
+path. It retains the 16×16 token grid, audits action-effect information after
+each of the six AdaLN blocks, trains a zero-initialized transition residual
+with controlled loss variants, and inserts the selected residual after every
+predictor call before recurrent feedback. Stage 7 still reuses inspected tasks
+and is development evidence only; any successful recipe must later be frozen
+and tested on numerically new tasks.
