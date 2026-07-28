@@ -1,0 +1,82 @@
+{
+  "artifact": "compact audit extracted from the completed Stage 9 result bundle",
+  "evidence_status": "EXPLORATORY_METHOD_DEVELOPMENT",
+  "run_signature": "3dbc91a3ed64a9500baee521ce8155b674d3a11eab98724a1801c14a7236bb33",
+  "run_mode": "full",
+  "states_per_environment": 96,
+  "development_tasks_per_environment": 3,
+  "bootstrap_repetitions": 2000,
+  "pipeline_failed": false,
+  "prospective_decision": "DO_NOT_CONFIRM_YET",
+  "selected_epoch_audit": {
+    "expected_final_epoch": 12,
+    "all_six_environment_method_records_selected_final_epoch": true
+  },
+  "key_pusht_horizon6_contrasts": [
+    {
+      "planner": "fresh_linear_physical_readout",
+      "baseline": "frozen_linear_pose",
+      "metric": "normalized_regret",
+      "estimate": 0.07798793183386488,
+      "interval_low": -0.006690845029832453,
+      "interval_high": 0.17137104061835765,
+      "positive_means_matched_adaptation_better": true
+    },
+    {
+      "planner": "fresh_linear_physical_readout",
+      "baseline": "frozen_linear_pose",
+      "metric": "weighted_pairwise_accuracy",
+      "estimate": 0.022187291128352524,
+      "interval_low": -0.02241174158374217,
+      "interval_high": 0.0718894169446618,
+      "positive_means_matched_adaptation_better": true
+    },
+    {
+      "planner": "fresh_linear_physical_readout",
+      "baseline": "frozen_linear_pose",
+      "metric": "top1_correct",
+      "estimate": -0.08333333333333333,
+      "interval_low": -0.2916666666666667,
+      "interval_high": 0.125,
+      "positive_means_matched_adaptation_better": true
+    },
+    {
+      "planner": "native_goal_latent_distance",
+      "baseline": "frozen_latent_distance",
+      "metric": "normalized_regret",
+      "estimate": 0.13280745908188016,
+      "interval_low": 0.013084817592080208,
+      "interval_high": 0.2615977225699779,
+      "positive_means_matched_adaptation_better": true
+    },
+    {
+      "planner": "native_goal_latent_distance",
+      "baseline": "frozen_latent_distance",
+      "metric": "weighted_pairwise_accuracy",
+      "estimate": 0.02296233361334109,
+      "interval_low": -0.010269329488940488,
+      "interval_high": 0.05355192485800486,
+      "positive_means_matched_adaptation_better": true
+    },
+    {
+      "planner": "native_goal_latent_distance",
+      "baseline": "frozen_latent_distance",
+      "metric": "top1_correct",
+      "estimate": 0.0,
+      "interval_low": -0.16666666666666666,
+      "interval_high": 0.16666666666666666,
+      "positive_means_matched_adaptation_better": true
+    }
+  ],
+  "interpretation": {
+    "supported": "A narrow PushT horizon-6 regret signal reached the native JEPA planner and was not only a fresh-readout artifact.",
+    "not_supported": "A robust cross-horizon, cross-environment repair or improved top-1 action selection.",
+    "stage10_motivation": "Replace the mean endpoint surrogate with a pairwise regret certificate and enforce native fidelity during checkpoint selection."
+  },
+  "source_bundle_file_sha256": {
+    "config.json": "4ab4638e4188f95285d595f767061af998d52e3da6a939b9fa4c835329731318",
+    "stage9_development_decision.json": "90882aea2814347fcba6e5793c6647957b90e546444f006cfee51c5a3de9bb9c",
+    "stage9_method_contrasts.csv": "7108471c8aaf239786c3f280da0d8d678ebda53bd5d38567a1d8f499c85d77fc",
+    "action_path_adaptation_manifest.json": "8fdbdca010494c9635f94b85ec7c7f375fc711aeb0c48cadff475523ef45e8a1"
+  }
+}
