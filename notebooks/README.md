@@ -485,6 +485,73 @@ and shuffled-correspondence control in both environments at multiple horizons.
 Only then should the recipe be frozen for a numerically new, multi-seed task
 family.
 
+## Stage 10 fidelity-constrained pairwise margin adaptation
+
+Notebook: `10_fidelity_constrained_pairwise_margin_adaptation.ipynb`
+
+Stage 10 follows the narrow Stage 9 PushT horizon-6 signal with a
+decision-aligned objective. Three goal-independent physical-state decoders are
+fit on the frozen JEPA rollout and frozen before adaptation. The notebook then
+updates the same action encoder and six AdaLN modulation maps using all ten
+candidates and all 45 unordered action pairs at once.
+
+The FPMA loss minimizes a sum p-norm upper bound on normalized planning regret
+and a non-saturating gap-normalized top-1 term. A per-horizon augmented
+Lagrangian encourages native latent fidelity, while calibration checkpoint
+eligibility independently enforces a two-percent limit at horizons 1, 3, and
+6. Epoch zero is eligible, so an unsafe update cannot displace the pretrained
+model. Violations restore both parameters and optimizer momentum and halve the
+learning rate.
+
+1. Open the Stage 10 notebook in a fresh or cache-compatible Colab runtime.
+2. Leave `RUN_MODE="full"` and all scientific settings unchanged.
+3. Select an A100 80 GB if available; an A100 40 GB is the minimum intended
+   full-run GPU. L4 and T4 runtimes are for smoke mode only.
+4. Leave `MOUNT_DRIVE=True` for the full run. This is the default because a
+   boundary extension can outlive a single Colab lease.
+5. Keep `REUSE_STAGE7_CACHE=True`. A compatible Stage 7 cache avoids repeating
+   simulator and frozen-transition reconstruction.
+6. Run all eleven cells in order.
+7. Return `stage10_result_bundle.zip`, which downloads automatically after
+   either a completed run or a captured failure.
+
+The full run uses 96 states per environment, three adaptation seeds, four
+trained conditions, three frozen training decoders, five unseen evaluation
+projections, and checkpoints `0,2,...,24`. A prospectively defined improving
+final-boundary rule can extend an individual treatment to epoch 36 and then
+48. Atomic latest checkpoints resume an interrupted treatment from its most
+recent calibration boundary; completed treatments are reused only when their
+base model, frozen decoders, cache-content digest, pinned pretrained assets,
+and full configuration signature match. A reduced smoke matrix always returns
+`NONPROTOCOL_RUN_NO_SCIENTIFIC_DECISION`; it cannot trigger the advancement
+gate.
+
+Expected runtime with a complete Stage 7 cache:
+
+- A100 80 GB: approximately 6–10 hours before rare boundary extensions;
+- A100 40 GB: approximately 8–12 hours before rare boundary extensions;
+- A100 smoke mode: approximately 30–75 minutes.
+
+The bundle excludes large transition/rollout caches and completed control
+checkpoints. If a treatment fails, its atomic latest checkpoint is included so
+the failure bundle remains resumable.
+It includes the selected matched FPMA checkpoints, frozen-decoder manifests,
+all training and checkpoint histories, fresh-projection readout selections,
+task-clustered metrics and contrasts, deterministic certificate checks, plots,
+native goal-latent planner metrics, the prospective decision gate, logs, and
+checksums. All truth/transition/goal shards and task/split definitions are
+SHA256-bound before training, and the exact JEPA-WM and DINOv2 asset hashes are
+verified after model load.
+
+Stage 10 is still development evidence because the task family has informed
+the method. Advancement requires the matched constrained method to improve
+regret and ranking over frozen, latent-only, and shuffled controls at at least
+two common, task-interval-supported horizons in at least four of five unseen
+projections in both environments, while satisfying every native-fidelity
+constraint, preserving the native latent planner, and avoiding candidate
+collapse in every seed/projection/horizon stratum. Passing freezes the recipe
+for a numerically new task-family run.
+
 ## Stage 1 historical instructions
 
 1. Open `01_model_and_environment_smoke_test.ipynb` in a fresh Colab runtime.
