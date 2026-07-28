@@ -45,6 +45,9 @@ downloaded Colab result bundles.
 - `docs/STAGE9_COUNTERFACTUAL_VALUE_EQUIVALENCE_PROTOCOL.md` —
   counterfactual, goal-independent adaptation of JEPA-WM's actual AdaLN
   action-conditioning pathway.
+- `docs/STAGE10_FIDELITY_CONSTRAINED_PAIRWISE_MARGIN_PROTOCOL.md` — direct
+  pairwise regret-certificate optimization with hard per-horizon native
+  fidelity constraints.
 - `src/cf_faithfulness/` — tested NumPy metric and grouped-analysis code.
 - `tests/` — synthetic and exact-state restoration tests.
 - `notebooks/01_model_and_environment_smoke_test.ipynb` — Stage 1 Colab.
@@ -71,6 +74,9 @@ downloaded Colab result bundles.
 - `notebooks/09_counterfactual_value_equivalent_adaln.ipynb` — exploratory
   value-equivalent fine-tuning of the JEPA-WM action encoder and AdaLN
   modulation maps, with latent-only and shuffled-outcome controls.
+- `notebooks/10_fidelity_constrained_pairwise_margin_adaptation.ipynb` —
+  FPMA-JEPA training with three frozen physical decoders, all 45 candidate
+  pairs, checkpoint rollback, and five unseen evaluation projections.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.
 - `audits/` — independent post-run audits and supporting summaries.
 - `results/bundles/` — original Stage 1 through Stage 3 Colab ZIP bundles.
@@ -136,11 +142,25 @@ result says that decision information is present but a direct high-capacity
 energy head can exploit task/candidate regularities without repairing
 state-specific counterfactual dynamics.
 
-Stage 9 therefore changes the transition model for the first time. It freezes
-the visual encoder and all state/content weights, then fine-tunes only the
-action encoder and six AdaLN modulation maps. Its same-state loss aligns
-no-op-relative predicted latent effects with goal-independent physical outcome
-effects while retaining the native latent target as an anchor. Temporary
-training heads are discarded; identical fresh linear readouts evaluate frozen,
-latent-only, shuffled-correspondence, and correctly matched predictors. Stage 9
-is exploratory on the inspected task family and has not yet been run.
+Stage 9 completed successfully and produced a narrow but genuine intervention
+signal. Correctly matched action-path adaptation reduced PushT horizon-6 regret
+under both a fresh physical readout and the native latent planner; the native
+contrast was positive under its state-clustered interval. The result did not
+transfer to early PushT horizons or Wall, and top-1 choice did not improve.
+Every selected checkpoint also landed on the final epoch boundary. Stage 9
+therefore shows that JEPA's action path can correct some severe long-horizon
+mistakes, but its mean endpoint objective is not a reliable cross-environment
+repair. The compact numerical provenance is recorded in
+`results/stage9_development_audit.json`.
+
+Stage 10 directly optimizes a deterministic pairwise-margin upper bound on
+normalized planning regret. Three goal-independent physical decoders are fit
+on the frozen model and then frozen; the intervention still updates only the
+action encoder and six AdaLN modulation maps. It evaluates all ten candidates
+and all 45 unordered pairs together, enforces a two-percent native latent
+constraint separately at every horizon, makes epoch zero an eligible fallback,
+and rolls back violating checkpoints. Five unseen projections with newly fit
+physical readouts test whether any gain transfers beyond the training
+decoders, while the original goal-latent planner is evaluated as a separate
+non-harm gate. Stage 10 remains development evidence on the inspected task
+family.
