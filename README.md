@@ -48,6 +48,8 @@ downloaded Colab result bundles.
 - `docs/STAGE10_FIDELITY_CONSTRAINED_PAIRWISE_MARGIN_PROTOCOL.md` — direct
   pairwise regret-certificate optimization with hard per-horizon native
   fidelity constraints.
+- `docs/STAGE11_ACTION_RESPONSE_GEOMETRY_PILOT.md` — compute-gated,
+  readout-free adaptation of whitened centered action-response geometry.
 - `src/cf_faithfulness/` — tested NumPy metric and grouped-analysis code.
 - `tests/` — synthetic and exact-state restoration tests.
 - `notebooks/01_model_and_environment_smoke_test.ipynb` — Stage 1 Colab.
@@ -77,6 +79,9 @@ downloaded Colab result bundles.
 - `notebooks/10_fidelity_constrained_pairwise_margin_adaptation.ipynb` —
   FPMA-JEPA training with three frozen physical decoders, all 45 candidate
   pairs, checkpoint rollback, and five unseen evaluation projections.
+- `notebooks/11_action_response_geometry_pilot.ipynb` — low-compute ARGA
+  pilot with a sequential seed gate, unseen geometry projections, fresh
+  readouts, atomic checkpoints, and automatic result downloads.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.
 - `audits/` — independent post-run audits and supporting summaries.
 - `results/bundles/` — original Stage 1 through Stage 3 Colab ZIP bundles.
@@ -164,3 +169,14 @@ physical readouts test whether any gain transfers beyond the training
 decoders, while the original goal-latent planner is evaluated as a separate
 non-harm gate. Stage 10 remains development evidence on the inspected task
 family.
+
+The Stage 10 full run returned `UNDERTRAINED_INCONCLUSIVE`, but additional
+epochs alone do not explain its central failure: matched decoder-margin
+training did not transfer to fresh readouts in either environment, and some
+shuffled controls were competitive. Stage 11 therefore tests a
+readout-independent alternative before allocating another full run. It aligns
+whitened, within-state centered action-response geometry in JEPA token space,
+uses no physical goal, cost, pose, or readout in the training objective, and
+runs a second adaptation seed only after a necessary direct-geometry screen.
+The default Stage 11 run is a compute-allocation pilot and cannot by itself
+support a scientific claim.

@@ -552,6 +552,53 @@ constraint, preserving the native latent planner, and avoiding candidate
 collapse in every seed/projection/horizon stratum. Passing freezes the recipe
 for a numerically new task-family run.
 
+## Stage 11 compute-gated action-response geometry pilot
+
+Notebook: `11_action_response_geometry_pilot.ipynb`
+
+Stage 11 is the inexpensive falsification step after Stage 10. It updates the
+same JEPA action encoder and six AdaLN modulation maps, but its matched loss
+contains no physical decoder, goal, pose, cost, or action-selection label. It
+matches whitened, candidate-centered target-token responses across all ten
+same-state alternatives. A latent-only treatment and a deterministic
+within-state shuffled-correspondence treatment use the same optimizer and
+checkpoint budget.
+
+1. Open the Stage 11 notebook in a fresh Colab GPU runtime.
+2. Leave `RUN_MODE="pilot"` and all other defaults unchanged.
+3. Use the G4 / RTX PRO 6000 Blackwell runtime if it is still available. An
+   A100 or L4 is also sufficient.
+4. Run all eleven cells in order. Google Drive is off by default, so Drive
+   quota does not affect the run.
+5. Save both automatic downloads:
+   `stage11_phase_c_checkpoint_rescue.zip` and
+   `stage11_result_bundle.zip`.
+
+The pilot uses 36 exact states per environment, one mandatory adaptation seed,
+at most one confirmation seed, three treatments, two training projections,
+three unseen evaluation projections, and at most ten epochs. The second seed
+runs only when matched geometry beats both frozen and shuffled geometry on
+calibration without cross-environment harm. Each treatment writes an atomic
+local checkpoint every two epochs and resumes from that checkpoint if the cell
+is rerun in the same runtime.
+
+Expected runtime without an existing compatible cache:
+
+- RTX PRO 6000 Blackwell / G4: approximately 35–70 minutes;
+- A100 80 GB: approximately 40–80 minutes;
+- L4: approximately 60–110 minutes.
+
+Failure of the screening gate can save roughly one third of the adaptation
+compute. Cache generation and fresh-readout evaluation still run so that a
+stopped pilot returns an interpretable bundle.
+
+The pilot may return `PROMOTE_TO_FULL_RUN`,
+`PROMOTE_TO_FULL_RUN_WITH_EPOCH_EXTENSION`,
+`GEOMETRY_ONLY_DIAGNOSIS`, `STOP_NO_DIRECT_GEOMETRY_SIGNAL`,
+`STOP_NO_ROBUST_UNSEEN_GEOMETRY_GAIN`, or
+`STOP_NATIVE_FIDELITY_FAILURE`. Promotion only authorizes changing the first
+cell to `RUN_MODE="full"`; it is not confirmatory evidence.
+
 ## Stage 1 historical instructions
 
 1. Open `01_model_and_environment_smoke_test.ipynb` in a fresh Colab runtime.
