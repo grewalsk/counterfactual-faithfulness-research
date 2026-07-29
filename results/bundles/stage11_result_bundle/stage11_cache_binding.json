@@ -1,0 +1,1952 @@
+{
+  "run_signature": "50c833efab75ee8daa4f0f770451f1e1324528b2bd4e0ad7b1c5b048674b5bb5",
+  "cache_content_digest": "8e4db3a3c778dca3a8ee104bd674428cf9357e56a99d0d64dc2002371d584421",
+  "file_count": 389,
+  "records": [
+    {
+      "logical_path": "candidate_design_summary.json",
+      "size_bytes": 2699,
+      "sha256": "e7041b5703efd218f6c64466320c9a42f495d77f1723c9d7cbe8e8592da719dc"
+    },
+    {
+      "logical_path": "goals/jepa_wm_pusht.npz",
+      "size_bytes": 2458112,
+      "sha256": "7911e0717ed3c97585174335b734b73b814fc62ba3fcc27ab0e8fe6b4f384dc3"
+    },
+    {
+      "logical_path": "goals/jepa_wm_wall.npz",
+      "size_bytes": 2458112,
+      "sha256": "17275463f8c14e48463fb85ab3503eb45a8a20922ff9e564eced213a37f63133"
+    },
+    {
+      "logical_path": "split_manifest.json",
+      "size_bytes": 3977,
+      "sha256": "d04d0db10a31970c311b307473fb1dc268816bf055f714ef4ac9be6c810284c6"
+    },
+    {
+      "logical_path": "tasks.json",
+      "size_bytes": 4810,
+      "sha256": "90826f91eeaf34214a2aadafe816177f2730a8e2b22ac83c032a869d114e86c7"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0000.npz",
+      "size_bytes": 36100230,
+      "sha256": "89acbd52b1b11203aee0ff623ae28c00fa9deaf58fa2d9ae13864655422b95ed"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0001.npz",
+      "size_bytes": 36100230,
+      "sha256": "43f009c192af0da9b1d5115890e2e82db0ab4092caaafdf5fc66ee3aa53beed6"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0002.npz",
+      "size_bytes": 36100230,
+      "sha256": "e636503fafd8bdd7e4ed2fb4fbb7e476c53a1f0915487db7cfb1e419f759b391"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0003.npz",
+      "size_bytes": 36100230,
+      "sha256": "6a40fb5eb8cdb14bc3978e0a0cd67760e1282068a6b522c0b978394faad32779"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0004.npz",
+      "size_bytes": 36100230,
+      "sha256": "c3ec4b00659f53d8d035c930f2adbd9f9c9233262b61af6d94e392809c5277c0"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0005.npz",
+      "size_bytes": 36100230,
+      "sha256": "1e81035fb8df6c3be848b1e7b234159bb5b71fefa78d9d5158852263079ecf46"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0006.npz",
+      "size_bytes": 36100230,
+      "sha256": "92ebc14fbaa68dca88428f42236c19aaf29096c995aa25b979f0d657f3d9700a"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0007.npz",
+      "size_bytes": 36100230,
+      "sha256": "5eadbdae06e7c8b213bbc0842ee860f1b001e3b9803d05de5e4221ca2db5ce3e"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0008.npz",
+      "size_bytes": 36100230,
+      "sha256": "8161aa5e636fc8f9a8cf044d418226fe6218f03e118f73f7eff0eed256809036"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0009.npz",
+      "size_bytes": 36100230,
+      "sha256": "023fdc18348c1193a7bd2ce0e7a11148fbd22e0a511ddc4c72a1b5e5397fb5b8"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0010.npz",
+      "size_bytes": 36100230,
+      "sha256": "4eed4c211b9263b7c6204fbd20c0d2deddf9654981eaaf802866d14617c68bb1"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0011.npz",
+      "size_bytes": 36100230,
+      "sha256": "c8a2b2030ead471736c9fb404a4fddd61ef63b9a818bd44da2f29796dd8c684a"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0012.npz",
+      "size_bytes": 36100230,
+      "sha256": "aa23e721f05a6d953f36c2a376ba0f8a6252c9a6c64ca5495e55eb479c0d4b01"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0013.npz",
+      "size_bytes": 36100230,
+      "sha256": "83b591e0659d0e8fe0a05036d1494584f4bac5c73f3dbdc4e3097ab0d99c9b37"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0014.npz",
+      "size_bytes": 36100230,
+      "sha256": "41e339d411de01fb560bcb8c86b2b3ec8ec26b2fc03f0adf52263879cc217d3f"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0015.npz",
+      "size_bytes": 36100230,
+      "sha256": "93df44a1b5d34cb75d48edbe4a3b2f23bb74430f453b8794b09b591474074805"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0016.npz",
+      "size_bytes": 36100230,
+      "sha256": "27362fe08ea3e088a86211ef9a81de1e0de32abc9c920e4827f38b7e7aa3f94e"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0017.npz",
+      "size_bytes": 36100230,
+      "sha256": "723de23fd921489b77ec2d12689599f10af99c706a0502ff9af40c95d4569884"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0018.npz",
+      "size_bytes": 36100230,
+      "sha256": "217d59f0e31b926b14b96f5264044e595bd8a68514d4e922a8ca392c1b9307ab"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0019.npz",
+      "size_bytes": 36100230,
+      "sha256": "3d7f246a926a8574bc0762a62d6ef6e4f624f0a5f69fa4c845d9d2b439ca42ce"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0020.npz",
+      "size_bytes": 36100230,
+      "sha256": "3ae04339422a96a52ca122c8596c1a713b3c440e751c7ecbd67d3316e41ae96a"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0021.npz",
+      "size_bytes": 36100230,
+      "sha256": "99f497c05a58c1da2d2f9f7aeda1988458bb4bc5815f652fc136cc46410bad8c"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0022.npz",
+      "size_bytes": 36100230,
+      "sha256": "075186bb01dd937867cbffa4e84fd2b7f8c6372e7e903a1e437469598d9a6700"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0023.npz",
+      "size_bytes": 36100230,
+      "sha256": "00434fe7759db7c9b8edecf1161d528e3e99ce502742fc3aee57a08e79a452d0"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0024.npz",
+      "size_bytes": 36100230,
+      "sha256": "9e3944990b4069989ed6e23aebb40e3002b63cbab20466f90c648bdad270fe96"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0025.npz",
+      "size_bytes": 36100230,
+      "sha256": "09467580c82f58bb352c1bdc3321890f0ce8f2a4c522279bce049c25b1fbabf5"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0026.npz",
+      "size_bytes": 36100230,
+      "sha256": "b03dbb66c41191421f8961c4e0f711f99992504e4baff801fb4f535b74e94176"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0027.npz",
+      "size_bytes": 36100230,
+      "sha256": "6a568d4c73e5da708a426f2218665d1efdbb59b83ba0d0840424351aa6de5a0e"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0028.npz",
+      "size_bytes": 36100230,
+      "sha256": "5b090ddf159d7f9fda6e31811eecdbe903e4eefeba48aed6576a6304e1336d24"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0029.npz",
+      "size_bytes": 36100230,
+      "sha256": "1390e4d0bb7e2de4816c3ca4887a35e1cec3120a7e13f2be52b3d842e9062828"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0030.npz",
+      "size_bytes": 36100230,
+      "sha256": "f17992076226394c836afa6c573e6a8361042fbbea9e0a890c6fd7f3ae794a4a"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0031.npz",
+      "size_bytes": 36100230,
+      "sha256": "7c6cdaf86ab0bf18ce90f0b4cf41d76ffebd86f5e225a7d0f2c3d227cc9b9479"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0032.npz",
+      "size_bytes": 36100230,
+      "sha256": "b273c1d934d640c369858e81ec1293d402cc9f7d102f3c4158ae33c1cc3a34f1"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0033.npz",
+      "size_bytes": 36100230,
+      "sha256": "96c76e9d285c07fcaf04e91857bb0514f38b9ed7890b5e95a885e5cd11cf2497"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0034.npz",
+      "size_bytes": 36100230,
+      "sha256": "44fe4368285bb45ff2e858982b089d8ec566f9ca4ea014e4c29cfea88f9c5a9a"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0035.npz",
+      "size_bytes": 36100230,
+      "sha256": "0fb95609e4709fe7fc7268819860fd8125607312fe02a76e4beac3734e48680e"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0036.npz",
+      "size_bytes": 36100230,
+      "sha256": "596ccfa92eb28cd17f5d97b8bec461e3ea831c5412514217ca4b22f0b732528f"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0037.npz",
+      "size_bytes": 36100230,
+      "sha256": "b646eaf2feece7d4909388e3f773b7e8803c34150da52b937566090dff384eb2"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0038.npz",
+      "size_bytes": 36100230,
+      "sha256": "04f06a296d7775c4c43004c9f1a7905d95ae1325e90b719b3654a10b1998aaa2"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0039.npz",
+      "size_bytes": 36100230,
+      "sha256": "7415d05f3db2f0e770704a6ff15fed0cab3036a5d9242413d2e6e7d0dd8622ad"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0040.npz",
+      "size_bytes": 36100230,
+      "sha256": "35337043227a0878d5e61c248c3498fa48674ba1bcfe94258e07fb6641d95f9c"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0041.npz",
+      "size_bytes": 36100230,
+      "sha256": "b96a20ab5ffc6a6cca020d18533009079d3aa0a2c08d3c116ba8ee002046aea0"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0042.npz",
+      "size_bytes": 36100230,
+      "sha256": "ebd825e4e1ad662f1cef0a2c377ebb156297315146e0f134a22ae51fc3ad642e"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0043.npz",
+      "size_bytes": 36100230,
+      "sha256": "6c4aecc1e0026104af23fb1f74c4fcc3c73cf77e50434421f4a7b0e974378237"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0044.npz",
+      "size_bytes": 36100230,
+      "sha256": "5fbb06aa40436311802da6ae7d31bf2114a9297fb9421f9e5c8ebc889188ae85"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0045.npz",
+      "size_bytes": 36100230,
+      "sha256": "96cee22727f1b9c2364b693a78741a9ed3a953e26ceb5ffb73e428161cf2ddd5"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0046.npz",
+      "size_bytes": 36100230,
+      "sha256": "fd3347d0436824b4000465bd066a26334e5aa8d3a6e6abb681c409f93da28639"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0047.npz",
+      "size_bytes": 36100230,
+      "sha256": "c534773ef30265e4f72d51f6be215d39585f3bf5632cb1a6cf6a9ef8689edd23"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0048.npz",
+      "size_bytes": 36100230,
+      "sha256": "186e853a37aedd68c88ea4fed6bb7b9899b5ecd387330c22b77fcae89627e384"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0049.npz",
+      "size_bytes": 36100230,
+      "sha256": "d6d1e6312f78380fc4c710647b8885454f99bd955497949dfc928d99f1cf62a7"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0050.npz",
+      "size_bytes": 36100230,
+      "sha256": "7265ae800d6f06bd2f8f22a1d9bbe316d644f075801e07bff09853d57363edf2"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0051.npz",
+      "size_bytes": 36100230,
+      "sha256": "ab026f16a6caab530c8b72479c9268555624e88365e77e6a65ae55e069f6f44c"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0052.npz",
+      "size_bytes": 36100230,
+      "sha256": "ecf6db010028dfa463d8ee6454dbfadd91b90615bc375a18c440607091973e88"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0053.npz",
+      "size_bytes": 36100230,
+      "sha256": "0983ffa50ac402e80980676125c307509440845bc7a88415e49e648b1722a639"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0054.npz",
+      "size_bytes": 36100230,
+      "sha256": "26abfee089dc4a0a60c6d6ec12542e5ecc0291e3d568a770d62c6f8d061daaee"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0055.npz",
+      "size_bytes": 36100230,
+      "sha256": "688b4754f4aa000ee06ff2bbe119ec4b203fd7073160435e04df25c61bb9285f"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0056.npz",
+      "size_bytes": 36100230,
+      "sha256": "2508c1b625ed79d7b322e8eb21eb5767a75a0b1a03bad56a6745ec6d986eac4a"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0057.npz",
+      "size_bytes": 36100230,
+      "sha256": "1a1ef54ffbee277511e5e6b0f7d373ff1b0b0e075bd3fdda5fc79c59e6e0e3ea"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0058.npz",
+      "size_bytes": 36100230,
+      "sha256": "65cbb3b20d46395d7ac4e36875ddf8b609dc0a0fb5d6031fccaa3a8d7027b520"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0059.npz",
+      "size_bytes": 36100230,
+      "sha256": "454f7ba81b463ba47139e9e6b391facf47072299ec85f98a06177378c4688471"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0060.npz",
+      "size_bytes": 36100230,
+      "sha256": "d026d94d498da9d20b9bddfc2ddb4729a67fd145c583bc71e34a0c0bff1c78a5"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0061.npz",
+      "size_bytes": 36100230,
+      "sha256": "25b82c176d0fdf61f0460061ca151cfed3dc58123fd31280ddd1ff124212d2e9"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0062.npz",
+      "size_bytes": 36100230,
+      "sha256": "475ef18947fa6259448e190310116f4ffe86660793341c6cbb218946db29b1e9"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0063.npz",
+      "size_bytes": 36100230,
+      "sha256": "d77add2862b446c2bc74d0ec591ddd5a0feb66a3ffb345f3233eab330ab8cd51"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0064.npz",
+      "size_bytes": 36100230,
+      "sha256": "10aca61651982d0d294b4a5431bc5fa5a30bfb8569c6f69713986cfa7cb23b8d"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0065.npz",
+      "size_bytes": 36100230,
+      "sha256": "d546383e6df61bc2dd7d10216f1106d01f62bb4123c71679e039221127dfa2fe"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0066.npz",
+      "size_bytes": 36100230,
+      "sha256": "a8f2db3612e6885776d1988b59484e49d9d34d5105d4a48abeb7bde9f93b4246"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0067.npz",
+      "size_bytes": 36100230,
+      "sha256": "2e456e4a1d9bbb6cc485b2dc4ba851b08fa54b94c185917fd77bdc651e7db9d7"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0068.npz",
+      "size_bytes": 36100230,
+      "sha256": "2b230edca0426356f5665029f94db6a9a4ac2bd1df83e7ddca80ff1f8fb2ee96"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0069.npz",
+      "size_bytes": 36100230,
+      "sha256": "14ab3964002f7d6e522c6e88da2eb1acbc446fe995521ab0c0a5c1fdf4bc6a6c"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0070.npz",
+      "size_bytes": 36100230,
+      "sha256": "a598486c8e1713c26fde12472239e3d153498b7a28784ebd7ee0c3a4894099d8"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0071.npz",
+      "size_bytes": 36100230,
+      "sha256": "c63dadec7e9912a6089a320e972862c7fe3236ca76ccad77c1701a56d9251ca4"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0072.npz",
+      "size_bytes": 36100230,
+      "sha256": "a12f243dded82e942184bea2b644d6fcd3c37c9c6f940cf3c8b2d47c92d54660"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0073.npz",
+      "size_bytes": 36100230,
+      "sha256": "19a86e52011e7424d03dbb5c65d61ee50b19868b6366607f0d4e4f1718d40286"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0074.npz",
+      "size_bytes": 36100230,
+      "sha256": "118210acba795da65bebbe9c56e725aacabe0a024a8fdc18d85ac3a51b24d238"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0075.npz",
+      "size_bytes": 36100230,
+      "sha256": "7066b6bc49641a7e6b0751ae03da285ab4d11fc9d2fd2919e66554a26318185c"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0076.npz",
+      "size_bytes": 36100230,
+      "sha256": "44a59d437bf8e3f6284bafdf0d89d54122c75e75eeb86cc923de18db2fcea27b"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0077.npz",
+      "size_bytes": 36100230,
+      "sha256": "199dcfde9cc5802847023232b347febf4ee904d1123647bb79a7b7e217599bf0"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0078.npz",
+      "size_bytes": 36100230,
+      "sha256": "a1c261e7110bd1e6d0a12d5649c64349572654fdb98293722a235282bc567928"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0079.npz",
+      "size_bytes": 36100230,
+      "sha256": "a7d25acddff46ef08bc39194132a3e7e1c3b7a4466766224218ea3dfab504032"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0080.npz",
+      "size_bytes": 36100230,
+      "sha256": "67a8c1178b1da973c79e7b0c9c7a407d1a08a9c565cf6f382c5ec970200dff52"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0081.npz",
+      "size_bytes": 36100230,
+      "sha256": "2229e4aa4f2c101f5db270e11597f842b2e51cc754a14aa1f45c34815d50961c"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0082.npz",
+      "size_bytes": 36100230,
+      "sha256": "39479a10342ee7d661b3d8f355e18deb3c8b489d035bb858b12130ae7cb09f0e"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0083.npz",
+      "size_bytes": 36100230,
+      "sha256": "566ae8dc0e08d9c03fb7cec094e31ba83153da2b1252ae0377b3ecdaea63f2eb"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0084.npz",
+      "size_bytes": 36100230,
+      "sha256": "4658bcb42d5ba0c87c9d5e5a5279cf32993979475a2c212b2d5f99bb11dab52f"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0085.npz",
+      "size_bytes": 36100230,
+      "sha256": "e8b0a4a7921c2a1e685c69b9edf9e670c4819ea10b0bff401e8fa10c3a58a402"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0086.npz",
+      "size_bytes": 36100230,
+      "sha256": "05bd25467a99edee06ca615751c9bf93fe7eec39c0f21bccd2b3de591c8fc6ef"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0087.npz",
+      "size_bytes": 36100230,
+      "sha256": "690fed2c5e9424f6e98f23a82364a935a28244257eeea2f85892078d242836a9"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0088.npz",
+      "size_bytes": 36100230,
+      "sha256": "f8432d9dd37905e19ec5ff2a17d86d0397a945d6c6a55bc6470607e7130cf2c3"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0089.npz",
+      "size_bytes": 36100230,
+      "sha256": "d6e5703b64e94362a7979f0c31c4f4194f973e9bf3a9607fe7048cd062061589"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0090.npz",
+      "size_bytes": 36100230,
+      "sha256": "03aabb181150227f5d5a4f164dae309c27d8a1795583ad125e7ca27e2d7b638f"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0091.npz",
+      "size_bytes": 36100230,
+      "sha256": "7725dcf279a94d616dbe7d80c4a25047ae97674070bd87fb71c057927a9bc8ab"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0092.npz",
+      "size_bytes": 36100230,
+      "sha256": "2857711b43356b4582413149a7adb5c01bf2a21854021d927d2912af5a991779"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0093.npz",
+      "size_bytes": 36100230,
+      "sha256": "749b831cfaf2bc6621bb15b143c22b2ac2926023fe9f2f6190467fcc9a737513"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0094.npz",
+      "size_bytes": 36100230,
+      "sha256": "3073c2fb92a92e24908cc9e6d4a8efe1d419be813e35bc28604acb9139603efb"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_pusht/state_0095.npz",
+      "size_bytes": 36100230,
+      "sha256": "eb8ac355948a2e3b7ea6783502ac2556a96c3e79a2677fb94e3478b7bec97420"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0000.npz",
+      "size_bytes": 36100230,
+      "sha256": "930f29c19025a8163e5953ab8791696715be7e4d9ecddd8946c21b0820c69e8e"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0001.npz",
+      "size_bytes": 36100230,
+      "sha256": "5b2bbfe0f71a0b12e2d2defb0bf30deaa6981fb302f7aed0dd2c2940147fda2e"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0002.npz",
+      "size_bytes": 36100230,
+      "sha256": "e55ac0c9d7a3b43bd6386824276404bd6f4bf6458c2e48b83f6d4c3dccff7e6f"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0003.npz",
+      "size_bytes": 36100230,
+      "sha256": "ccf1e5d9a19204dd4bb8601b6ac4e0854fc5d47b17c10c010180a6288c26c534"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0004.npz",
+      "size_bytes": 36100230,
+      "sha256": "689051c4b8da1b7767a0cc3488743a8ccc9a7aec5837b7c91c8af0e6bf8ff3a4"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0005.npz",
+      "size_bytes": 36100230,
+      "sha256": "81d895f9b7fe64fc9e29ca1671337270b08996f14ec48a7f399c48325b52e9e1"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0006.npz",
+      "size_bytes": 36100230,
+      "sha256": "918aa63e9cb442b647023e06234ccc521ce45d19380ea330496c3ba50822ebc8"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0007.npz",
+      "size_bytes": 36100230,
+      "sha256": "c7effef2700e73ff7839ca4a96772535db71712e103e073f89032cfdc389256b"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0008.npz",
+      "size_bytes": 36100230,
+      "sha256": "3f006364afb08d4b9532c5ee2fefc0f50fc7deb9c5cd5c2169d157348b737621"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0009.npz",
+      "size_bytes": 36100230,
+      "sha256": "b2c462797ec8e4f56fce333c86efd73055a68756adf586441ceb0d43a79557b9"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0010.npz",
+      "size_bytes": 36100230,
+      "sha256": "89eea5e0aa8d7dd6747646c8e538b220a4b93a508029acc11e65d5035fa61692"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0011.npz",
+      "size_bytes": 36100230,
+      "sha256": "56477f4a42c5e872386cdec1b3f9649c6f52a42f4d8fb8e83192675efde99e4a"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0012.npz",
+      "size_bytes": 36100230,
+      "sha256": "b84d1a60077560252cbe3406fa48e58c4063317bed407958af7268004d531ecf"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0013.npz",
+      "size_bytes": 36100230,
+      "sha256": "f7d999ef18e4fad4ec6aefbe258a309c319ae4c2417e78f0669e933f73012b91"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0014.npz",
+      "size_bytes": 36100230,
+      "sha256": "242082812c109167053fc061af30161b536043c36f777c8290df0a83a3d6bee2"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0015.npz",
+      "size_bytes": 36100230,
+      "sha256": "d0a68d08800c305649e31693c2df19bc41ef4db9ee89e621fa003eea17990306"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0016.npz",
+      "size_bytes": 36100230,
+      "sha256": "954441c7e58d59d58df013f8c6a87e646f90bd4de1936b142186f76fbf4bc3cb"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0017.npz",
+      "size_bytes": 36100230,
+      "sha256": "d3944aed01413eb3aa2156273f15072da6086ec183ed135c52e672240530a4fb"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0018.npz",
+      "size_bytes": 36100230,
+      "sha256": "554dfe6019b797938cbc665f1821c0c0c7871d8105bef0efa15f7e6d431655da"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0019.npz",
+      "size_bytes": 36100230,
+      "sha256": "101803ea92d610ae72e7886823042be46352374e4c534926a0c41d26f88e34f8"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0020.npz",
+      "size_bytes": 36100230,
+      "sha256": "2dda5ae2b1122d3ce207803f568813a337ff3e44c82544e01c06c418b80c970c"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0021.npz",
+      "size_bytes": 36100230,
+      "sha256": "899b12cd0d681fb784bb20013813b01ef65fc1f8ff95ac3eb156da4ed7c961ae"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0022.npz",
+      "size_bytes": 36100230,
+      "sha256": "91baf4349e0d0dcddb18de65cf82082798cc41cc2ffa22f973929a7d900c0583"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0023.npz",
+      "size_bytes": 36100230,
+      "sha256": "8e50aeb3cc6afb5a7314ffe4e7a40597f1383905a23b02f6c7dfe5084ec62544"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0024.npz",
+      "size_bytes": 36100230,
+      "sha256": "296260482b7958e647126e13b26e4dac04c2db8644a9b4303617e356c0575249"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0025.npz",
+      "size_bytes": 36100230,
+      "sha256": "84188b31b65e914007949fc064f72af5ba36844bd63101da11b19366be620987"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0026.npz",
+      "size_bytes": 36100230,
+      "sha256": "a14fb91263eef05814688a50e981e1ec968f76c4389749a3fc94328785ad60a5"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0027.npz",
+      "size_bytes": 36100230,
+      "sha256": "f77ae124335fdc5b7834d461bb82d3fb97e4cfb22d24306c874a3d376c747a84"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0028.npz",
+      "size_bytes": 36100230,
+      "sha256": "3a82b293fe6f3bc52facc4d859377044d5ca8d3161d05f4a3f44f0774e6cea45"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0029.npz",
+      "size_bytes": 36100230,
+      "sha256": "1f14f3607cc845e0e42bb5d1148f9643c01026a5e92664247b263d0ee73a2b9a"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0030.npz",
+      "size_bytes": 36100230,
+      "sha256": "1040731dc5c06aed402e33a1c28154003ae2ddad0c46cac8fa697521915c3c11"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0031.npz",
+      "size_bytes": 36100230,
+      "sha256": "b1110aea22f56aa8c2535bac959363f336f93b4f1be7e43cdabe53c9cb08b5f3"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0032.npz",
+      "size_bytes": 36100230,
+      "sha256": "ac237ecf86c720dce3285c6fd742c898132d647573111d614105486f0d779b0c"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0033.npz",
+      "size_bytes": 36100230,
+      "sha256": "b755563684d982c4fba0a0c4c399a7e9cc594e1a4f42896b72e422aa48d30477"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0034.npz",
+      "size_bytes": 36100230,
+      "sha256": "dd27b9ecde9a31eae693d2ca4df5e9543f00bdf457b2ca71f6310c863e9cccfb"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0035.npz",
+      "size_bytes": 36100230,
+      "sha256": "0a85710b8231bc9ec0bd38dd5e688735ee6b2001d504237ceec2f139e904e2b0"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0036.npz",
+      "size_bytes": 36100230,
+      "sha256": "6021209f58b9c0bdfa772fffc6c27033e6391314bdebaca5cdcebf78cdc78cae"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0037.npz",
+      "size_bytes": 36100230,
+      "sha256": "ffaa3844060b2e484138dfe1a1b150f1ce4807265606889104dd32362119cd15"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0038.npz",
+      "size_bytes": 36100230,
+      "sha256": "37440bc803e68eb8565e6a56c7a085f73a2761782974d8710018f3cdd7394ecc"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0039.npz",
+      "size_bytes": 36100230,
+      "sha256": "be44cbf5d556c7853a578b2eb6f2464ca7b71141c59c855cb5575637fa73907b"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0040.npz",
+      "size_bytes": 36100230,
+      "sha256": "60ef9cc52f0eabe113dcc0ddb7ab60dc3ecbf5f579d955c158b05c288b17eafe"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0041.npz",
+      "size_bytes": 36100230,
+      "sha256": "edaa303170307628d096c3f5cfe5ee47d05a2e00293c0c80a3c8682131d367e8"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0042.npz",
+      "size_bytes": 36100230,
+      "sha256": "b42a0eb0cee6dbdd3cd7f6f3bbb136d3290363f3fbf30f5dc8fa443a0c6b0c52"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0043.npz",
+      "size_bytes": 36100230,
+      "sha256": "6d02fd4b7a119a2443409c7a5204a801302629247d8c55eab318038addcda0c0"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0044.npz",
+      "size_bytes": 36100230,
+      "sha256": "dc40452894661401a266f0b7df4eaca7fd7b233be7faecf7417b373463ca19ec"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0045.npz",
+      "size_bytes": 36100230,
+      "sha256": "af75c4389d233b57d1faff3ed7aecc38990d2e2caedfffdd8145d742d4df3c36"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0046.npz",
+      "size_bytes": 36100230,
+      "sha256": "cda7a40e557551faebdc7ce4650d66fc38860f31c9c82694d3d63f6d47a5fe43"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0047.npz",
+      "size_bytes": 36100230,
+      "sha256": "bd3878d8edacba15b40a445ecae7d80d0a11d6190e64796797d2c6b5dc167495"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0048.npz",
+      "size_bytes": 36100230,
+      "sha256": "074485a051f368b740b5aa54c3fbbfb316aec817f7e3b96d103d49d00613bfc0"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0049.npz",
+      "size_bytes": 36100230,
+      "sha256": "13f88a2c0781bae423e8bf42b694d58d0e9c2f6bdd132fba409684c3fd302291"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0050.npz",
+      "size_bytes": 36100230,
+      "sha256": "2f6c733e7babcc1a8aa7705abb8f7fb1a43d9cd1a1a4ff8ef11203ef2ed7407d"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0051.npz",
+      "size_bytes": 36100230,
+      "sha256": "a42e402c4024813c6c54035ea00dfb18660049d528b28860da15e67a48cb83e0"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0052.npz",
+      "size_bytes": 36100230,
+      "sha256": "d4a25420ce899b73ac7f312a39ab148ca916bdf1b8730266bc18bbc5e44b1fce"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0053.npz",
+      "size_bytes": 36100230,
+      "sha256": "b71c0caf92bf75e74d5de56c0dcad99a510e2b3635fcbfdbe5764db13bad8de7"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0054.npz",
+      "size_bytes": 36100230,
+      "sha256": "e06d42db27d062094e7baf9966348cfea3d0125ae9e40b6d70b8f770ce2b7af5"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0055.npz",
+      "size_bytes": 36100230,
+      "sha256": "bf065864108a4c9a6a6a27cb5a549a037868907596c9c2a9cd34e4491f1658a8"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0056.npz",
+      "size_bytes": 36100230,
+      "sha256": "cce374d2bc720040390d0208a70cca890721d1d0b019215da8cfe3e96b190d23"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0057.npz",
+      "size_bytes": 36100230,
+      "sha256": "f3fbe54eb7d552d1b332435cdc36437e5f9e7e08965c5a49e626b59a3628a4db"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0058.npz",
+      "size_bytes": 36100230,
+      "sha256": "b688525bd62681ce5095c68df7c8c31fc9a2baaf7d9dd6f170ba4304adebc063"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0059.npz",
+      "size_bytes": 36100230,
+      "sha256": "7d56c61c3cfe11cff06279180038aa7f41278cfd4b42dcc951c2b32e4e9f472d"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0060.npz",
+      "size_bytes": 36100230,
+      "sha256": "6f9029d61073139e27cbec00ce79c80cac2db12917f77b3bc14f8a0f5d5bedb2"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0061.npz",
+      "size_bytes": 36100230,
+      "sha256": "e5c9f3fa48362421a268f7e8df198d93060bfe74fd123872a74da47356657028"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0062.npz",
+      "size_bytes": 36100230,
+      "sha256": "471517e295a8b77a337e9db14f20b8e9bbe047ccdad2d0fa82bbbd7d8462a2af"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0063.npz",
+      "size_bytes": 36100230,
+      "sha256": "9ee538ca5daa2b44175f484b3b5934897cc301fcc20be6ce86e3d036858a4163"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0064.npz",
+      "size_bytes": 36100230,
+      "sha256": "1c7d72f55de3b5f5f080285baacacba1fe39f2a0076d944bc9a507e5948eefff"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0065.npz",
+      "size_bytes": 36100230,
+      "sha256": "415912acc993f65e873907c7ac238556153771663b43ec442468164a1b94e12a"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0066.npz",
+      "size_bytes": 36100230,
+      "sha256": "4e40180d68f4eb95f7e93b0c0b6463a0b5c9714c793b7d1d9c8ee775b7b1d544"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0067.npz",
+      "size_bytes": 36100230,
+      "sha256": "99f23a83e116c1c1da5b231312117654f2dfd2c55ffc4104d14960c14f624503"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0068.npz",
+      "size_bytes": 36100230,
+      "sha256": "53f275aacca3d8e164baa802c6d0110e2e538e63503fd09b3ec80bee54cafbb5"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0069.npz",
+      "size_bytes": 36100230,
+      "sha256": "e23cb29592c2a00556e8fa58906f040e1f9da4744333f42760e4e2ae010312a6"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0070.npz",
+      "size_bytes": 36100230,
+      "sha256": "45c79b324fbf2a2d333fba6e34500754f3178d565643484f62b9744d2539a480"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0071.npz",
+      "size_bytes": 36100230,
+      "sha256": "699850fa23b89c60542c66c0f2551e2a3d299d402a830db9d3a8702e6b0dfb0f"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0072.npz",
+      "size_bytes": 36100230,
+      "sha256": "126a6231cd7411efcd8d0b4f046007ab86ac7b7d2a1ecba2cd5c2a7d51201416"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0073.npz",
+      "size_bytes": 36100230,
+      "sha256": "e56ddf023197e270409b6f1914674fedaebece5a559aff0eab057b76156c8ad7"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0074.npz",
+      "size_bytes": 36100230,
+      "sha256": "48eeef9b2c4c11d508c77534bf599238cb1d4adf2d60d0e0cfd610aa3ba7731e"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0075.npz",
+      "size_bytes": 36100230,
+      "sha256": "ec25a8c6bf130641c00e1a812358fe4fc2a4c9e56f7682f32d3228ab57d32038"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0076.npz",
+      "size_bytes": 36100230,
+      "sha256": "5f288bb1fa165262764d80a10b55568c773026f146417af74610e60dba1ee813"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0077.npz",
+      "size_bytes": 36100230,
+      "sha256": "f32197cc0c58b3a6783612a794601c1f1044bb0a5b5acf902548be88c306a64a"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0078.npz",
+      "size_bytes": 36100230,
+      "sha256": "f8ef648ba8df3a7917bb884ef220cb74a8b7c5407eb49cbd70b89cd1bca3e093"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0079.npz",
+      "size_bytes": 36100230,
+      "sha256": "10e0cce3761033f20c5e98809677ce640dd1d8256e10ecb02aa82730eb24f3c4"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0080.npz",
+      "size_bytes": 36100230,
+      "sha256": "d05bbd402a4cc4887a75773c8c8d263771412df4e8777dfdf34bc01e11b4bd95"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0081.npz",
+      "size_bytes": 36100230,
+      "sha256": "b7b686a236f894d4f15e6b894aeb84faab39f856008546504fcc6c9dbc8c3743"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0082.npz",
+      "size_bytes": 36100230,
+      "sha256": "2afe03d0555c18d42d790bd96285610f38f0e37222393b3133a3e706305dbb5a"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0083.npz",
+      "size_bytes": 36100230,
+      "sha256": "1ee3c90c0623dc9abb431bedae62eaf1b739d619ee6b0a22f90944a18d971929"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0084.npz",
+      "size_bytes": 36100230,
+      "sha256": "164616c6e0803a439d53597bce627e54727e707d3db2bc24f1e621d3628cba3d"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0085.npz",
+      "size_bytes": 36100230,
+      "sha256": "78d46702e8331d2f483b23cda6bf4284b63189a554b91213382b99e987450f21"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0086.npz",
+      "size_bytes": 36100230,
+      "sha256": "ed0794fa5897e0a1c91bde6541594027313f8a4592af01ac7551d465d426ab62"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0087.npz",
+      "size_bytes": 36100230,
+      "sha256": "a36b8652ea2b5817e9ff12666eb13a86d57b2e680dcd898eb779755a490d6248"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0088.npz",
+      "size_bytes": 36100230,
+      "sha256": "da59f82e8d60f356269e907b207c6022d643b1fdfc77bc65caef54973c95b969"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0089.npz",
+      "size_bytes": 36100230,
+      "sha256": "89800e32db0173283970113a1f91c60a796237e11dc6e6e4163c40bce97338ca"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0090.npz",
+      "size_bytes": 36100230,
+      "sha256": "27627ac997cf5d141f92af95a0ab5feb972efbe181bae5959c167ad804d8f09d"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0091.npz",
+      "size_bytes": 36100230,
+      "sha256": "394619b4578b5706873127ff8206411ee1c778f8296aabaa749bd9cd9439e3f1"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0092.npz",
+      "size_bytes": 36100230,
+      "sha256": "fb7a6c0a0dc552297411f1e913a5d48596587758ff76d1dcf3ca8a2783a5e85b"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0093.npz",
+      "size_bytes": 36100230,
+      "sha256": "8cd4144ab8526663c1da81ba52b435a478f981faae0607ca44821272bd1d2ffa"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0094.npz",
+      "size_bytes": 36100230,
+      "sha256": "9e44b6487294c7e9ce8a548362b7d8fc312667ece59fb38d7700748079f07c5f"
+    },
+    {
+      "logical_path": "transitions/jepa_wm_wall/state_0095.npz",
+      "size_bytes": 36100230,
+      "sha256": "53560c0b5a815cf60bbd35f2104aeef3c05d4bd67040b14257d57d8fbd2a881c"
+    },
+    {
+      "logical_path": "truth/pusht/state_0000.npz",
+      "size_bytes": 207863,
+      "sha256": "cd6c5000b6d832f8a73a8c4f8132f16e84e561cda25e158a053893574fa39d67"
+    },
+    {
+      "logical_path": "truth/pusht/state_0001.npz",
+      "size_bytes": 188255,
+      "sha256": "a34b944452db4abb4522d0c81e4ce984ee3c852bc4e7644ef0c8861be47f9ac1"
+    },
+    {
+      "logical_path": "truth/pusht/state_0002.npz",
+      "size_bytes": 222427,
+      "sha256": "76b03a96da90f6751703e0dbe93a2cd0934e877ed8cff47418fcc0d8fc6bebdc"
+    },
+    {
+      "logical_path": "truth/pusht/state_0003.npz",
+      "size_bytes": 178038,
+      "sha256": "751b5932d68d13ee48e32ed4b3c9b6f2ad459a10b6897ff25224122a4dbf208d"
+    },
+    {
+      "logical_path": "truth/pusht/state_0004.npz",
+      "size_bytes": 230351,
+      "sha256": "fecd1cb8caa11450ed238467e008f1178613c656309a71fe07afaf0ca78e14fe"
+    },
+    {
+      "logical_path": "truth/pusht/state_0005.npz",
+      "size_bytes": 211204,
+      "sha256": "6cfeeed337fdeb1bee567da6895f9fd608c6660d26e197c773e1dd9a747ddb71"
+    },
+    {
+      "logical_path": "truth/pusht/state_0006.npz",
+      "size_bytes": 208406,
+      "sha256": "2c91b34e88ae700531c34a1194b84513ac10a3be17f6ce5d1664979293f4f112"
+    },
+    {
+      "logical_path": "truth/pusht/state_0007.npz",
+      "size_bytes": 234391,
+      "sha256": "d2eaf4118a6b6c69929f07cdfbf50788e91a86108d36c440a50ebf852fdba199"
+    },
+    {
+      "logical_path": "truth/pusht/state_0008.npz",
+      "size_bytes": 215728,
+      "sha256": "e25bf111da0ae49297b5e7252ddaabc0865e3c643551bd570f6771f981d3bc00"
+    },
+    {
+      "logical_path": "truth/pusht/state_0009.npz",
+      "size_bytes": 180900,
+      "sha256": "446e429a0db1db087aa4dcaedcaa73376bc17602d0cc4d2a8a57e4ff21419c22"
+    },
+    {
+      "logical_path": "truth/pusht/state_0010.npz",
+      "size_bytes": 216442,
+      "sha256": "e9553fe74aedfdac3fdc51737c55d44b407017e3cbf602169e7714c48ce68112"
+    },
+    {
+      "logical_path": "truth/pusht/state_0011.npz",
+      "size_bytes": 209295,
+      "sha256": "d31da1d24b102ab560042d81618e873d17b700158053e392b047c720bbf08b57"
+    },
+    {
+      "logical_path": "truth/pusht/state_0012.npz",
+      "size_bytes": 220830,
+      "sha256": "52d3000e080db1474f29d5ace0d1d4f4e91cbfc672259b692508df842dc3d8d1"
+    },
+    {
+      "logical_path": "truth/pusht/state_0013.npz",
+      "size_bytes": 212053,
+      "sha256": "d4c63db0ca68643c611b4fb4a8b9a8422e1fee4d5f36a86908f839cef242f422"
+    },
+    {
+      "logical_path": "truth/pusht/state_0014.npz",
+      "size_bytes": 232703,
+      "sha256": "b6b6349dcfc0f3fd7c42752e214f8674f466c630a7b69a253b7bc2c20d711b94"
+    },
+    {
+      "logical_path": "truth/pusht/state_0015.npz",
+      "size_bytes": 226232,
+      "sha256": "eff44f0e397b3170fc59fab6a5706d6bc4ca0872e3325d216f5c1d4dc8723960"
+    },
+    {
+      "logical_path": "truth/pusht/state_0016.npz",
+      "size_bytes": 234869,
+      "sha256": "5dab1c7f0c7227730be1f01669050505aefd6bbb780bd1972cdf7423d1dc8cf7"
+    },
+    {
+      "logical_path": "truth/pusht/state_0017.npz",
+      "size_bytes": 185826,
+      "sha256": "c4593971b7a4218d951311c84586b02564fb1eeaa00a0579e2150f269bf1516d"
+    },
+    {
+      "logical_path": "truth/pusht/state_0018.npz",
+      "size_bytes": 225510,
+      "sha256": "439ce793b6446ea6910101939d0bf1981dd5d78b0a0cdea115a3844eb21c9327"
+    },
+    {
+      "logical_path": "truth/pusht/state_0019.npz",
+      "size_bytes": 212371,
+      "sha256": "9acd48956fedcc39b905f1e0262e9369e9e24164580bf923b5b2775be41a7cc8"
+    },
+    {
+      "logical_path": "truth/pusht/state_0020.npz",
+      "size_bytes": 240706,
+      "sha256": "41ec0a75a0f71199d60531d485ee88881b99237364af19cbcf3a1178932b14e2"
+    },
+    {
+      "logical_path": "truth/pusht/state_0021.npz",
+      "size_bytes": 199837,
+      "sha256": "1ad1b52fae616626d2f9175f5bf636cedb33fd1cef09c646362371658234072d"
+    },
+    {
+      "logical_path": "truth/pusht/state_0022.npz",
+      "size_bytes": 229026,
+      "sha256": "fcbe5ddbe687e63a7ab6ecf093ffcec32644e2b99aeea74dd14b0722abf4e031"
+    },
+    {
+      "logical_path": "truth/pusht/state_0023.npz",
+      "size_bytes": 245873,
+      "sha256": "540f983ee238c344df3c47763b5e36e1c8b8253b76c0054a3b8faa6da831ac12"
+    },
+    {
+      "logical_path": "truth/pusht/state_0024.npz",
+      "size_bytes": 200065,
+      "sha256": "b24cbe093a91772a1c2a246289234168be61e8e21c8c8d71a369e60a11e22d0f"
+    },
+    {
+      "logical_path": "truth/pusht/state_0025.npz",
+      "size_bytes": 224886,
+      "sha256": "d540bd4a21b7479c00bfc9af4e8465bc4c3e0a68cbbb5c0737b7f791c14ac364"
+    },
+    {
+      "logical_path": "truth/pusht/state_0026.npz",
+      "size_bytes": 235937,
+      "sha256": "a7fa08b305a695bf8a6417c3975fdf5c7b1a27b90abcd2b57f26f64029ca9cb1"
+    },
+    {
+      "logical_path": "truth/pusht/state_0027.npz",
+      "size_bytes": 235591,
+      "sha256": "5b984a8f505d2a15f81484c03c8013e85354c1bcfe5db4908f509f43b3bdab5b"
+    },
+    {
+      "logical_path": "truth/pusht/state_0028.npz",
+      "size_bytes": 222011,
+      "sha256": "94a08d0daee44353f74370074e1e365da28304f5f08d20763be20107036e44ef"
+    },
+    {
+      "logical_path": "truth/pusht/state_0029.npz",
+      "size_bytes": 222413,
+      "sha256": "3a5ab7d4ff424cbc4a921604b4aa376a209df3f2a35b2c9a4087056e23fed7e1"
+    },
+    {
+      "logical_path": "truth/pusht/state_0030.npz",
+      "size_bytes": 241560,
+      "sha256": "943c4080400adac9c1ff2cae7cdfb518721943ff9df826b7cd35f6ebb77b3182"
+    },
+    {
+      "logical_path": "truth/pusht/state_0031.npz",
+      "size_bytes": 237359,
+      "sha256": "dbd5f21f689c32e4a9401ea21a7562b65b60223d951a14dc4ac4e1511d7e9a1e"
+    },
+    {
+      "logical_path": "truth/pusht/state_0032.npz",
+      "size_bytes": 220232,
+      "sha256": "3f6f198d6163782b7f1728a59694b386b78a382d2de085d62b05e16dfbcf7904"
+    },
+    {
+      "logical_path": "truth/pusht/state_0033.npz",
+      "size_bytes": 223517,
+      "sha256": "6f46672210a90db26251fbb196ee47c1cca45c870b82227c7a6b8d1a6f6782ba"
+    },
+    {
+      "logical_path": "truth/pusht/state_0034.npz",
+      "size_bytes": 197327,
+      "sha256": "d9d5c3efa5750896669ba13ae88de2a06d6084f15b9277024e59d028d99840d7"
+    },
+    {
+      "logical_path": "truth/pusht/state_0035.npz",
+      "size_bytes": 207739,
+      "sha256": "266dac4a8a4dd6a211741fd0fa63de61841a13a0bd74fe6b707b85fcba6df4db"
+    },
+    {
+      "logical_path": "truth/pusht/state_0036.npz",
+      "size_bytes": 234629,
+      "sha256": "a17613f7c522434ba7dd0daff44b1a1c8886892d7e7d7fb92186ee60aaad9f86"
+    },
+    {
+      "logical_path": "truth/pusht/state_0037.npz",
+      "size_bytes": 222679,
+      "sha256": "7b73ec3baa62a926b620e5930fd497e968b88e77f320a0638f7563d66e049349"
+    },
+    {
+      "logical_path": "truth/pusht/state_0038.npz",
+      "size_bytes": 218733,
+      "sha256": "0313fa44372d5bb9aa33ebfb3fac49f620c4b321787f604ac59d61890053e825"
+    },
+    {
+      "logical_path": "truth/pusht/state_0039.npz",
+      "size_bytes": 215458,
+      "sha256": "e941a0c285496547941bcebe492083fd3e2f359f8bde6f416a1764c63d191083"
+    },
+    {
+      "logical_path": "truth/pusht/state_0040.npz",
+      "size_bytes": 217734,
+      "sha256": "f40bfc17c484b6ecda089235d377b24f3603c95619a5a7e6a325f25d8d03358a"
+    },
+    {
+      "logical_path": "truth/pusht/state_0041.npz",
+      "size_bytes": 236353,
+      "sha256": "b451a8b8083348125663f879f1cfd7b2ba483634a412c7ee7c9f12c073fc4431"
+    },
+    {
+      "logical_path": "truth/pusht/state_0042.npz",
+      "size_bytes": 223341,
+      "sha256": "f52c8ddeff3318edacd38f906f438846ba691b76c7c25fcd2daccbf721846667"
+    },
+    {
+      "logical_path": "truth/pusht/state_0043.npz",
+      "size_bytes": 213366,
+      "sha256": "9e88a334d65287b4893101ba81d6cf4fa4b5f5aefb0a4621d87a54252b87f0ec"
+    },
+    {
+      "logical_path": "truth/pusht/state_0044.npz",
+      "size_bytes": 231200,
+      "sha256": "1cd23d4d114b16f6859b74a8ff94e6669d21c451335a334874a903cd100eb856"
+    },
+    {
+      "logical_path": "truth/pusht/state_0045.npz",
+      "size_bytes": 233922,
+      "sha256": "62d15b4fb79fbd53004fd4a7b17cbd3b695da681a7d5c8db0067d23205ab84dc"
+    },
+    {
+      "logical_path": "truth/pusht/state_0046.npz",
+      "size_bytes": 234247,
+      "sha256": "47e95530851828e58969327c7ee5adbe4655c7498aa4b38251af6772cc43b196"
+    },
+    {
+      "logical_path": "truth/pusht/state_0047.npz",
+      "size_bytes": 232275,
+      "sha256": "8061c179dfb89540915bdb3683c83afab856f4af3703add4a0c89b3871967e9a"
+    },
+    {
+      "logical_path": "truth/pusht/state_0048.npz",
+      "size_bytes": 223297,
+      "sha256": "0873f620394fb29232c1e35a69bc4a4c06e56c9fa107162adf6dd24e8bbb6885"
+    },
+    {
+      "logical_path": "truth/pusht/state_0049.npz",
+      "size_bytes": 235534,
+      "sha256": "795389ea40fd74186eca30fa39a84a89c977ecffb042d9c02023237e8585162b"
+    },
+    {
+      "logical_path": "truth/pusht/state_0050.npz",
+      "size_bytes": 221756,
+      "sha256": "8650a2103522083e10bb95b4b20a0a88afc916a509bd73c2a7b14a3a8b136361"
+    },
+    {
+      "logical_path": "truth/pusht/state_0051.npz",
+      "size_bytes": 207885,
+      "sha256": "872d1c18548363b7865b8cd6458b324e493570df3f5beb02ff1ff76c19761e96"
+    },
+    {
+      "logical_path": "truth/pusht/state_0052.npz",
+      "size_bytes": 241853,
+      "sha256": "d81d71519b512832ba689bfb0948fc7f4c52e51ea5f5fb6e6ec916a4b8f09508"
+    },
+    {
+      "logical_path": "truth/pusht/state_0053.npz",
+      "size_bytes": 239010,
+      "sha256": "a8b14d45698d2a1cf74acbcdff1063aeefc49937304bd2da2145d824bf652ee0"
+    },
+    {
+      "logical_path": "truth/pusht/state_0054.npz",
+      "size_bytes": 239829,
+      "sha256": "60f736518e50cf04c8a40c32a5fcc879df8580ac1de28ecb4620e92039fcc4b6"
+    },
+    {
+      "logical_path": "truth/pusht/state_0055.npz",
+      "size_bytes": 212472,
+      "sha256": "adc2f4c71bae45fbcbecb9ca8c280ad23e70c80dcdf2af120f221f5825a2fcad"
+    },
+    {
+      "logical_path": "truth/pusht/state_0056.npz",
+      "size_bytes": 217973,
+      "sha256": "9526129ed190a69c48de7f997139c026da2382662a964b6eb5eb4208f4c3217d"
+    },
+    {
+      "logical_path": "truth/pusht/state_0057.npz",
+      "size_bytes": 239069,
+      "sha256": "1bbb87022dde1f79149211047af983fb9d85bf02bc136249474710965c4455c5"
+    },
+    {
+      "logical_path": "truth/pusht/state_0058.npz",
+      "size_bytes": 235677,
+      "sha256": "3108a1f96e5133b6022d1f6ae9a0f4a9f1b6a667ae96672afc6799d9cb2b8b31"
+    },
+    {
+      "logical_path": "truth/pusht/state_0059.npz",
+      "size_bytes": 189471,
+      "sha256": "17eb8ffe5e54bf44eb9dd1b77e184d1c128e28ff0a03b241058a2c5d883d9ff6"
+    },
+    {
+      "logical_path": "truth/pusht/state_0060.npz",
+      "size_bytes": 173042,
+      "sha256": "f0a7a1f5f43a1d67c6b958c5ea53705c9d390e4a39332ace5b344e6688d35754"
+    },
+    {
+      "logical_path": "truth/pusht/state_0061.npz",
+      "size_bytes": 239009,
+      "sha256": "e47348b61ccc0d34560afe00dae6895db4639c46ca927da36ffac51b56da4170"
+    },
+    {
+      "logical_path": "truth/pusht/state_0062.npz",
+      "size_bytes": 235076,
+      "sha256": "3e9fdb98635034a586ce7c1938b43b308b15b3255dee80766ab0b54e23cec269"
+    },
+    {
+      "logical_path": "truth/pusht/state_0063.npz",
+      "size_bytes": 244581,
+      "sha256": "f22b75fc56d492c445b8e7736c9f8f3c1df743d6ece5c53a4304764dfc90ca99"
+    },
+    {
+      "logical_path": "truth/pusht/state_0064.npz",
+      "size_bytes": 232192,
+      "sha256": "d0d7596d60ff125aa0a3984588458e466fa0320957f83e7c1223bfe7bffbc31e"
+    },
+    {
+      "logical_path": "truth/pusht/state_0065.npz",
+      "size_bytes": 243163,
+      "sha256": "0833019add48c83d6ea0693c76f1998d5700e5e3419edd09d8780e50834ffb28"
+    },
+    {
+      "logical_path": "truth/pusht/state_0066.npz",
+      "size_bytes": 205224,
+      "sha256": "9291fdcb2a8e0fb48fac9440f1007b78525b09bc5bf0269b83d8b54c5cbadae8"
+    },
+    {
+      "logical_path": "truth/pusht/state_0067.npz",
+      "size_bytes": 238694,
+      "sha256": "0051bd020e1b5fd144b709583e58ac8a1911b5835d5e2eedca2bfa73254d7370"
+    },
+    {
+      "logical_path": "truth/pusht/state_0068.npz",
+      "size_bytes": 231630,
+      "sha256": "19fb5ca8e6aa8427501ec648474df66facf4583ba794a99586b965013f4dbc04"
+    },
+    {
+      "logical_path": "truth/pusht/state_0069.npz",
+      "size_bytes": 186117,
+      "sha256": "7eebac9cab3b16bb0bf597ac3473ae185dbe75a9de4cd0ce7426d7b57ccd3300"
+    },
+    {
+      "logical_path": "truth/pusht/state_0070.npz",
+      "size_bytes": 217299,
+      "sha256": "149bc3a1e4d9388f2ce2ef143d744226be9ccbcdb01fb7d0de9ddf9c992d2860"
+    },
+    {
+      "logical_path": "truth/pusht/state_0071.npz",
+      "size_bytes": 232638,
+      "sha256": "1ebc56c222b75b91af06bbec0fc8e2c02f7adcf0b348791029b5da59cbdeb4ef"
+    },
+    {
+      "logical_path": "truth/pusht/state_0072.npz",
+      "size_bytes": 224531,
+      "sha256": "161ae0b80408f460e13f5cf781ff75d9c83c8a21d894eb4e29b16624978a6237"
+    },
+    {
+      "logical_path": "truth/pusht/state_0073.npz",
+      "size_bytes": 237862,
+      "sha256": "d1d30cf43fa60ac4ff88341ba6639eaa76ae2e7e70e155757692f35c3c1c7c56"
+    },
+    {
+      "logical_path": "truth/pusht/state_0074.npz",
+      "size_bytes": 247740,
+      "sha256": "f06d2a84117e604d290e34bb59cc967c5e4d1c908ff833a6e45321e98868e63c"
+    },
+    {
+      "logical_path": "truth/pusht/state_0075.npz",
+      "size_bytes": 183384,
+      "sha256": "ecac036550a4d343d481be88b2470d689aacf27a3f03cb5cae77d362600ffe6b"
+    },
+    {
+      "logical_path": "truth/pusht/state_0076.npz",
+      "size_bytes": 231657,
+      "sha256": "14af455d8a56fd766bade24c51c5180d8636ac13c11c8420c9701b11c044a07f"
+    },
+    {
+      "logical_path": "truth/pusht/state_0077.npz",
+      "size_bytes": 187041,
+      "sha256": "149c78da34a52670f2440fa640772281f83ebe1db1b7ede2bf54544042567acf"
+    },
+    {
+      "logical_path": "truth/pusht/state_0078.npz",
+      "size_bytes": 231902,
+      "sha256": "9f8a407e41f8ca230906123e78392142ffc5b337832515d3725d27365b38acd3"
+    },
+    {
+      "logical_path": "truth/pusht/state_0079.npz",
+      "size_bytes": 236284,
+      "sha256": "d013d3f20c4c4c63e3f872760c27d85b47fc9c47a349808ad38f2d0b02cfe752"
+    },
+    {
+      "logical_path": "truth/pusht/state_0080.npz",
+      "size_bytes": 229486,
+      "sha256": "bc94e097448488d0244c299a24cecb80df3ce6d6498fc0fcf8ff26dfb06d2951"
+    },
+    {
+      "logical_path": "truth/pusht/state_0081.npz",
+      "size_bytes": 235190,
+      "sha256": "109d549f606c88adcd8a2ee12a45d8cf6d70337a86f0517b1ae1a218316e1789"
+    },
+    {
+      "logical_path": "truth/pusht/state_0082.npz",
+      "size_bytes": 236107,
+      "sha256": "27506bfb09c321438278d52941d49bc5fa5eed554cb99bda2ccf110c34218e27"
+    },
+    {
+      "logical_path": "truth/pusht/state_0083.npz",
+      "size_bytes": 222442,
+      "sha256": "c28ba723a992c093b571db5d77b7ddd929635733a76d23dc016503887c6dea35"
+    },
+    {
+      "logical_path": "truth/pusht/state_0084.npz",
+      "size_bytes": 237362,
+      "sha256": "0fe755f91294604facc7b2166cd0c19fde240bbe9b94a554946e7c9c4c82ab86"
+    },
+    {
+      "logical_path": "truth/pusht/state_0085.npz",
+      "size_bytes": 229136,
+      "sha256": "725f24b8f8de92e7b9a9db84870c52001d6c60f7793c9075a599510a8faeec54"
+    },
+    {
+      "logical_path": "truth/pusht/state_0086.npz",
+      "size_bytes": 237071,
+      "sha256": "134a0610fba9dc23e5de7b6cf105a93747138cb3d01d74612be497c98c2ca2cf"
+    },
+    {
+      "logical_path": "truth/pusht/state_0087.npz",
+      "size_bytes": 227776,
+      "sha256": "7077e141a32d76f10da9e52750dd1fb0a0e777501eac1e26d0ff3547044c1f49"
+    },
+    {
+      "logical_path": "truth/pusht/state_0088.npz",
+      "size_bytes": 236606,
+      "sha256": "142561384ab9f50c85bdf30c1241fa69816e9050796d6eb735cf5284b9c3500a"
+    },
+    {
+      "logical_path": "truth/pusht/state_0089.npz",
+      "size_bytes": 176056,
+      "sha256": "4d3afe1b90537c8a790e87c97e9080e370ee3e6699a50e8d4615b2b4c07749ec"
+    },
+    {
+      "logical_path": "truth/pusht/state_0090.npz",
+      "size_bytes": 231701,
+      "sha256": "40ae9525023ac170b2a17f84257f3caf90971599c80a6ad741a4ffe479d1596a"
+    },
+    {
+      "logical_path": "truth/pusht/state_0091.npz",
+      "size_bytes": 182603,
+      "sha256": "721aa82ce0fd31870710cf0448bd9bd80f1c50138cab3473e16cb8e0cbe5c05c"
+    },
+    {
+      "logical_path": "truth/pusht/state_0092.npz",
+      "size_bytes": 215804,
+      "sha256": "27092c5e6c9ab58b89f9883584540afebd9be06bd13578f650b3df7f0b21f873"
+    },
+    {
+      "logical_path": "truth/pusht/state_0093.npz",
+      "size_bytes": 210761,
+      "sha256": "6dbc4fe6d73bdd68527d0324a0794cd0df784fdef1a2bd5859d54de6ad63fe2e"
+    },
+    {
+      "logical_path": "truth/pusht/state_0094.npz",
+      "size_bytes": 224016,
+      "sha256": "9a1a5a8e23423b48f662fb5a9ada8bb0936b4497069e5863323b4250bc17be17"
+    },
+    {
+      "logical_path": "truth/pusht/state_0095.npz",
+      "size_bytes": 210394,
+      "sha256": "14bbb595c9bdbe1baae7cf336761dd3159f89ad68dcb6295320bd9018d3792d1"
+    },
+    {
+      "logical_path": "truth/wall/state_0000.npz",
+      "size_bytes": 315867,
+      "sha256": "60fa4148329b135d0c5dc7a725e8f0e0ae5182714c05b9c016ce099b398246e8"
+    },
+    {
+      "logical_path": "truth/wall/state_0001.npz",
+      "size_bytes": 320586,
+      "sha256": "68899c7f1426a47a16f8648712a2dbee24253b99e1338b06dd5ed3a26f3edf65"
+    },
+    {
+      "logical_path": "truth/wall/state_0002.npz",
+      "size_bytes": 317205,
+      "sha256": "5611aab1aabc177b55441e3a170cf1f0350099aa622fd8fd7e96baf8f5c8aa29"
+    },
+    {
+      "logical_path": "truth/wall/state_0003.npz",
+      "size_bytes": 330914,
+      "sha256": "d6b9f4b77cfa82c5e1d4667012fc24c06d206e834ddd1378168b5e40f640e29c"
+    },
+    {
+      "logical_path": "truth/wall/state_0004.npz",
+      "size_bytes": 325682,
+      "sha256": "bb838bbcc9a8cd1feba042951a310c6cdf23b60e05e53390e04e3c061d4d6e53"
+    },
+    {
+      "logical_path": "truth/wall/state_0005.npz",
+      "size_bytes": 312951,
+      "sha256": "3ca54f34bd07bab34a0182b4e50f2cdcbfc3f6424a21149577dc1256ef3dfeda"
+    },
+    {
+      "logical_path": "truth/wall/state_0006.npz",
+      "size_bytes": 299583,
+      "sha256": "870e6e7718d5a57b6a147c2cfc1128ce952579cfbf93743ec37e920852c21e41"
+    },
+    {
+      "logical_path": "truth/wall/state_0007.npz",
+      "size_bytes": 304727,
+      "sha256": "b1cf6b9e63dd866d14e5791e2d3bc3c5f61953642b206f5af6d4502bbd230686"
+    },
+    {
+      "logical_path": "truth/wall/state_0008.npz",
+      "size_bytes": 317122,
+      "sha256": "923d6c920613fa4cd127a48b2cc0fb16df8be35b9fb5f7dbecc536cee77fac67"
+    },
+    {
+      "logical_path": "truth/wall/state_0009.npz",
+      "size_bytes": 324043,
+      "sha256": "781e309e3f660b3efe373bcd9b70098ee23226d977416e9f2161d2de449abf34"
+    },
+    {
+      "logical_path": "truth/wall/state_0010.npz",
+      "size_bytes": 325468,
+      "sha256": "637fb0165d339d3da3f53237044269fc84bbbf60c942406f6bb36bd3b3447a7d"
+    },
+    {
+      "logical_path": "truth/wall/state_0011.npz",
+      "size_bytes": 327201,
+      "sha256": "9b1085f121608b2721f786ffcaa32cec9cdfc89c90fb62d2bff32b09a75a331f"
+    },
+    {
+      "logical_path": "truth/wall/state_0012.npz",
+      "size_bytes": 323140,
+      "sha256": "6e12d9a34084db9c7e925deb2c6c047a45ecd12101195f04485f1de7a4922405"
+    },
+    {
+      "logical_path": "truth/wall/state_0013.npz",
+      "size_bytes": 312134,
+      "sha256": "64db750701ff37ce41e58b57abe574fec334038fd3ab6efd56b7cbcc66bbe597"
+    },
+    {
+      "logical_path": "truth/wall/state_0014.npz",
+      "size_bytes": 326029,
+      "sha256": "15823dbdce99b20afd27f5fc2aeaad5c466dee43456408a1f0ae33628d9b1cc0"
+    },
+    {
+      "logical_path": "truth/wall/state_0015.npz",
+      "size_bytes": 320845,
+      "sha256": "8533a60477b84ce5195d5590cc1f479cdbd65a219f2928ef974f1433f14a85f4"
+    },
+    {
+      "logical_path": "truth/wall/state_0016.npz",
+      "size_bytes": 337892,
+      "sha256": "34447ef345b7168bb55d655d0e1cfd6ee306e47c2996468d2cb6e62c0b8e582f"
+    },
+    {
+      "logical_path": "truth/wall/state_0017.npz",
+      "size_bytes": 334005,
+      "sha256": "467727327ea94ee9861fe070131d137d1caa474d20777fa5010daf1a262f3ed1"
+    },
+    {
+      "logical_path": "truth/wall/state_0018.npz",
+      "size_bytes": 333633,
+      "sha256": "645220f96901cb6046a7dc23979e55f7659d8f193ca16bca6be44ea450b3e680"
+    },
+    {
+      "logical_path": "truth/wall/state_0019.npz",
+      "size_bytes": 333466,
+      "sha256": "e2030ca12e5124bbee595edb3fdb567baa2f5025b99a5cdcba589f1467c85ce3"
+    },
+    {
+      "logical_path": "truth/wall/state_0020.npz",
+      "size_bytes": 333765,
+      "sha256": "1d41bd3db882c67ac0106a438db66f8ca5d71c09a9e1e1fc9e42f89fda0df4d7"
+    },
+    {
+      "logical_path": "truth/wall/state_0021.npz",
+      "size_bytes": 333071,
+      "sha256": "c0c31fe5211729d367bc81fadcf3bfd0aa5264c7f18cdc59f4e17944e7eea91b"
+    },
+    {
+      "logical_path": "truth/wall/state_0022.npz",
+      "size_bytes": 332736,
+      "sha256": "77e5070befd6f41e36bc5148dbabf422257505ee778e151e23605fff7734d65a"
+    },
+    {
+      "logical_path": "truth/wall/state_0023.npz",
+      "size_bytes": 341933,
+      "sha256": "9e87dcc41529ac8e19712da554d18803bd78861ac85b3612e8629f4e07300506"
+    },
+    {
+      "logical_path": "truth/wall/state_0024.npz",
+      "size_bytes": 318516,
+      "sha256": "5444f5534ed56f5b8dd36a43499d354b6faac951331f1b2195aeec6dc24eb184"
+    },
+    {
+      "logical_path": "truth/wall/state_0025.npz",
+      "size_bytes": 316231,
+      "sha256": "79847218385431439865cc79909950e5ccc0e192b560a647cd0a8fbe27e2464c"
+    },
+    {
+      "logical_path": "truth/wall/state_0026.npz",
+      "size_bytes": 313510,
+      "sha256": "1193f28d087b9314d597cfd77a10ff4112401f96244dbe865237d05856c711f4"
+    },
+    {
+      "logical_path": "truth/wall/state_0027.npz",
+      "size_bytes": 305129,
+      "sha256": "5d2356342c8a19028df75826aa0b09bb448b494f46ad6766d97ce6321fe3d39c"
+    },
+    {
+      "logical_path": "truth/wall/state_0028.npz",
+      "size_bytes": 313004,
+      "sha256": "b8800390090440353a797a734f97db20128a9a69da6715b7e2ca58df9f683ef4"
+    },
+    {
+      "logical_path": "truth/wall/state_0029.npz",
+      "size_bytes": 315709,
+      "sha256": "5e5a2ff1e051ebf5430ee7d774db6bd5bf0d63fe02b28fe2b83f0e501d32f31a"
+    },
+    {
+      "logical_path": "truth/wall/state_0030.npz",
+      "size_bytes": 315964,
+      "sha256": "7df4d4fe6e28bf237ce25f6094f74bcb7ef003cb3e6756ed7ec2259630c41391"
+    },
+    {
+      "logical_path": "truth/wall/state_0031.npz",
+      "size_bytes": 322799,
+      "sha256": "af04f2b726fc0d59fa3a5a3dc2a359adb46157b325dc261cb69060763212654d"
+    },
+    {
+      "logical_path": "truth/wall/state_0032.npz",
+      "size_bytes": 302498,
+      "sha256": "0638f87e81d327e7e99f3a7eb93b0972d2da574ede1526ee1c3f5082dc94c0e1"
+    },
+    {
+      "logical_path": "truth/wall/state_0033.npz",
+      "size_bytes": 305529,
+      "sha256": "0bda697edc8288ed02a23fb797530a26c8a05d65616b80121c782fd4f4b10d48"
+    },
+    {
+      "logical_path": "truth/wall/state_0034.npz",
+      "size_bytes": 321698,
+      "sha256": "d901e74527c0354e8d93bd7eade5e0f56a2330c655eeac84e7efe288ff67e20b"
+    },
+    {
+      "logical_path": "truth/wall/state_0035.npz",
+      "size_bytes": 320107,
+      "sha256": "63450d3d0e7a2d9ae8072ea86b49da9f0e05fb1a6fb3ffe14753418fff4087ee"
+    },
+    {
+      "logical_path": "truth/wall/state_0036.npz",
+      "size_bytes": 319451,
+      "sha256": "b6b68dbd03597f2c86746b16f9dbedef034fb03a6c04d7b10bd404b4c51df9c6"
+    },
+    {
+      "logical_path": "truth/wall/state_0037.npz",
+      "size_bytes": 314730,
+      "sha256": "8fcd4aa479f0d87ec2ce973cde863061f8282e5fd7bbde850978bc54b498af71"
+    },
+    {
+      "logical_path": "truth/wall/state_0038.npz",
+      "size_bytes": 311685,
+      "sha256": "99ddd51551bfd6c9a2801576039946d0913c8bc1c296e93e397387e0159d9f85"
+    },
+    {
+      "logical_path": "truth/wall/state_0039.npz",
+      "size_bytes": 326302,
+      "sha256": "00c008335685bdf9f5ecd9c2244e351a9b8bfb821dce31f0087588e17f71493b"
+    },
+    {
+      "logical_path": "truth/wall/state_0040.npz",
+      "size_bytes": 308943,
+      "sha256": "5c3ebaeafc007b5f44aaa115fd8c20d29a3154b7d061bc2e86be7c4f8162f88f"
+    },
+    {
+      "logical_path": "truth/wall/state_0041.npz",
+      "size_bytes": 295804,
+      "sha256": "ccd27f49caa113b28b63256d85a7c2fbabd46fade6ba301d44c3903c1f63f763"
+    },
+    {
+      "logical_path": "truth/wall/state_0042.npz",
+      "size_bytes": 307809,
+      "sha256": "c20c80f6a43d72d529db070f494217cfb2c3e98e53f9c9dab50057d4810d2cb9"
+    },
+    {
+      "logical_path": "truth/wall/state_0043.npz",
+      "size_bytes": 303490,
+      "sha256": "d1cad5bfdec96bbac1457ffacd74273ffcedff982e603298758f74b4ac8fcca3"
+    },
+    {
+      "logical_path": "truth/wall/state_0044.npz",
+      "size_bytes": 309252,
+      "sha256": "d21882284a6af8a783929f7835d51d787cca5800d050f1000b396bcadfe70821"
+    },
+    {
+      "logical_path": "truth/wall/state_0045.npz",
+      "size_bytes": 307704,
+      "sha256": "66d7436c580235906e281d3f0526f03f4e22f4c9953af36b8bb50eb6450ba05d"
+    },
+    {
+      "logical_path": "truth/wall/state_0046.npz",
+      "size_bytes": 312398,
+      "sha256": "86aa6c59e5b456c53310e62c3e450d15731444b7411e42def210850465fe78a6"
+    },
+    {
+      "logical_path": "truth/wall/state_0047.npz",
+      "size_bytes": 310533,
+      "sha256": "f814472774a3b175ca98b48c58989a7c1da97f95f33c0d1c668abf95f825d91c"
+    },
+    {
+      "logical_path": "truth/wall/state_0048.npz",
+      "size_bytes": 330791,
+      "sha256": "94f4d37aabe9cdc758388649fb148cead179b9fe175bdb592aeb1a7ccc97e33d"
+    },
+    {
+      "logical_path": "truth/wall/state_0049.npz",
+      "size_bytes": 329985,
+      "sha256": "3db4c0e36e038fad0b87c7847c0bc43d161d57d7086c1bed7b04b85047c70e7a"
+    },
+    {
+      "logical_path": "truth/wall/state_0050.npz",
+      "size_bytes": 328965,
+      "sha256": "15301749af918692ad7af72af3b3933e50a48114c3a607079c368478332f6114"
+    },
+    {
+      "logical_path": "truth/wall/state_0051.npz",
+      "size_bytes": 322263,
+      "sha256": "394c4f227d98529f1134a81d575871e956d27eb8850af3dea1a112d9a0511bad"
+    },
+    {
+      "logical_path": "truth/wall/state_0052.npz",
+      "size_bytes": 322907,
+      "sha256": "8bb74d136dc8657885c526fd48776d44cea19b114283d698978bd824749f9ca2"
+    },
+    {
+      "logical_path": "truth/wall/state_0053.npz",
+      "size_bytes": 330745,
+      "sha256": "76930c6be59d25f9cedd55d8d9b6b16ace4bd8e49923384c3e100a79af4f2b0d"
+    },
+    {
+      "logical_path": "truth/wall/state_0054.npz",
+      "size_bytes": 327849,
+      "sha256": "d30fb36e497e8c3c7ebd7238cd56b8840a831555e71d29d853032ea22ff71b98"
+    },
+    {
+      "logical_path": "truth/wall/state_0055.npz",
+      "size_bytes": 325696,
+      "sha256": "2c4b97fce2814098edd4f0848c2608d49803584161b6e3974dc6d36f872d99be"
+    },
+    {
+      "logical_path": "truth/wall/state_0056.npz",
+      "size_bytes": 316016,
+      "sha256": "cb3e8f899c4ab8d3d4141b5d8652fe080fb4abf433b499307646145968bba09e"
+    },
+    {
+      "logical_path": "truth/wall/state_0057.npz",
+      "size_bytes": 325965,
+      "sha256": "957bbbf62a069456771b37dabcd9bdff1c9012f5ba64776159e048f6dc1cd2aa"
+    },
+    {
+      "logical_path": "truth/wall/state_0058.npz",
+      "size_bytes": 324037,
+      "sha256": "1243bfeab43af5848b73d0235714c8c3210c4500c812a0c4c65f47e556e1aa64"
+    },
+    {
+      "logical_path": "truth/wall/state_0059.npz",
+      "size_bytes": 327350,
+      "sha256": "d6fbc9dfb96a714946324b5b13df4110fd3972a352bb30ea05090d9deb53789d"
+    },
+    {
+      "logical_path": "truth/wall/state_0060.npz",
+      "size_bytes": 333441,
+      "sha256": "ba2305fd61a3f7d9ea618c52b2230b2f5732afde046388a112ff104bc2d04945"
+    },
+    {
+      "logical_path": "truth/wall/state_0061.npz",
+      "size_bytes": 314248,
+      "sha256": "62203c0fe389927bf26f134a801e248dd86c519617270b54ab974a84086ab900"
+    },
+    {
+      "logical_path": "truth/wall/state_0062.npz",
+      "size_bytes": 334493,
+      "sha256": "09774c3df5a89afeb40e656dfb5c74aa510aff585246ce2ea8a003fee9a63872"
+    },
+    {
+      "logical_path": "truth/wall/state_0063.npz",
+      "size_bytes": 317872,
+      "sha256": "81290a9f88353d2f0bee251e6d65a1e1788aa3209b3b7dd731645cb3d4f11781"
+    },
+    {
+      "logical_path": "truth/wall/state_0064.npz",
+      "size_bytes": 325116,
+      "sha256": "648bcebdfcc3bf34ce9c5758e6e89beba0251bf41deb00f8b7b16f8d41b5e5f4"
+    },
+    {
+      "logical_path": "truth/wall/state_0065.npz",
+      "size_bytes": 323355,
+      "sha256": "f4e24d70e6f6f84b0c741cdeaa67cdcba6d495e85a5d0d5060290c1b22d72d21"
+    },
+    {
+      "logical_path": "truth/wall/state_0066.npz",
+      "size_bytes": 330475,
+      "sha256": "10a0f32684e093e0a4a4d8c7c4c639b8b2b1b996a9b8fbc70bd9c4b94c456c15"
+    },
+    {
+      "logical_path": "truth/wall/state_0067.npz",
+      "size_bytes": 312574,
+      "sha256": "3f4730bf58612e46128d7154d7090cf24178cd089a6ce4c05b1b90a22635294a"
+    },
+    {
+      "logical_path": "truth/wall/state_0068.npz",
+      "size_bytes": 316205,
+      "sha256": "c5e42ae15d6e2617e1093f1cb2f7a2e1709b91484e2d65cb592fa3f67f677a70"
+    },
+    {
+      "logical_path": "truth/wall/state_0069.npz",
+      "size_bytes": 304350,
+      "sha256": "3b970af70ef00d2cd17c71c67862d185f7182debaded6b1591a5f83545337e6b"
+    },
+    {
+      "logical_path": "truth/wall/state_0070.npz",
+      "size_bytes": 318948,
+      "sha256": "65ac3afab2e0e6a7239f9235720482b8dd8d03e5aa9ad6480a6e48181358e09e"
+    },
+    {
+      "logical_path": "truth/wall/state_0071.npz",
+      "size_bytes": 317500,
+      "sha256": "061d4fe97902846271ded7ca38c58fc5f5068202069ca31b43100a849dece4b6"
+    },
+    {
+      "logical_path": "truth/wall/state_0072.npz",
+      "size_bytes": 318014,
+      "sha256": "2aec54e692ab58b9c9becf29ca08ab71ed41c94db9288133cef1b5495eb54e80"
+    },
+    {
+      "logical_path": "truth/wall/state_0073.npz",
+      "size_bytes": 306405,
+      "sha256": "6e611721bac3c1101e20b44707c934c01acf375c368034a19cf6e599215cdce9"
+    },
+    {
+      "logical_path": "truth/wall/state_0074.npz",
+      "size_bytes": 304356,
+      "sha256": "48f47925690f0d5576de2b4722fdf9e81c689ce531a8e294ddf31cd41b1e0220"
+    },
+    {
+      "logical_path": "truth/wall/state_0075.npz",
+      "size_bytes": 314287,
+      "sha256": "47b9f83a2c06cc1808d8ceae7e94f20cd9480e7ba6d7d86b3d89f9279038ebef"
+    },
+    {
+      "logical_path": "truth/wall/state_0076.npz",
+      "size_bytes": 315627,
+      "sha256": "74e6919fb9fd6e6abacf141c74bd7a92cc3c9d11aebb0ac5d29200755f669bec"
+    },
+    {
+      "logical_path": "truth/wall/state_0077.npz",
+      "size_bytes": 317358,
+      "sha256": "5e5272e3cfc1f58d0b366db49feece91fc4dfdc4de0590b5bd889a5045a5c104"
+    },
+    {
+      "logical_path": "truth/wall/state_0078.npz",
+      "size_bytes": 309691,
+      "sha256": "2afd499b222039cf98001a98fc726b027b61a8776821cfa470b4aa8f2104fe89"
+    },
+    {
+      "logical_path": "truth/wall/state_0079.npz",
+      "size_bytes": 307308,
+      "sha256": "9ddbf945349e326b16b6e8895007f75ccfa3ffdc17c6beee8c5261870bff965b"
+    },
+    {
+      "logical_path": "truth/wall/state_0080.npz",
+      "size_bytes": 303604,
+      "sha256": "51a7855aa665963c21636dc7beab4d3c8f28c6084cf8461b2e5f7a8aedf201ea"
+    },
+    {
+      "logical_path": "truth/wall/state_0081.npz",
+      "size_bytes": 306140,
+      "sha256": "25540319b3be88504f4fb71f639bad60db8e4ecd05b17cf80876c83838156a1f"
+    },
+    {
+      "logical_path": "truth/wall/state_0082.npz",
+      "size_bytes": 309064,
+      "sha256": "32289ad1d5bacae91743642ab4e6eb62ed283e7f9cd6798db785216e2a93f12c"
+    },
+    {
+      "logical_path": "truth/wall/state_0083.npz",
+      "size_bytes": 322439,
+      "sha256": "10a4ee0479068a9b69533eb8d6713cd4296aa3cd0f4e95250db6c16ff497adf3"
+    },
+    {
+      "logical_path": "truth/wall/state_0084.npz",
+      "size_bytes": 327409,
+      "sha256": "5eb75eb02d11cb4d3a358dbc5657bb90fd185c8adaf6650bc3ba2f9f4232d351"
+    },
+    {
+      "logical_path": "truth/wall/state_0085.npz",
+      "size_bytes": 316153,
+      "sha256": "3e5317f9568012709ffb1247047b43dea703ff8ef13f94f7da4b6daa8bba89d9"
+    },
+    {
+      "logical_path": "truth/wall/state_0086.npz",
+      "size_bytes": 318811,
+      "sha256": "02bd7c5072fcec844dcae5e37585dd44762dd28113b93e65917597118dcf23d1"
+    },
+    {
+      "logical_path": "truth/wall/state_0087.npz",
+      "size_bytes": 322119,
+      "sha256": "f3a2a0ba244e85fa54be90ab8a49ee12b18a30fbc8036e1c1d2e2158fd8b096b"
+    },
+    {
+      "logical_path": "truth/wall/state_0088.npz",
+      "size_bytes": 338522,
+      "sha256": "803701470e5b183eaef6b85124e3f06a4e2e723d3443f07a705f3b9c273f96a7"
+    },
+    {
+      "logical_path": "truth/wall/state_0089.npz",
+      "size_bytes": 334309,
+      "sha256": "f9577e76c0e318833b8d1f187568885bdf93081de939df0237732b3502b77d51"
+    },
+    {
+      "logical_path": "truth/wall/state_0090.npz",
+      "size_bytes": 325834,
+      "sha256": "51cdf999c4b0d64f326682ae45b15a14ce3fbdc0d0c95129051919f1ca72319a"
+    },
+    {
+      "logical_path": "truth/wall/state_0091.npz",
+      "size_bytes": 322526,
+      "sha256": "87b580cc0cc93e0a3b96c5c58d3e94ad4c2fc6367bed306a1a2bb5f6f8985279"
+    },
+    {
+      "logical_path": "truth/wall/state_0092.npz",
+      "size_bytes": 335133,
+      "sha256": "9ac2cd69b4967298e82b18569e82f8c0e100bdaa8c35face94d78a5591b113c9"
+    },
+    {
+      "logical_path": "truth/wall/state_0093.npz",
+      "size_bytes": 330710,
+      "sha256": "f23db2305e5bcec5c00b32e02b3ed913dd946c38d2f24dd43555df34da715424"
+    },
+    {
+      "logical_path": "truth/wall/state_0094.npz",
+      "size_bytes": 330271,
+      "sha256": "5409c8fb159c82878629ab9694dedf496d39814a0ab9385cd138c6e737c68aa0"
+    },
+    {
+      "logical_path": "truth/wall/state_0095.npz",
+      "size_bytes": 334442,
+      "sha256": "dbd744c01cbb8c64b393d95cf65ac7a513ee2f1cd2b064afd6122d2dbf4b53e7"
+    }
+  ]
+}

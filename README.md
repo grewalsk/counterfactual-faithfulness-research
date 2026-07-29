@@ -50,6 +50,12 @@ downloaded Colab result bundles.
   fidelity constraints.
 - `docs/STAGE11_ACTION_RESPONSE_GEOMETRY_PILOT.md` — compute-gated,
   readout-free adaptation of whitened centered action-response geometry.
+- `docs/RESEARCH_STATE_AFTER_STAGE11_AND_ICLR_ROADMAP.md` — audited synthesis
+  of the full evidence chain, the remaining mathematical failure, and the
+  proposed shared goal-metric bridge.
+- `docs/ICLR_RESEARCH_DECISION_AGENT_PROMPT.md` — adversarial, copy-ready
+  prompt for an independent agent to audit the work and choose the next
+  ICLR-critical experiment.
 - `src/cf_faithfulness/` — tested NumPy metric and grouped-analysis code.
 - `tests/` — synthetic and exact-state restoration tests.
 - `notebooks/01_model_and_environment_smoke_test.ipynb` — Stage 1 Colab.
@@ -85,6 +91,11 @@ downloaded Colab result bundles.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.
 - `audits/` — independent post-run audits and supporting summaries.
 - `results/bundles/` — original Stage 1 through Stage 3 Colab ZIP bundles.
+- `results/bundles/stage11_result_bundle/` — complete extracted Stage 11 full
+  result bundle, including raw CSVs, manifests, logs, plots, evaluation-only
+  decoders, geometry references, and all six matched ARGA checkpoints.
+- `results/stage11_full_development_audit.json` — compact independent Stage 11
+  numerical audit with source hashes and corrected decision semantics.
 
 ## Reproduce the local CPU checks
 
@@ -93,6 +104,7 @@ python -m venv .venv
 .venv/bin/python -m pip install -r requirements-cpu.txt
 PYTHONPATH=src SDL_VIDEODRIVER=dummy .venv/bin/python -m pytest
 PYTHONPATH=src SDL_VIDEODRIVER=dummy .venv/bin/python scripts/run_cpu_smoke.py
+python scripts/validate_stage11_bundle.py
 ```
 
 The `pymunk==6.8.0` pin is essential. `gym-pusht==0.1.6` declares a permissive
@@ -180,3 +192,28 @@ uses no physical goal, cost, pose, or readout in the training objective, and
 runs a second adaptation seed only after a necessary direct-geometry screen.
 The default Stage 11 run is a compute-allocation pilot and cannot by itself
 support a scientific claim.
+
+The returned Stage 11 run used the full development matrix: 96 states per
+environment, three adaptation seeds, five unseen evaluation projections, and
+2,000 task-clustered bootstrap repetitions. All bundle hashes and exact
+simulator restoration checks passed. Matched action-response geometry improved
+over frozen and shuffled controls by point estimate at every horizon in all
+five unseen projections in both PushT and Wall. The direct geometry gate
+therefore passed 5/5 in each environment.
+
+Planning transfer remained incomplete. The fresh-readout joint gate passed
+only 1/5 PushT projections and 2/5 Wall projections, below the required 4/5.
+Wall nevertheless showed substantial average normalized-regret reductions of
+approximately 27%, 19%, and 5% at horizons 1, 3, and 6. The matched latent
+fidelity constraint passed, but the PushT native planner exceeded its
+horizon-6 non-harm tolerance. The notebook label
+`STOP_NATIVE_FIDELITY_FAILURE` is therefore semantically misleading: latent
+fidelity passed; native-planner non-harm and fresh-readout transfer failed.
+
+Stage 11 localizes the next problem. Correct relative action geometry is
+repairable, but the goal representation and planner metric do not reliably
+consume it. The recommended next falsification pilot freezes ARGA and learns
+one low-capacity positive-semidefinite goal metric from target latents, then
+applies the identical frozen metric to frozen, latent-only, shuffled, and
+matched dynamics. The full reasoning and ICLR go/no-go plan are in
+`docs/RESEARCH_STATE_AFTER_STAGE11_AND_ICLR_ROADMAP.md`.

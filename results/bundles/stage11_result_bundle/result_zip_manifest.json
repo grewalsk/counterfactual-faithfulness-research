@@ -1,0 +1,234 @@
+{
+  "run_signature": "50c833efab75ee8daa4f0f770451f1e1324528b2bd4e0ad7b1c5b048674b5bb5",
+  "pipeline_failed": false,
+  "matched_checkpoints_included": 6,
+  "failed_run_latest_checkpoints_included": 0,
+  "completed_control_checkpoints_excluded_from_download": true,
+  "files": [
+    {
+      "path": "FAILURE_TRACE.txt",
+      "size_bytes": 38,
+      "sha256": "4bb9a53b2f27b943df8a079fb6c9566b04802df79ce79c6b8d5f7f391751fb55"
+    },
+    {
+      "path": "adapted_action_paths/jepa_wm_pusht_fidelity_constrained_matched_geometry_seed11401_50c833efab75.pt",
+      "size_bytes": 23126705,
+      "sha256": "844f846afb9f14f57987ce890e46cc9f9f3cafe4155fbfa46f715da99608eab1"
+    },
+    {
+      "path": "adapted_action_paths/jepa_wm_pusht_fidelity_constrained_matched_geometry_seed11419_50c833efab75.pt",
+      "size_bytes": 23126705,
+      "sha256": "fcbaea5f87c6a6fedbc43c4976b61c6b9b81ee3b77eecc11571bc094c0943f41"
+    },
+    {
+      "path": "adapted_action_paths/jepa_wm_pusht_fidelity_constrained_matched_geometry_seed11437_50c833efab75.pt",
+      "size_bytes": 23127345,
+      "sha256": "4c919d7f916a4806328be8f0e3d2ac3eb5ade8bc88641db9ecfb8103f65b4bd4"
+    },
+    {
+      "path": "adapted_action_paths/jepa_wm_wall_fidelity_constrained_matched_geometry_seed11401_50c833efab75.pt",
+      "size_bytes": 23127325,
+      "sha256": "69acecc6b4241c03d3bdf26fd1e8af183faf840f7daf9f56b7e637c350f1b4d9"
+    },
+    {
+      "path": "adapted_action_paths/jepa_wm_wall_fidelity_constrained_matched_geometry_seed11419_50c833efab75.pt",
+      "size_bytes": 23126685,
+      "sha256": "0b480c2eca9a951753106d4de441f2601e79148e92476ecb36fbb3a5a7aa2be3"
+    },
+    {
+      "path": "adapted_action_paths/jepa_wm_wall_fidelity_constrained_matched_geometry_seed11437_50c833efab75.pt",
+      "size_bytes": 23126685,
+      "sha256": "a92d638de6fb9abeaea0883ca10c02575bd8c9a94448a94b6874890aef0e6100"
+    },
+    {
+      "path": "cache_reuse.json",
+      "size_bytes": 139,
+      "sha256": "6e0f60f15f0967bdc921b09e142f93acec7451372e1566e2b74ffa0eee2b2746"
+    },
+    {
+      "path": "candidate_design_summary.json",
+      "size_bytes": 2699,
+      "sha256": "e7041b5703efd218f6c64466320c9a42f495d77f1723c9d7cbe8e8592da719dc"
+    },
+    {
+      "path": "checkpoints_manifest.json",
+      "size_bytes": 1057,
+      "sha256": "d827149d5f812464436733eba7db54ac24b7aefd553193cbc3e171335f758336"
+    },
+    {
+      "path": "config.json",
+      "size_bytes": 3996,
+      "sha256": "2d3082f30d7277c650d72cd23be3fff764b48c4d8a81192164dd54d24e1c0e8d"
+    },
+    {
+      "path": "frozen_training_decoders/jepa_wm_pusht_50c833efab75_training_decoders.pt",
+      "size_bytes": 20751,
+      "sha256": "7e586b96f0ed4d143d493a54052b04188f2614f1337cc57ff880fc4fa3632125"
+    },
+    {
+      "path": "frozen_training_decoders/jepa_wm_pusht_decoder_manifest.json",
+      "size_bytes": 1854,
+      "sha256": "95e2403b23af797d85dc685dee5b6156323ab96316a53b9b77b254f14d001aa9"
+    },
+    {
+      "path": "frozen_training_decoders/jepa_wm_wall_50c833efab75_training_decoders.pt",
+      "size_bytes": 16125,
+      "sha256": "21ad7991f5bd5748101d60ed1a09cec60b600faee51f3388f7cc45cbe4b7c403"
+    },
+    {
+      "path": "frozen_training_decoders/jepa_wm_wall_decoder_manifest.json",
+      "size_bytes": 1850,
+      "sha256": "646cec5733040bd913c049743a21f8d3b54b1b9a356472aab975810f61305c2d"
+    },
+    {
+      "path": "geometry_references/jepa_wm_pusht_50c833efab75.pt",
+      "size_bytes": 396099,
+      "sha256": "8786aac865a9bf864af3d4600c81cf647696b6cc105d66387ee1ad89a3b633c8"
+    },
+    {
+      "path": "geometry_references/jepa_wm_wall_50c833efab75.pt",
+      "size_bytes": 396092,
+      "sha256": "17834b7ec83c3f9b5aab449d656e24b5e76440899936a747b866ca9a6705b9f3"
+    },
+    {
+      "path": "jepa_wm_pusht_transition_progress.json",
+      "size_bytes": 225,
+      "sha256": "53021337af09a7b88d19f44e1f114fc8c5103cb27694270f217ea1ade05620c3"
+    },
+    {
+      "path": "jepa_wm_wall_transition_progress.json",
+      "size_bytes": 223,
+      "sha256": "da680f9bf40f64ce33e4a94f3fa7e63e66bbcb1d308a881fb743e5ef28b67cd1"
+    },
+    {
+      "path": "logs/run.log",
+      "size_bytes": 142843,
+      "sha256": "52c4144543ba59bdfa5ba5c54307953c95f38644e443f0880c7274b2c1a72473"
+    },
+    {
+      "path": "plots/stage11_geometry_and_planning.png",
+      "size_bytes": 294285,
+      "sha256": "c4790a7aa76f779a0a2acef4002f76b8d356a74a4b021b6c707ee8602155e1af"
+    },
+    {
+      "path": "pretrained_asset_verification.json",
+      "size_bytes": 1750,
+      "sha256": "27279052c0789b2376dabc4405bd48f628c56c13d4dda2a5c992519f01ec23ae"
+    },
+    {
+      "path": "pusht_design.npz",
+      "size_bytes": 22889,
+      "sha256": "bcacd9bf640c0ae779fba1a2e80d3bcb8bc9c77e5c53baf0a9f49878a24d65da"
+    },
+    {
+      "path": "pusht_simulator_progress.json",
+      "size_bytes": 197,
+      "sha256": "11f0947366d4544d54f59bd5b5da4a8cd7304356ca359ddbef94d3d6922cd705"
+    },
+    {
+      "path": "restore_test.json",
+      "size_bytes": 413,
+      "sha256": "e012527221ec3924073cf3b651ee499c53b30cff61d84c7386a5dfb938d1e1aa"
+    },
+    {
+      "path": "split_manifest.json",
+      "size_bytes": 3977,
+      "sha256": "d04d0db10a31970c311b307473fb1dc268816bf055f714ef4ac9be6c810284c6"
+    },
+    {
+      "path": "stage11_cache_binding.json",
+      "size_bytes": 71537,
+      "sha256": "f5da2774dd3b851871cbdf1d1449fef5ad4b1dd036b2f518605c77b60761f95f"
+    },
+    {
+      "path": "stage11_certificate_metrics.csv",
+      "size_bytes": 881364,
+      "sha256": "e4f53c849558d51eb9b9c08de6ea7882b2d7cff3ef0a6222a2e2b4e51b7e6666"
+    },
+    {
+      "path": "stage11_direct_calibration_geometry.csv",
+      "size_bytes": 6990,
+      "sha256": "785afa24aee7e68961f7032a3f2face7318331248e0eb39624257cb5cfad1389"
+    },
+    {
+      "path": "stage11_geometry_adaptation_manifest.json",
+      "size_bytes": 21507,
+      "sha256": "179ff112012e3904e9674513c6a72a7362f3857c23c088d6f319336d4c944c5c"
+    },
+    {
+      "path": "stage11_geometry_task_contrasts.csv",
+      "size_bytes": 24128,
+      "sha256": "20b95f125dc216d2a1748b7b0a83f5c56a9a5358a523db0e07aa02db32690e48"
+    },
+    {
+      "path": "stage11_geometry_unit_metrics.csv",
+      "size_bytes": 969698,
+      "sha256": "62085a1d78ba03b98e59a63f8497c0efb66d8295039c3814f25c1d3701424eb3"
+    },
+    {
+      "path": "stage11_native_fidelity.csv",
+      "size_bytes": 186941,
+      "sha256": "2fdf6d6b9f1c565aa01890c995edc89b253b145f9e39b8a9244ad4d809c56aa1"
+    },
+    {
+      "path": "stage11_native_planner_contrasts.csv",
+      "size_bytes": 12487,
+      "sha256": "bf38ea9edf5548e8fd1417bfbe14cffad028ec3f0d26867312025766a907f71d"
+    },
+    {
+      "path": "stage11_native_planner_metrics.csv",
+      "size_bytes": 215368,
+      "sha256": "9d1a33c9e880ca9c7b2ad80fdf10175fa1ac1b768c4341dcb3f1d5f240dd7ec6"
+    },
+    {
+      "path": "stage11_pilot_decision.json",
+      "size_bytes": 5555,
+      "sha256": "150b5153e07e6e710d1aed76ac0e98e9d26a94382a1b799ca4be563965cf9ebb"
+    },
+    {
+      "path": "stage11_probe_selection.csv",
+      "size_bytes": 29409,
+      "sha256": "933abd93b5fe43d8b28d1eec6ec1124746042211b154da30527fddce3ed8f2a6"
+    },
+    {
+      "path": "stage11_screening_gate.json",
+      "size_bytes": 1351,
+      "sha256": "ce8bb05edfab9bc2c02e2c35f53939c9a17bc8bb7d102d1709306e64e92d0dc0"
+    },
+    {
+      "path": "stage11_task_clustered_contrasts.csv",
+      "size_bytes": 66452,
+      "sha256": "d72eee6390b8f08c972b7fef9294a5a96e20f24ec08e7d3255187890b9d8b106"
+    },
+    {
+      "path": "stage11_task_clustered_summary.csv",
+      "size_bytes": 350779,
+      "sha256": "3d80a83a09c27113e76302e19b4d197dffa7ceb74d5b2db8de1e0adfb4580731"
+    },
+    {
+      "path": "stage11_unit_metrics.csv",
+      "size_bytes": 1588663,
+      "sha256": "cb02eeca57e0d063ea163ce28597e0f726dc2494b67c71525151032df94f32b5"
+    },
+    {
+      "path": "tasks.json",
+      "size_bytes": 4810,
+      "sha256": "90826f91eeaf34214a2aadafe816177f2730a8e2b22ac83c032a869d114e86c7"
+    },
+    {
+      "path": "versions.json",
+      "size_bytes": 339,
+      "sha256": "7ac094109e87887ba59f1b370ef76d6f4a98c0656f4c7371eaec8a5fcb03df7d"
+    },
+    {
+      "path": "wall_design.npz",
+      "size_bytes": 29082,
+      "sha256": "115d16cf133f7dc93fc48535fcab174be4406a3145fa904aa605831092550001"
+    },
+    {
+      "path": "wall_simulator_progress.json",
+      "size_bytes": 196,
+      "sha256": "ea2e1e29933986f113fa20bcf20094bfe4df737fb1e688561b6fbab67427979e"
+    }
+  ]
+}

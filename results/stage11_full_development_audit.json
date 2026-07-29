@@ -1,0 +1,212 @@
+{
+  "artifact": "independent compact audit of the completed Stage 11 full development bundle",
+  "evidence_status": "EXPLORATORY_METHOD_DEVELOPMENT_ON_INSPECTED_TASK_FAMILY",
+  "bundle_path": "results/bundles/stage11_result_bundle",
+  "run_signature": "50c833efab75ee8daa4f0f770451f1e1324528b2bd4e0ad7b1c5b048674b5bb5",
+  "run_mode": "full",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+  "states_per_environment": 96,
+  "environments": [
+    "PushT",
+    "Wall"
+  ],
+  "adaptation_seeds": [
+    11401,
+    11419,
+    11437
+  ],
+  "unseen_evaluation_projection_seeds": [
+    14011,
+    14029,
+    14047,
+    14065,
+    14083
+  ],
+  "bootstrap_repetitions": 2000,
+  "pipeline_failed": false,
+  "integrity": {
+    "manifest_files_verified": 45,
+    "missing_manifest_files": 0,
+    "hash_or_size_failures": 0,
+    "pusht_exact_restore_passed": true,
+    "wall_exact_restore_passed": true,
+    "fresh_ridge_optima_all_interior": true,
+    "pairwise_certificate_rows": 4320,
+    "all_pairwise_certificate_bounds_hold": true,
+    "all_certified_top1_rows_correct": true
+  },
+  "raw_notebook_decision": "STOP_NATIVE_FIDELITY_FAILURE",
+  "decision_label_audit": {
+    "label_is_semantically_accurate": false,
+    "matched_native_latent_fidelity_passed": true,
+    "native_planner_nondestruction_passed": false,
+    "fresh_readout_gate_passed": false,
+    "explanation": "The code maps either a latent-fidelity failure or a native-planner non-harm failure to STOP_NATIVE_FIDELITY_FAILURE. In this run the formal latent-fidelity constraint passed; the failed safety condition was PushT native-planner non-harm."
+  },
+  "screening_gate": {
+    "passed": true,
+    "pusht_strong_horizons": [
+      6
+    ],
+    "wall_strong_horizons": [
+      3,
+      6
+    ],
+    "confirmation_seeds_executed": true
+  },
+  "unseen_geometry": {
+    "gate_passed": true,
+    "projection_consensus": {
+      "PushT": "5/5",
+      "Wall": "5/5"
+    },
+    "all_horizons_positive_against_frozen_and_shuffled_by_point_estimate": true,
+    "task_equal_mean_rmse": {
+      "PushT": {
+        "frozen": {
+          "h1": 1.028901,
+          "h3": 0.838222,
+          "h6": 0.831390
+        },
+        "matched": {
+          "h1": 1.014020,
+          "h3": 0.817385,
+          "h6": 0.772206
+        },
+        "relative_reduction_vs_frozen_percent": {
+          "h1": 1.45,
+          "h3": 2.49,
+          "h6": 7.12
+        }
+      },
+      "Wall": {
+        "frozen": {
+          "h1": 1.464850,
+          "h3": 2.112841,
+          "h6": 2.233369
+        },
+        "matched": {
+          "h1": 1.355368,
+          "h3": 1.938090,
+          "h6": 2.109294
+        },
+        "relative_reduction_vs_frozen_percent": {
+          "h1": 7.47,
+          "h3": 8.27,
+          "h6": 5.56
+        }
+      }
+    },
+    "specificity_caveat": "Matched beat shuffled by point estimate in every projection and horizon. PushT intervals were consistently stronger; Wall matched-versus-shuffled task intervals were weak at horizons 1 and 6 despite positive point estimates."
+  },
+  "fresh_readout_planning": {
+    "gate_passed": false,
+    "required_projection_consensus": 4,
+    "observed_projection_consensus": {
+      "PushT": 1,
+      "Wall": 2
+    },
+    "task_equal_mean_normalized_regret": {
+      "PushT": {
+        "frozen": {
+          "h1": 0.329467,
+          "h3": 0.227235,
+          "h6": 0.268940
+        },
+        "matched": {
+          "h1": 0.326085,
+          "h3": 0.230689,
+          "h6": 0.248163
+        }
+      },
+      "Wall": {
+        "frozen": {
+          "h1": 0.121152,
+          "h3": 0.167956,
+          "h6": 0.235852
+        },
+        "matched": {
+          "h1": 0.088356,
+          "h3": 0.135784,
+          "h6": 0.224305
+        },
+        "relative_reduction_vs_frozen_percent": {
+          "h1": 27.07,
+          "h3": 19.16,
+          "h6": 4.90
+        }
+      }
+    },
+    "interpretation": "Wall has a substantial but projection-unstable actionable signal. PushT has only a sparse horizon-6 regret gain and fails robust joint regret/ranking transfer."
+  },
+  "native_planner": {
+    "nondestruction_gate_passed": {
+      "PushT": false,
+      "Wall": true
+    },
+    "failed_cell": {
+      "environment": "PushT",
+      "horizon": 6,
+      "metric": "normalized_regret",
+      "matched_minus_frozen_with_positive_meaning_better": -0.038037,
+      "interval": [
+        -0.125000,
+        0.010889
+      ],
+      "allowed_harm": -0.02
+    },
+    "interpretation": "The interval includes zero, so this is not conclusive evidence of harm, but it violates the prospective point-estimate non-harm tolerance."
+  },
+  "latent_fidelity": {
+    "matched_calibration_constraint_passed": true,
+    "largest_selected_matched_calibration_ratio": 1.019779,
+    "development_mean_ratio_ranges": {
+      "PushT": {
+        "h1": 1.001796,
+        "h3": 0.959646,
+        "h6": 0.875644
+      },
+      "Wall": {
+        "h1": 0.996133,
+        "h3": 0.960285,
+        "h6": 0.961590
+      }
+    },
+    "matched_checkpoints_have_unresolved_boundary": false,
+    "undertrained_controls": "All three Wall latent-only controls selected epoch 32 at the unresolved final boundary; no matched ARGA checkpoint was unresolved."
+  },
+  "scientific_interpretation": {
+    "supported": [
+      "The JEPA action path can be trained to improve correct state-specific relative action/outcome geometry.",
+      "The geometry improvement transfers to five unseen random projections in both environments.",
+      "The matched correspondence has information beyond ordinary latent-only adaptation and shuffled action/outcome correspondence, most clearly in PushT and Wall horizon 3.",
+      "In Wall, improved action geometry can produce large average fresh-readout regret and ranking gains."
+    ],
+    "not_supported": [
+      "A robust cross-environment improvement in action selection.",
+      "Reliable improvement of JEPA's native goal-latent planner.",
+      "Confirmatory generalization to a numerically new task family.",
+      "An ICLR-ready claim that ARGA alone solves counterfactual planning."
+    ],
+    "localized_bottleneck": "The transition action-effect geometry is now repairable; the remaining bottleneck is the interface between that geometry, the goal representation, and the planner's scoring metric."
+  },
+  "recommended_next_experiment": {
+    "name": "frozen-ARGA goal-metric bridge",
+    "core_design": "Freeze matched Stage 11 action paths. Fit a low-capacity positive-semidefinite latent goal metric using target-token/goal pairs on training tasks only, then apply the identical frozen metric to frozen-JEPA and ARGA rollouts. Require ARGA plus the shared metric to beat frozen JEPA plus the same metric on new tasks.",
+    "why": "Centered action geometry deliberately removes common-mode components, whereas native squared goal distance depends on relative action effects, the goal direction, and common-mode state. A shared goal metric tests whether the repaired dynamics become actionable without allowing a downstream head to hide dynamics errors.",
+    "do_not_do": [
+      "Do not rerun ARGA for more epochs.",
+      "Do not train another unconstrained high-capacity decision head.",
+      "Do not claim confirmation on the inspected Stage 5 task family."
+    ]
+  },
+  "source_file_sha256": {
+    "config.json": "2d3082f30d7277c650d72cd23be3fff764b48c4d8a81192164dd54d24e1c0e8d",
+    "stage11_pilot_decision.json": "150b5153e07e6e710d1aed76ac0e98e9d26a94382a1b799ca4be563965cf9ebb",
+    "stage11_geometry_task_contrasts.csv": "20b95f125dc216d2a1748b7b0a83f5c56a9a5358a523db0e07aa02db32690e48",
+    "stage11_task_clustered_contrasts.csv": "d72eee6390b8f08c972b7fef9294a5a96e20f24ec08e7d3255187890b9d8b106",
+    "stage11_native_planner_contrasts.csv": "bf38ea9edf5548e8fd1417bfbe14cffad028ec3f0d26867312025766a907f71d",
+    "stage11_geometry_adaptation_manifest.json": "179ff112012e3904e9674513c6a72a7362f3857c23c088d6f319336d4c944c5c",
+    "result_zip_manifest.json": "a16030f79588bfbfdddf4387099a8a7e15deaa5a77be997f87252307f2520068"
+  }
+}

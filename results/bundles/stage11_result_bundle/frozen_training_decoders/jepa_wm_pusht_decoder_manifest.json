@@ -1,0 +1,49 @@
+{
+  "run_signature": "50c833efab75ee8daa4f0f770451f1e1324528b2bd4e0ad7b1c5b048674b5bb5",
+  "environment": "PushT",
+  "model": "jepa_wm_pusht",
+  "cache_content_digest": "8e4db3a3c778dca3a8ee104bd674428cf9357e56a99d0d64dc2002371d584421",
+  "pretrained_asset_digest": "2ea53434c2f309a8838e3a74b5cd7d3e6e4276493896f554c72db1f49564d877",
+  "projection_seeds": [
+    13501,
+    13519,
+    13537
+  ],
+  "projection_dim": 192,
+  "manifest": [
+    {
+      "decoder_index": 0,
+      "projection_seed": 13501,
+      "projection_checksum": "4c6c1d05655fcf1eb13e66ece2292004303b293e8d6f896320ed1f4f8634badc",
+      "ridge": 100.0,
+      "calibration_pose_mse": 0.05247445407156189,
+      "ridge_optimum_interior": true,
+      "coefficient_sha256": "03a19446bd43a3a1b011671abcd6d1730e3d2f345c56fd20b4201b4c0fbb7993",
+      "goal_task_action_inputs": "none"
+    },
+    {
+      "decoder_index": 1,
+      "projection_seed": 13519,
+      "projection_checksum": "4ef1ebc4608be4633a5f34f171e26dfa3203e0f05ab5abe5ffc9cce0f96d5cb8",
+      "ridge": 100.0,
+      "calibration_pose_mse": 0.054030761156502176,
+      "ridge_optimum_interior": true,
+      "coefficient_sha256": "a9bd5ddc8b1e0b3813407da00c3519f2484356be4f2a5c70b4b531715b285044",
+      "goal_task_action_inputs": "none"
+    },
+    {
+      "decoder_index": 2,
+      "projection_seed": 13537,
+      "projection_checksum": "560108ee39f15232c644415369dd7b95ea352085a0a246d54cdc155629f56627",
+      "ridge": 100.0,
+      "calibration_pose_mse": 0.058387890160220085,
+      "ridge_optimum_interior": true,
+      "coefficient_sha256": "377e48cec42cdc7a117708945e48038f80e7318c1cabb5d3bdb17f952401ed5f",
+      "goal_task_action_inputs": "none"
+    }
+  ],
+  "fit_split": "probe_train",
+  "ridge_selection_split": "probe_calibration",
+  "targets": "goal-independent physical pose only",
+  "frozen_before_adaptation": true
+}

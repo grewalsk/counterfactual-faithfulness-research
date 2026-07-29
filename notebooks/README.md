@@ -599,6 +599,16 @@ The pilot may return `PROMOTE_TO_FULL_RUN`,
 `STOP_NATIVE_FIDELITY_FAILURE`. Promotion only authorizes changing the first
 cell to `RUN_MODE="full"`; it is not confirmatory evidence.
 
+The completed returned run used `RUN_MODE="full"` and passed the direct
+geometry gate in all five unseen projections in both environments. It did not
+pass the fresh-readout consensus gate, and PushT failed the native-planner
+horizon-6 non-harm tolerance. The raw label
+`STOP_NATIVE_FIDELITY_FAILURE` conflates native latent fidelity with native
+planner safety: the matched latent-fidelity constraint passed. See
+`../results/stage11_full_development_audit.json` and
+`../docs/RESEARCH_STATE_AFTER_STAGE11_AND_ICLR_ROADMAP.md` before designing a
+follow-up.
+
 ## Stage 1 historical instructions
 
 1. Open `01_model_and_environment_smoke_test.ipynb` in a fresh Colab runtime.
