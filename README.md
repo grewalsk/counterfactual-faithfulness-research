@@ -59,6 +59,8 @@ downloaded Colab result bundles.
 - `docs/STAGE13_JOW_LITERATURE_AND_FALSIFICATION_PLAN.md` — evidence map,
   alternative hypotheses, same-state interchange interventions,
   out-of-distribution safeguards, and the minimal JOW feasibility pilot.
+- `docs/STAGE13_JOW_COMPUTE_MINIMAL_COLAB.md` — sequential compute gates,
+  cell-level implementation plan, resumability, and G4 planning envelope.
 - `docs/ICLR_RESEARCH_DECISION_AGENT_PROMPT.md` — adversarial, copy-ready
   prompt for an independent agent to audit the work and choose the next
   ICLR-critical experiment.
@@ -97,6 +99,10 @@ downloaded Colab result bundles.
 - `notebooks/12_shared_target_metric_bridge.ipynb` — shared-target-metric
   falsification pilot combining frozen ARGA checkpoints with a low-rank
   positive-semidefinite goal metric.
+- `notebooks/13_jacobian_outcome_workspace_screen.ipynb` — training-free,
+  compute-minimal PushT screen using streamed vector-Jacobian products,
+  same-state coordinate swaps, matched controls, and conditional checkpoint
+  evaluation.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.
 - `audits/` — independent post-run audits and supporting summaries.
 - `results/bundles/` — original Stage 1 through Stage 3 Colab ZIP bundles.
@@ -263,5 +269,7 @@ Jacobians, and requires coordinate swaps, ablations, flexible downstream use,
 and layer localization before calling the result a workspace. The idea and
 its falsification controls are recorded in
 `docs/STAGE13_JEPA_JACOBIAN_OUTCOME_WORKSPACE_IDEA.md` and
-`docs/STAGE13_JOW_LITERATURE_AND_FALSIFICATION_PLAN.md`; neither is yet a
-preregistered Stage 13 protocol.
+`docs/STAGE13_JOW_LITERATURE_AND_FALSIFICATION_PLAN.md`. The training-free
+compute gate is implemented in
+`notebooks/13_jacobian_outcome_workspace_screen.ipynb`; it remains a
+feasibility screen rather than a preregistered Stage 13 confirmation.

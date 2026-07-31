@@ -3,6 +3,9 @@
 **Status: executable-design memo, not a frozen protocol or authorization for a
 confirmatory run.**
 
+The executable implementation is
+[`notebooks/13_jacobian_outcome_workspace_screen.ipynb`](../notebooks/13_jacobian_outcome_workspace_screen.ipynb).
+
 ## Decision
 
 The first Colab should be a **training-free, sequentially gated diagnostic**.

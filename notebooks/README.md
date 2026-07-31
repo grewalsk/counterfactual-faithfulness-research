@@ -1,5 +1,28 @@
 # Colab instructions
 
+## Stage 13 compute-minimal JOW screen
+
+Notebook: `13_jacobian_outcome_workspace_screen.ipynb`
+
+1. Open the notebook in a fresh Colab GPU runtime.
+2. Leave `RUN_MODE="screen"` and `MOUNT_DRIVE=True`.
+3. Run all cells in order.
+4. Review the measured ETA printed by the integrity benchmark.
+5. Return `stage13_jow_result_bundle.zip`.
+
+The default screen performs no training. It reconstructs 8 construction and 4
+calibration PushT states, uses horizon 1 and predictor blocks 2/4/6, computes
+eight streamed vector-Jacobian products per state, and applies same-state JOW,
+orthogonal, and random swaps. The matched 22 MB checkpoint is downloaded only
+after the frozen causal gate passes; shuffled geometry is downloaded only if
+matched beats frozen.
+
+Plan for roughly 15–30 minutes of first-run setup and verified checkpoint
+downloads. A failed hypothesis should normally stop within another 30–60
+minutes on a G4. A successful three-condition screen can take roughly 1–2
+hours total. The notebook replaces these envelopes with a measured estimate
+from the actual assigned GPU before the main screen.
+
 ## Stage 1
 
 Notebook: `01_model_and_environment_smoke_test.ipynb`
