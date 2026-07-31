@@ -1,0 +1,278 @@
+[
+  {
+    "environment": "PushT",
+    "task_id": 0,
+    "task_name": "stage5_pusht_goal_00",
+    "goal": [
+      220.0,
+      200.0,
+      -0.9
+    ],
+    "split": "probe_train"
+  },
+  {
+    "environment": "PushT",
+    "task_id": 1,
+    "task_name": "stage5_pusht_goal_01",
+    "goal": [
+      200.0,
+      272.0,
+      0.35
+    ],
+    "split": "development_holdout"
+  },
+  {
+    "environment": "PushT",
+    "task_id": 2,
+    "task_name": "stage5_pusht_goal_02",
+    "goal": [
+      224.0,
+      320.0,
+      -0.3
+    ],
+    "split": "development_holdout"
+  },
+  {
+    "environment": "PushT",
+    "task_id": 3,
+    "task_name": "stage5_pusht_goal_03",
+    "goal": [
+      270.0,
+      198.0,
+      0.95
+    ],
+    "split": "probe_train"
+  },
+  {
+    "environment": "PushT",
+    "task_id": 4,
+    "task_name": "stage5_pusht_goal_04",
+    "goal": [
+      292.0,
+      224.0,
+      -0.45
+    ],
+    "split": "probe_calibration"
+  },
+  {
+    "environment": "PushT",
+    "task_id": 5,
+    "task_name": "stage5_pusht_goal_05",
+    "goal": [
+      314.0,
+      270.0,
+      0.55
+    ],
+    "split": "probe_train"
+  },
+  {
+    "environment": "PushT",
+    "task_id": 6,
+    "task_name": "stage5_pusht_goal_06",
+    "goal": [
+      292.0,
+      316.0,
+      -1.0
+    ],
+    "split": "development_holdout"
+  },
+  {
+    "environment": "PushT",
+    "task_id": 7,
+    "task_name": "stage5_pusht_goal_07",
+    "goal": [
+      246.0,
+      310.0,
+      0.15
+    ],
+    "split": "probe_calibration"
+  },
+  {
+    "environment": "PushT",
+    "task_id": 8,
+    "task_name": "stage5_pusht_goal_08",
+    "goal": [
+      230.0,
+      238.0,
+      1.25
+    ],
+    "split": "probe_train"
+  },
+  {
+    "environment": "PushT",
+    "task_id": 9,
+    "task_name": "stage5_pusht_goal_09",
+    "goal": [
+      276.0,
+      244.0,
+      -1.25
+    ],
+    "split": "probe_train"
+  },
+  {
+    "environment": "PushT",
+    "task_id": 10,
+    "task_name": "stage5_pusht_goal_10",
+    "goal": [
+      314.0,
+      292.0,
+      0.85
+    ],
+    "split": "probe_calibration"
+  },
+  {
+    "environment": "PushT",
+    "task_id": 11,
+    "task_name": "stage5_pusht_goal_11",
+    "goal": [
+      244.0,
+      278.0,
+      -0.75
+    ],
+    "split": "probe_train"
+  },
+  {
+    "environment": "Wall",
+    "task_id": 0,
+    "task_name": "stage5_wall_layout_goal_00",
+    "wall_x": 26.0,
+    "door_y": 20.0,
+    "goal": [
+      54.0,
+      44.0
+    ],
+    "split": "probe_train"
+  },
+  {
+    "environment": "Wall",
+    "task_id": 1,
+    "task_name": "stage5_wall_layout_goal_01",
+    "wall_x": 28.0,
+    "door_y": 34.0,
+    "goal": [
+      54.0,
+      16.0
+    ],
+    "split": "development_holdout"
+  },
+  {
+    "environment": "Wall",
+    "task_id": 2,
+    "task_name": "stage5_wall_layout_goal_02",
+    "wall_x": 30.0,
+    "door_y": 44.0,
+    "goal": [
+      54.0,
+      32.0
+    ],
+    "split": "development_holdout"
+  },
+  {
+    "environment": "Wall",
+    "task_id": 3,
+    "task_name": "stage5_wall_layout_goal_03",
+    "wall_x": 33.0,
+    "door_y": 16.0,
+    "goal": [
+      10.0,
+      48.0
+    ],
+    "split": "probe_train"
+  },
+  {
+    "environment": "Wall",
+    "task_id": 4,
+    "task_name": "stage5_wall_layout_goal_04",
+    "wall_x": 35.0,
+    "door_y": 28.0,
+    "goal": [
+      10.0,
+      20.0
+    ],
+    "split": "probe_calibration"
+  },
+  {
+    "environment": "Wall",
+    "task_id": 5,
+    "task_name": "stage5_wall_layout_goal_05",
+    "wall_x": 38.0,
+    "door_y": 42.0,
+    "goal": [
+      10.0,
+      36.0
+    ],
+    "split": "probe_train"
+  },
+  {
+    "environment": "Wall",
+    "task_id": 6,
+    "task_name": "stage5_wall_layout_goal_06",
+    "wall_x": 25.0,
+    "door_y": 38.0,
+    "goal": [
+      55.0,
+      22.0
+    ],
+    "split": "development_holdout"
+  },
+  {
+    "environment": "Wall",
+    "task_id": 7,
+    "task_name": "stage5_wall_layout_goal_07",
+    "wall_x": 31.0,
+    "door_y": 24.0,
+    "goal": [
+      55.0,
+      50.0
+    ],
+    "split": "probe_calibration"
+  },
+  {
+    "environment": "Wall",
+    "task_id": 8,
+    "task_name": "stage5_wall_layout_goal_08",
+    "wall_x": 36.0,
+    "door_y": 46.0,
+    "goal": [
+      11.0,
+      16.0
+    ],
+    "split": "probe_train"
+  },
+  {
+    "environment": "Wall",
+    "task_id": 9,
+    "task_name": "stage5_wall_layout_goal_09",
+    "wall_x": 39.0,
+    "door_y": 20.0,
+    "goal": [
+      11.0,
+      40.0
+    ],
+    "split": "probe_train"
+  },
+  {
+    "environment": "Wall",
+    "task_id": 10,
+    "task_name": "stage5_wall_layout_goal_10",
+    "wall_x": 29.0,
+    "door_y": 30.0,
+    "goal": [
+      54.0,
+      50.0
+    ],
+    "split": "probe_calibration"
+  },
+  {
+    "environment": "Wall",
+    "task_id": 11,
+    "task_name": "stage5_wall_layout_goal_11",
+    "wall_x": 34.0,
+    "door_y": 38.0,
+    "goal": [
+      10.0,
+      24.0
+    ],
+    "split": "probe_train"
+  }
+]

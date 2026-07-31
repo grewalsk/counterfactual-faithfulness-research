@@ -1,0 +1,124 @@
+{
+  "evidence_status": "COMPUTE_GATED_EXPLORATORY_PILOT",
+  "decision": "STOP_NATIVE_FIDELITY_FAILURE",
+  "pilot_promotes_to_full": false,
+  "screening_gate": {
+    "passed": true,
+    "criterion": "run confirmation seed only if at least one environment has matched/frozen <= 0.97 and matched/shuffled <= 0.99 at >=2/3 horizons, with no environment >5% worse than frozen",
+    "environments": {
+      "PushT": {
+        "ratios": {
+          "1": {
+            "matched_over_frozen": 0.980227775374572,
+            "matched_over_shuffled": 0.9884338996385371
+          },
+          "3": {
+            "matched_over_frozen": 0.9747649407926008,
+            "matched_over_shuffled": 0.9700057619281569
+          },
+          "6": {
+            "matched_over_frozen": 0.9546242169446025,
+            "matched_over_shuffled": 0.9628065594477468
+          }
+        },
+        "strong_horizons": [
+          6
+        ],
+        "strong_signal": false,
+        "catastrophic_harm": false
+      },
+      "Wall": {
+        "ratios": {
+          "1": {
+            "matched_over_frozen": 0.964860173651062,
+            "matched_over_shuffled": 1.00464343893461
+          },
+          "3": {
+            "matched_over_frozen": 0.902932749706807,
+            "matched_over_shuffled": 0.9501975258253771
+          },
+          "6": {
+            "matched_over_frozen": 0.9091531747128078,
+            "matched_over_shuffled": 0.9307521394569017
+          }
+        },
+        "strong_horizons": [
+          3,
+          6
+        ],
+        "strong_signal": true,
+        "catastrophic_harm": false
+      }
+    }
+  },
+  "executed_adaptation_seeds": [
+    11401,
+    11419,
+    11437
+  ],
+  "two_seed_stability_available": true,
+  "direct_geometry_projection_consensus": {
+    "PushT": 1,
+    "Wall": 1
+  },
+  "direct_geometry_projection_gates": {
+    "PushT": {
+      "15001": {
+        "pass": true,
+        "common_positive_horizons": [
+          1,
+          3,
+          6
+        ]
+      }
+    },
+    "Wall": {
+      "15001": {
+        "pass": true,
+        "common_positive_horizons": [
+          1,
+          3
+        ]
+      }
+    }
+  },
+  "direct_geometry_gate_pass": true,
+  "fresh_readout_projection_consensus": {
+    "PushT": 0,
+    "Wall": 1
+  },
+  "fresh_readout_projection_gates": {
+    "PushT": {
+      "15001": {
+        "pass": false,
+        "common_positive_horizons": [
+          1
+        ]
+      }
+    },
+    "Wall": {
+      "15001": {
+        "pass": true,
+        "common_positive_horizons": [
+          1,
+          3,
+          6
+        ]
+      }
+    }
+  },
+  "fresh_readout_gate_pass": false,
+  "matched_native_fidelity_pass": true,
+  "native_planner_nondestruction": {
+    "PushT": false,
+    "Wall": true
+  },
+  "native_planner_nondestruction_pass": false,
+  "unresolved_final_epoch_boundary": false,
+  "interpretation": {
+    "promote": "The action path learned label-specific relative dynamics that transfer to unseen projections and fresh physical readouts. Run the larger matrix before making a claim.",
+    "geometry_only": "The relative latent dynamics improved, but action decisions did not. The remaining bottleneck is representation/readout alignment rather than action conditioning.",
+    "stop": "The necessary direct geometry signal failed or did not generalize. Do not spend the full-run compute on ARGA."
+  },
+  "guardrail": "This is a compute-gated development pilot on an inspected task family. Point-estimate projection consensus is a promotion rule, not confirmatory evidence. A successful pilot must be rerun with RUN_MODE='full' and then on a numerically new task family."
+}

@@ -11,9 +11,13 @@ bundles rather than trusting notebook headline labels.
   interaction-taxonomy mismatch, and model-ranking artifact.
 - `stage4/` — independently reproduced matched-intervention causal result,
   dose response, and model-by-horizon direction consistency.
+- `stage12/` — full shared-target-metric bridge audit, including the robust
+  no-go decision, nonconverged metric-fit caveat, and NaN-safe gate repair.
 - `scripts/audit_stage3.py` — row-level Stage 3 reconciliation script.
 - `scripts/audit_stage4.py` — independent Stage 4 integrity and decision
   reconciliation script.
+- `../scripts/audit_stage12_bundle.py` — independent Stage 12 manifest,
+  checkpoint, row-metric, seed-collapse, bootstrap, and decision audit.
 
 The Stage 3 audit motivated `notebooks/03b_stage3_analysis_repair.ipynb`.
 Stage 4 then converted the remaining correlational ambiguity into a controlled

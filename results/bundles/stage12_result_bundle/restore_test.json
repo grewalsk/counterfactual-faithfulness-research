@@ -1,0 +1,18 @@
+{
+  "PushT": {
+    "environment": "PushT",
+    "repeats": 3,
+    "endpoint_bitwise_exact": true,
+    "initial_render_bitwise_exact": true,
+    "diagnostics_exact": true,
+    "max_endpoint_abs_diff": 0.0
+  },
+  "Wall": {
+    "environment": "Wall",
+    "repeats": 3,
+    "endpoint_bitwise_exact": true,
+    "initial_render_bitwise_exact": true,
+    "diagnostics_exact": true,
+    "max_endpoint_abs_diff": 0.0
+  }
+}

@@ -88,6 +88,9 @@ downloaded Colab result bundles.
 - `notebooks/11_action_response_geometry_pilot.ipynb` — low-compute ARGA
   pilot with a sequential seed gate, unseen geometry projections, fresh
   readouts, atomic checkpoints, and automatic result downloads.
+- `notebooks/12_shared_target_metric_bridge.ipynb` — shared-target-metric
+  falsification pilot combining frozen ARGA checkpoints with a low-rank
+  positive-semidefinite goal metric.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.
 - `audits/` — independent post-run audits and supporting summaries.
 - `results/bundles/` — original Stage 1 through Stage 3 Colab ZIP bundles.
@@ -96,6 +99,12 @@ downloaded Colab result bundles.
   decoders, geometry references, and all six matched ARGA checkpoints.
 - `results/stage11_full_development_audit.json` — compact independent Stage 11
   numerical audit with source hashes and corrected decision semantics.
+- `results/bundles/stage12_result_bundle/` — complete extracted Stage 12 bundle,
+  including all transition and metric checkpoints, raw and seed-collapsed
+  planning rows, bootstrap draws, logs, plots, and integrity manifests.
+- `audits/stage12/STAGE12_RESULT_AUDIT.md` and
+  `results/stage12_full_development_audit.json` — independent Stage 12
+  scientific and machine-readable audits.
 
 ## Reproduce the local CPU checks
 
@@ -105,6 +114,8 @@ python -m venv .venv
 PYTHONPATH=src SDL_VIDEODRIVER=dummy .venv/bin/python -m pytest
 PYTHONPATH=src SDL_VIDEODRIVER=dummy .venv/bin/python scripts/run_cpu_smoke.py
 python scripts/validate_stage11_bundle.py
+python scripts/audit_stage12_bundle.py \
+  --output results/stage12_full_development_audit.json
 ```
 
 The `pymunk==6.8.0` pin is essential. `gym-pusht==0.1.6` declares a permissive
@@ -217,3 +228,23 @@ one low-capacity positive-semidefinite goal metric from target latents, then
 applies the identical frozen metric to frozen, latent-only, shuffled, and
 matched dynamics. The full reasoning and ICLR go/no-go plan are in
 `docs/RESEARCH_STATE_AFTER_STAGE11_AND_ICLR_ROADMAP.md`.
+
+Stage 12 completed that falsification pilot and returned
+`STOP_METRIC_CLASS_NOT_VIABLE`. The independent audit verified every manifest
+entry, all 36 learned checkpoints, 5,472 raw planning rows, 2,880
+seed-collapsed rows, and 144,000 bootstrap draws. Neither environment passed
+the Phase A metric-viability gate after undefined weighted-accuracy rows were
+handled correctly. Phase B also found no horizon in either environment that
+jointly beat frozen and shuffled controls at the preregistered thresholds
+while improving directionally over latent-only adaptation. Goal-permuted
+specificity and task-majority gates failed as well.
+
+The result is a no-go for untouched-task confirmation of this recipe. Its
+interpretation has two caveats: ordinary task means propagated undefined
+PushT accuracies into two reported summaries, without changing the decision,
+and all 18 metric fits ended at the 600-epoch limit without satisfying their
+convergence criterion. Stage 12 therefore does not prove that every low-rank
+PSD target metric is impossible. It establishes that the tested fitting recipe
+did not convert the real action-geometry repair into robust goal-conditioned
+planning. The full independent judgment is in
+`audits/stage12/STAGE12_RESULT_AUDIT.md`.

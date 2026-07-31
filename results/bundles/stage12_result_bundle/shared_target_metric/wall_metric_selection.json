@@ -1,0 +1,91 @@
+{
+  "environment": "Wall",
+  "selection_split": "probe_calibration",
+  "selection_metric": "task_equal_horizon_mean_normalized_margin_rmse",
+  "tie_break": [
+    "lower_rank",
+    "larger_regularizer",
+    "lower_optimization_seed"
+  ],
+  "selected": {
+    "rank": 2,
+    "regularizer": 0.01,
+    "optimization_seed": 15119,
+    "calibration_margin_rmse": 2.3692884884982224
+  },
+  "all_candidates": [
+    {
+      "rank": 2,
+      "regularizer": 0.01,
+      "optimization_seed": 15119,
+      "calibration_margin_rmse": 2.3692884884982224
+    },
+    {
+      "rank": 2,
+      "regularizer": 0.01,
+      "optimization_seed": 15101,
+      "calibration_margin_rmse": 2.4262540741725283
+    },
+    {
+      "rank": 2,
+      "regularizer": 0.001,
+      "optimization_seed": 15101,
+      "calibration_margin_rmse": 2.5506537979541632
+    },
+    {
+      "rank": 2,
+      "regularizer": 0.001,
+      "optimization_seed": 15119,
+      "calibration_margin_rmse": 2.7663598084257592
+    },
+    {
+      "rank": 8,
+      "regularizer": 0.01,
+      "optimization_seed": 15119,
+      "calibration_margin_rmse": 3.5817052555042643
+    },
+    {
+      "rank": 8,
+      "regularizer": 0.01,
+      "optimization_seed": 15101,
+      "calibration_margin_rmse": 3.674997475664632
+    },
+    {
+      "rank": 8,
+      "regularizer": 0.001,
+      "optimization_seed": 15119,
+      "calibration_margin_rmse": 7.608379659840519
+    },
+    {
+      "rank": 8,
+      "regularizer": 0.001,
+      "optimization_seed": 15101,
+      "calibration_margin_rmse": 8.418462044394705
+    }
+  ],
+  "goal_permutation": {
+    "0": 8,
+    "3": 9,
+    "5": 11,
+    "8": 0,
+    "9": 5,
+    "11": 3
+  },
+  "whitening": {
+    "ridge": 0.008065288412238115,
+    "minimum_eigenvalue": 0.012468033235569905,
+    "maximum_eigenvalue": 31.277078318517955,
+    "condition_after_ridge": 1523.6279908112163,
+    "fit_split": "probe_train",
+    "uses_predicted_rollouts": false,
+    "uses_development_outcomes": false
+  },
+  "whitening_mean_checksum": "e4d5285d7c1dbbde3a46dcb154a1685397fce8b7799b647e4bcc4c41c4e8c69b",
+  "whitener_checksum": "0edf0fb04f51bd014190c79d28422a7f3411a4b13f0ec9e9232b3a9ed3723e1b",
+  "projection_checksum": "4a21987c13ba01b2503accbfae57b85e566446e553c4794a3d3aba5da946f6ba",
+  "native_horizon_scale": [
+    1.5333544919970843,
+    1e-08,
+    1.532924188713101
+  ]
+}

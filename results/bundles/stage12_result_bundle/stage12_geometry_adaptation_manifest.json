@@ -1,0 +1,545 @@
+{
+  "run_signature": "f975a0a746e793b3ceb5d270189e9e9e9571e68176bc6e7ca9a153a78adc6a91",
+  "method_implementation_id": "stage11_arga_whitened_centered_v1",
+  "updated_modules": [
+    "predictor.action_encoder",
+    "predictor.predictor_blocks.*.adaLN_modulation[1]"
+  ],
+  "training_objective_inputs": [
+    "predicted JEPA tokens",
+    "target JEPA tokens",
+    "candidate identity only through within-state correspondence"
+  ],
+  "training_objective_excludes": [
+    "physical pose",
+    "task goal",
+    "physical cost",
+    "learned physical readout",
+    "planner action label"
+  ],
+  "evaluation_decoders_used_by_objective": false,
+  "executed_adaptation_seeds": [
+    11401,
+    11419,
+    11437
+  ],
+  "screening_gate": {
+    "passed": true,
+    "criterion": "run confirmation seed only if at least one environment has matched/frozen <= 0.97 and matched/shuffled <= 0.99 at >=2/3 horizons, with no environment >5% worse than frozen",
+    "environments": {
+      "PushT": {
+        "ratios": {
+          "1": {
+            "matched_over_frozen": 0.980227775374572,
+            "matched_over_shuffled": 0.9884338996385371
+          },
+          "3": {
+            "matched_over_frozen": 0.9747649407926008,
+            "matched_over_shuffled": 0.9700057619281569
+          },
+          "6": {
+            "matched_over_frozen": 0.9546242169446025,
+            "matched_over_shuffled": 0.9628065594477468
+          }
+        },
+        "strong_horizons": [
+          6
+        ],
+        "strong_signal": false,
+        "catastrophic_harm": false
+      },
+      "Wall": {
+        "ratios": {
+          "1": {
+            "matched_over_frozen": 0.964860173651062,
+            "matched_over_shuffled": 1.00464343893461
+          },
+          "3": {
+            "matched_over_frozen": 0.902932749706807,
+            "matched_over_shuffled": 0.9501975258253771
+          },
+          "6": {
+            "matched_over_frozen": 0.9091531747128078,
+            "matched_over_shuffled": 0.9307521394569017
+          }
+        },
+        "strong_horizons": [
+          3,
+          6
+        ],
+        "strong_signal": true,
+        "catastrophic_harm": false
+      }
+    }
+  },
+  "records": [
+    {
+      "environment": "PushT",
+      "model": "jepa_wm_pusht",
+      "method": "fidelity_constrained_latent_only",
+      "adaptation_seed": 11401,
+      "selected_epoch": 32,
+      "completed_epoch_limit": 32,
+      "calibration_selection_score": 0.053423922508955,
+      "calibration_geometry_rmse": [
+        1.066719651222229,
+        0.8577542304992676,
+        0.8123286366462708
+      ],
+      "calibration_native_ratios": [
+        0.8986870646476746,
+        0.8875699043273926,
+        0.8575618863105774
+      ],
+      "fidelity_feasible": true,
+      "undertrained_inconclusive": false,
+      "base_action_path_checksum": "8e211f64a19c65b559847b7d60d5ab23e88b95b935052e8289c0e733a921b34c",
+      "selected_action_path_checksum": "aad57a675094d834fa02f1362e64c2f452474419af96e02c82b81cbd81a1fb3c",
+      "cache_content_digest": "8e4db3a3c778dca3a8ee104bd674428cf9357e56a99d0d64dc2002371d584421",
+      "pretrained_asset_digest": "2ea53434c2f309a8838e3a74b5cd7d3e6e4276493896f554c72db1f49564d877",
+      "training_decoders_used_by_objective": false
+    },
+    {
+      "environment": "PushT",
+      "model": "jepa_wm_pusht",
+      "method": "fidelity_constrained_shuffled_geometry",
+      "adaptation_seed": 11401,
+      "selected_epoch": 10,
+      "completed_epoch_limit": 16,
+      "calibration_selection_score": 2.711642026901245,
+      "calibration_geometry_rmse": [
+        1.7322198152542114,
+        1.6395576000213623,
+        1.5640302896499634
+      ],
+      "calibration_native_ratios": [
+        1.0193653106689453,
+        1.0036934614181519,
+        1.0091257095336914
+      ],
+      "fidelity_feasible": true,
+      "undertrained_inconclusive": false,
+      "base_action_path_checksum": "8e211f64a19c65b559847b7d60d5ab23e88b95b935052e8289c0e733a921b34c",
+      "selected_action_path_checksum": "6a4fad70eca3d653501a07239a0760c20ff0f56e98d21b61442604ba64861f8c",
+      "cache_content_digest": "8e4db3a3c778dca3a8ee104bd674428cf9357e56a99d0d64dc2002371d584421",
+      "pretrained_asset_digest": "2ea53434c2f309a8838e3a74b5cd7d3e6e4276493896f554c72db1f49564d877",
+      "training_decoders_used_by_objective": false
+    },
+    {
+      "environment": "PushT",
+      "model": "jepa_wm_pusht",
+      "method": "fidelity_constrained_matched_geometry",
+      "adaptation_seed": 11401,
+      "selected_epoch": 22,
+      "completed_epoch_limit": 24,
+      "calibration_selection_score": 0.8267218470573425,
+      "calibration_geometry_rmse": [
+        1.0591816902160645,
+        0.847195029258728,
+        0.8003500699996948
+      ],
+      "calibration_native_ratios": [
+        1.0004009008407593,
+        0.9676347374916077,
+        0.9418451189994812
+      ],
+      "fidelity_feasible": true,
+      "undertrained_inconclusive": false,
+      "base_action_path_checksum": "8e211f64a19c65b559847b7d60d5ab23e88b95b935052e8289c0e733a921b34c",
+      "selected_action_path_checksum": "95f2d4f653c5dc94a0154313d70f565239d85b72c15c90ceaf1b588156d0905e",
+      "cache_content_digest": "8e4db3a3c778dca3a8ee104bd674428cf9357e56a99d0d64dc2002371d584421",
+      "pretrained_asset_digest": "2ea53434c2f309a8838e3a74b5cd7d3e6e4276493896f554c72db1f49564d877",
+      "training_decoders_used_by_objective": false
+    },
+    {
+      "environment": "Wall",
+      "model": "jepa_wm_wall",
+      "method": "fidelity_constrained_latent_only",
+      "adaptation_seed": 11401,
+      "selected_epoch": 32,
+      "completed_epoch_limit": 32,
+      "calibration_selection_score": 0.13776250183582306,
+      "calibration_geometry_rmse": [
+        1.164824366569519,
+        1.5519492626190186,
+        1.7315407991409302
+      ],
+      "calibration_native_ratios": [
+        0.7247077822685242,
+        0.7410777807235718,
+        0.8101866245269775
+      ],
+      "fidelity_feasible": true,
+      "undertrained_inconclusive": true,
+      "base_action_path_checksum": "dbe55f0eadcbe3d7363af63973f38291bca002686aa2889de1ae30ae88145f18",
+      "selected_action_path_checksum": "44112ba0b7a26287dfa9c90205a1edb804694beafbd3ca9913b2714ad74ddea2",
+      "cache_content_digest": "8e4db3a3c778dca3a8ee104bd674428cf9357e56a99d0d64dc2002371d584421",
+      "pretrained_asset_digest": "49b3444776efc2223341986bf3e3ffaa732d70df2a7d2f93a842767f88eb00e5",
+      "training_decoders_used_by_objective": false
+    },
+    {
+      "environment": "Wall",
+      "model": "jepa_wm_wall",
+      "method": "fidelity_constrained_shuffled_geometry",
+      "adaptation_seed": 11401,
+      "selected_epoch": 10,
+      "completed_epoch_limit": 16,
+      "calibration_selection_score": 5.374246597290039,
+      "calibration_geometry_rmse": [
+        2.2353925704956055,
+        2.375663995742798,
+        2.3413631916046143
+      ],
+      "calibration_native_ratios": [
+        1.0185285806655884,
+        0.9830872416496277,
+        0.9994864463806152
+      ],
+      "fidelity_feasible": true,
+      "undertrained_inconclusive": false,
+      "base_action_path_checksum": "dbe55f0eadcbe3d7363af63973f38291bca002686aa2889de1ae30ae88145f18",
+      "selected_action_path_checksum": "c7bd87d03e54c129f66e0543621165dacbdeb23877f26b89b1cf7129c9bbf216",
+      "cache_content_digest": "8e4db3a3c778dca3a8ee104bd674428cf9357e56a99d0d64dc2002371d584421",
+      "pretrained_asset_digest": "49b3444776efc2223341986bf3e3ffaa732d70df2a7d2f93a842767f88eb00e5",
+      "training_decoders_used_by_objective": false
+    },
+    {
+      "environment": "Wall",
+      "model": "jepa_wm_wall",
+      "method": "fidelity_constrained_matched_geometry",
+      "adaptation_seed": 11401,
+      "selected_epoch": 30,
+      "completed_epoch_limit": 32,
+      "calibration_selection_score": 2.0892016887664795,
+      "calibration_geometry_rmse": [
+        1.14791738986969,
+        1.548617959022522,
+        1.5973955392837524
+      ],
+      "calibration_native_ratios": [
+        1.0197787284851074,
+        0.9630618691444397,
+        1.002362847328186
+      ],
+      "fidelity_feasible": true,
+      "undertrained_inconclusive": false,
+      "base_action_path_checksum": "dbe55f0eadcbe3d7363af63973f38291bca002686aa2889de1ae30ae88145f18",
+      "selected_action_path_checksum": "97babcdd4575cd16838531f248b0e8a77dc1fcce9cec0fe8ca153b2cb5f48c25",
+      "cache_content_digest": "8e4db3a3c778dca3a8ee104bd674428cf9357e56a99d0d64dc2002371d584421",
+      "pretrained_asset_digest": "49b3444776efc2223341986bf3e3ffaa732d70df2a7d2f93a842767f88eb00e5",
+      "training_decoders_used_by_objective": false
+    },
+    {
+      "environment": "PushT",
+      "model": "jepa_wm_pusht",
+      "method": "fidelity_constrained_latent_only",
+      "adaptation_seed": 11419,
+      "selected_epoch": 24,
+      "completed_epoch_limit": 24,
+      "calibration_selection_score": 0.05361032485961914,
+      "calibration_geometry_rmse": [
+        1.06803297996521,
+        0.8573607802391052,
+        0.8129069805145264
+      ],
+      "calibration_native_ratios": [
+        0.9031654596328735,
+        0.889536440372467,
+        0.8607394695281982
+      ],
+      "fidelity_feasible": true,
+      "undertrained_inconclusive": false,
+      "base_action_path_checksum": "8e211f64a19c65b559847b7d60d5ab23e88b95b935052e8289c0e733a921b34c",
+      "selected_action_path_checksum": "c54b97fa1973d4e6f58ad57393e49fcadec8323cb7a1ded18e836a364a49a46b",
+      "cache_content_digest": "8e4db3a3c778dca3a8ee104bd674428cf9357e56a99d0d64dc2002371d584421",
+      "pretrained_asset_digest": "2ea53434c2f309a8838e3a74b5cd7d3e6e4276493896f554c72db1f49564d877",
+      "training_decoders_used_by_objective": false
+    },
+    {
+      "environment": "PushT",
+      "model": "jepa_wm_pusht",
+      "method": "fidelity_constrained_shuffled_geometry",
+      "adaptation_seed": 11419,
+      "selected_epoch": 12,
+      "completed_epoch_limit": 16,
+      "calibration_selection_score": 2.7730979919433594,
+      "calibration_geometry_rmse": [
+        1.7705268859863281,
+        1.6486700773239136,
+        1.5704824924468994
+      ],
+      "calibration_native_ratios": [
+        1.0192673206329346,
+        1.0027899742126465,
+        1.0071637630462646
+      ],
+      "fidelity_feasible": true,
+      "undertrained_inconclusive": false,
+      "base_action_path_checksum": "8e211f64a19c65b559847b7d60d5ab23e88b95b935052e8289c0e733a921b34c",
+      "selected_action_path_checksum": "b08c4dffa2b0e3d444fdb3ceb9dda184b51927f19466b6f7680046fae9d22c38",
+      "cache_content_digest": "8e4db3a3c778dca3a8ee104bd674428cf9357e56a99d0d64dc2002371d584421",
+      "pretrained_asset_digest": "2ea53434c2f309a8838e3a74b5cd7d3e6e4276493896f554c72db1f49564d877",
+      "training_decoders_used_by_objective": false
+    },
+    {
+      "environment": "PushT",
+      "model": "jepa_wm_pusht",
+      "method": "fidelity_constrained_matched_geometry",
+      "adaptation_seed": 11419,
+      "selected_epoch": 22,
+      "completed_epoch_limit": 24,
+      "calibration_selection_score": 0.8258962631225586,
+      "calibration_geometry_rmse": [
+        1.0591323375701904,
+        0.846636176109314,
+        0.7994590997695923
+      ],
+      "calibration_native_ratios": [
+        1.000494122505188,
+        0.9668003916740417,
+        0.9404220581054688
+      ],
+      "fidelity_feasible": true,
+      "undertrained_inconclusive": false,
+      "base_action_path_checksum": "8e211f64a19c65b559847b7d60d5ab23e88b95b935052e8289c0e733a921b34c",
+      "selected_action_path_checksum": "bf4689c8bd0e162166dfc7b52a68d65db9d1d047ab68831f58c1a24309147269",
+      "cache_content_digest": "8e4db3a3c778dca3a8ee104bd674428cf9357e56a99d0d64dc2002371d584421",
+      "pretrained_asset_digest": "2ea53434c2f309a8838e3a74b5cd7d3e6e4276493896f554c72db1f49564d877",
+      "training_decoders_used_by_objective": false
+    },
+    {
+      "environment": "Wall",
+      "model": "jepa_wm_wall",
+      "method": "fidelity_constrained_latent_only",
+      "adaptation_seed": 11419,
+      "selected_epoch": 32,
+      "completed_epoch_limit": 32,
+      "calibration_selection_score": 0.1373300999403,
+      "calibration_geometry_rmse": [
+        1.1638519763946533,
+        1.5555171966552734,
+        1.7432693243026733
+      ],
+      "calibration_native_ratios": [
+        0.7204804420471191,
+        0.7367866039276123,
+        0.8106257319450378
+      ],
+      "fidelity_feasible": true,
+      "undertrained_inconclusive": true,
+      "base_action_path_checksum": "dbe55f0eadcbe3d7363af63973f38291bca002686aa2889de1ae30ae88145f18",
+      "selected_action_path_checksum": "604dd9063f7ac1d1cd85a6ee5e23e5211530a01aa0aa9ebf636446998c5cc3f4",
+      "cache_content_digest": "8e4db3a3c778dca3a8ee104bd674428cf9357e56a99d0d64dc2002371d584421",
+      "pretrained_asset_digest": "49b3444776efc2223341986bf3e3ffaa732d70df2a7d2f93a842767f88eb00e5",
+      "training_decoders_used_by_objective": false
+    },
+    {
+      "environment": "Wall",
+      "model": "jepa_wm_wall",
+      "method": "fidelity_constrained_shuffled_geometry",
+      "adaptation_seed": 11419,
+      "selected_epoch": 10,
+      "completed_epoch_limit": 16,
+      "calibration_selection_score": 5.461174488067627,
+      "calibration_geometry_rmse": [
+        2.286250352859497,
+        2.397038459777832,
+        2.326110601425171
+      ],
+      "calibration_native_ratios": [
+        1.019520878791809,
+        0.9827911853790283,
+        0.9970905780792236
+      ],
+      "fidelity_feasible": true,
+      "undertrained_inconclusive": false,
+      "base_action_path_checksum": "dbe55f0eadcbe3d7363af63973f38291bca002686aa2889de1ae30ae88145f18",
+      "selected_action_path_checksum": "07b92885bb11a7731de27df4ed4b4df2abc9d236b4535a1e3d15b3cbc888f339",
+      "cache_content_digest": "8e4db3a3c778dca3a8ee104bd674428cf9357e56a99d0d64dc2002371d584421",
+      "pretrained_asset_digest": "49b3444776efc2223341986bf3e3ffaa732d70df2a7d2f93a842767f88eb00e5",
+      "training_decoders_used_by_objective": false
+    },
+    {
+      "environment": "Wall",
+      "model": "jepa_wm_wall",
+      "method": "fidelity_constrained_matched_geometry",
+      "adaptation_seed": 11419,
+      "selected_epoch": 22,
+      "completed_epoch_limit": 24,
+      "calibration_selection_score": 2.080977439880371,
+      "calibration_geometry_rmse": [
+        1.1463600397109985,
+        1.5475467443466187,
+        1.5918195247650146
+      ],
+      "calibration_native_ratios": [
+        1.0186361074447632,
+        0.9620562791824341,
+        0.999906599521637
+      ],
+      "fidelity_feasible": true,
+      "undertrained_inconclusive": false,
+      "base_action_path_checksum": "dbe55f0eadcbe3d7363af63973f38291bca002686aa2889de1ae30ae88145f18",
+      "selected_action_path_checksum": "69e1202e1dbb6f5d93bc5ca68060bf37a5bbfc633e3a1543b0a6361b72b748da",
+      "cache_content_digest": "8e4db3a3c778dca3a8ee104bd674428cf9357e56a99d0d64dc2002371d584421",
+      "pretrained_asset_digest": "49b3444776efc2223341986bf3e3ffaa732d70df2a7d2f93a842767f88eb00e5",
+      "training_decoders_used_by_objective": false
+    },
+    {
+      "environment": "PushT",
+      "model": "jepa_wm_pusht",
+      "method": "fidelity_constrained_latent_only",
+      "adaptation_seed": 11437,
+      "selected_epoch": 24,
+      "completed_epoch_limit": 24,
+      "calibration_selection_score": 0.053644534200429916,
+      "calibration_geometry_rmse": [
+        1.0680699348449707,
+        0.8574783205986023,
+        0.8130913972854614
+      ],
+      "calibration_native_ratios": [
+        0.9037482142448425,
+        0.8900448083877563,
+        0.8613367080688477
+      ],
+      "fidelity_feasible": true,
+      "undertrained_inconclusive": false,
+      "base_action_path_checksum": "8e211f64a19c65b559847b7d60d5ab23e88b95b935052e8289c0e733a921b34c",
+      "selected_action_path_checksum": "78562f234ec39b6d6537a7ed8e73753d12fcc52f3b8fc4257230fc96adc935b9",
+      "cache_content_digest": "8e4db3a3c778dca3a8ee104bd674428cf9357e56a99d0d64dc2002371d584421",
+      "pretrained_asset_digest": "2ea53434c2f309a8838e3a74b5cd7d3e6e4276493896f554c72db1f49564d877",
+      "training_decoders_used_by_objective": false
+    },
+    {
+      "environment": "PushT",
+      "model": "jepa_wm_pusht",
+      "method": "fidelity_constrained_shuffled_geometry",
+      "adaptation_seed": 11437,
+      "selected_epoch": 16,
+      "completed_epoch_limit": 22,
+      "calibration_selection_score": 2.6303234100341797,
+      "calibration_geometry_rmse": [
+        1.6968796253204346,
+        1.6144400835037231,
+        1.5508556365966797
+      ],
+      "calibration_native_ratios": [
+        1.0199711322784424,
+        1.0109039545059204,
+        1.014208197593689
+      ],
+      "fidelity_feasible": true,
+      "undertrained_inconclusive": false,
+      "base_action_path_checksum": "8e211f64a19c65b559847b7d60d5ab23e88b95b935052e8289c0e733a921b34c",
+      "selected_action_path_checksum": "2a806614fcb22fcabac9c69135fe9c6a89befdc4e3ce748c29b1d495cbf29358",
+      "cache_content_digest": "8e4db3a3c778dca3a8ee104bd674428cf9357e56a99d0d64dc2002371d584421",
+      "pretrained_asset_digest": "2ea53434c2f309a8838e3a74b5cd7d3e6e4276493896f554c72db1f49564d877",
+      "training_decoders_used_by_objective": false
+    },
+    {
+      "environment": "PushT",
+      "model": "jepa_wm_pusht",
+      "method": "fidelity_constrained_matched_geometry",
+      "adaptation_seed": 11437,
+      "selected_epoch": 30,
+      "completed_epoch_limit": 32,
+      "calibration_selection_score": 0.8255276679992676,
+      "calibration_geometry_rmse": [
+        1.0578101873397827,
+        0.8470637202262878,
+        0.800064742565155
+      ],
+      "calibration_native_ratios": [
+        1.0015805959701538,
+        0.9687337279319763,
+        0.9432218670845032
+      ],
+      "fidelity_feasible": true,
+      "undertrained_inconclusive": false,
+      "base_action_path_checksum": "8e211f64a19c65b559847b7d60d5ab23e88b95b935052e8289c0e733a921b34c",
+      "selected_action_path_checksum": "1ff351805078d7a8d72a381b985fb0439572dcf7c8ec7c525bc4fbf8200518ab",
+      "cache_content_digest": "8e4db3a3c778dca3a8ee104bd674428cf9357e56a99d0d64dc2002371d584421",
+      "pretrained_asset_digest": "2ea53434c2f309a8838e3a74b5cd7d3e6e4276493896f554c72db1f49564d877",
+      "training_decoders_used_by_objective": false
+    },
+    {
+      "environment": "Wall",
+      "model": "jepa_wm_wall",
+      "method": "fidelity_constrained_latent_only",
+      "adaptation_seed": 11437,
+      "selected_epoch": 32,
+      "completed_epoch_limit": 32,
+      "calibration_selection_score": 0.13848045468330383,
+      "calibration_geometry_rmse": [
+        1.1623048782348633,
+        1.5538616180419922,
+        1.7372794151306152
+      ],
+      "calibration_native_ratios": [
+        0.7267837524414062,
+        0.7447538375854492,
+        0.815589427947998
+      ],
+      "fidelity_feasible": true,
+      "undertrained_inconclusive": true,
+      "base_action_path_checksum": "dbe55f0eadcbe3d7363af63973f38291bca002686aa2889de1ae30ae88145f18",
+      "selected_action_path_checksum": "b2b60eaee567a6fe92824149e795c06464a6d230a1ba7bad596591d2f944e1ce",
+      "cache_content_digest": "8e4db3a3c778dca3a8ee104bd674428cf9357e56a99d0d64dc2002371d584421",
+      "pretrained_asset_digest": "49b3444776efc2223341986bf3e3ffaa732d70df2a7d2f93a842767f88eb00e5",
+      "training_decoders_used_by_objective": false
+    },
+    {
+      "environment": "Wall",
+      "model": "jepa_wm_wall",
+      "method": "fidelity_constrained_shuffled_geometry",
+      "adaptation_seed": 11437,
+      "selected_epoch": 10,
+      "completed_epoch_limit": 16,
+      "calibration_selection_score": 5.22557258605957,
+      "calibration_geometry_rmse": [
+        2.2083959579467773,
+        2.3436434268951416,
+        2.303701400756836
+      ],
+      "calibration_native_ratios": [
+        1.0191879272460938,
+        0.9813372492790222,
+        0.9894859790802002
+      ],
+      "fidelity_feasible": true,
+      "undertrained_inconclusive": false,
+      "base_action_path_checksum": "dbe55f0eadcbe3d7363af63973f38291bca002686aa2889de1ae30ae88145f18",
+      "selected_action_path_checksum": "bfdbca3975f4c77d7e9eb65b27bcb190a7696aff522e83eef45d107fb8dc81d0",
+      "cache_content_digest": "8e4db3a3c778dca3a8ee104bd674428cf9357e56a99d0d64dc2002371d584421",
+      "pretrained_asset_digest": "49b3444776efc2223341986bf3e3ffaa732d70df2a7d2f93a842767f88eb00e5",
+      "training_decoders_used_by_objective": false
+    },
+    {
+      "environment": "Wall",
+      "model": "jepa_wm_wall",
+      "method": "fidelity_constrained_matched_geometry",
+      "adaptation_seed": 11437,
+      "selected_epoch": 22,
+      "completed_epoch_limit": 24,
+      "calibration_selection_score": 2.0893714427948,
+      "calibration_geometry_rmse": [
+        1.1484909057617188,
+        1.5447760820388794,
+        1.6008590459823608
+      ],
+      "calibration_native_ratios": [
+        1.0195891857147217,
+        0.9615236520767212,
+        1.0002330541610718
+      ],
+      "fidelity_feasible": true,
+      "undertrained_inconclusive": false,
+      "base_action_path_checksum": "dbe55f0eadcbe3d7363af63973f38291bca002686aa2889de1ae30ae88145f18",
+      "selected_action_path_checksum": "baa7ab934ee7377ad8ba2faafeaf7f3fe36935f065584de607d50df861ef19c7",
+      "cache_content_digest": "8e4db3a3c778dca3a8ee104bd674428cf9357e56a99d0d64dc2002371d584421",
+      "pretrained_asset_digest": "49b3444776efc2223341986bf3e3ffaa732d70df2a7d2f93a842767f88eb00e5",
+      "training_decoders_used_by_objective": false
+    }
+  ]
+}
