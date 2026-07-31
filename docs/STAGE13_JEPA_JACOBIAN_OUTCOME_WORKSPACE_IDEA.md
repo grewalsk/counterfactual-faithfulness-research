@@ -2,6 +2,11 @@
 
 **Status: research ideation, not a frozen protocol or authorization to run.**
 
+The companion
+[`STAGE13_JOW_LITERATURE_AND_FALSIFICATION_PLAN.md`](STAGE13_JOW_LITERATURE_AND_FALSIFICATION_PLAN.md)
+separates direct evidence from analogy and specifies the proposed
+interchange-intervention test in greater detail.
+
 ## Core idea
 
 Anthropic's J-space is not an architecturally designated compartment. The

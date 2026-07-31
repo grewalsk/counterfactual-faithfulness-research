@@ -56,6 +56,9 @@ downloaded Colab result bundles.
 - `docs/STAGE13_JEPA_JACOBIAN_OUTCOME_WORKSPACE_IDEA.md` — post-Stage-12
   ideation for a Jacobian-derived, causally tested outcome workspace in
   intermediate JEPA-WM predictor layers; explicitly not a frozen protocol.
+- `docs/STAGE13_JOW_LITERATURE_AND_FALSIFICATION_PLAN.md` — evidence map,
+  alternative hypotheses, same-state interchange interventions,
+  out-of-distribution safeguards, and the minimal JOW feasibility pilot.
 - `docs/ICLR_RESEARCH_DECISION_AGENT_PROMPT.md` — adversarial, copy-ready
   prompt for an independent agent to audit the work and choose the next
   ICLR-critical experiment.
@@ -259,5 +262,6 @@ prototypes, derives intermediate predictor directions from average output
 Jacobians, and requires coordinate swaps, ablations, flexible downstream use,
 and layer localization before calling the result a workspace. The idea and
 its falsification controls are recorded in
-`docs/STAGE13_JEPA_JACOBIAN_OUTCOME_WORKSPACE_IDEA.md`; it is not yet a
+`docs/STAGE13_JEPA_JACOBIAN_OUTCOME_WORKSPACE_IDEA.md` and
+`docs/STAGE13_JOW_LITERATURE_AND_FALSIFICATION_PLAN.md`; neither is yet a
 preregistered Stage 13 protocol.
