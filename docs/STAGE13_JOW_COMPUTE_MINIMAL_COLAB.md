@@ -22,15 +22,15 @@ Its job is to decide whether the full Phase 0 is worth running.
 | Choice | Screening value | Expansion value, only after a pass |
 |---|---:|---:|
 | Environment | PushT | PushT |
-| Conditions | frozen | frozen, matched, then shuffled |
+| Conditions | frozen; conditional matched/shuffled | frozen, matched, then shuffled |
 | States | 8 construction + 4 calibration | 16 construction + 8 calibration |
 | Actions | all 10 for the dictionary | all 10 |
-| Horizons | 1 | 1 and 3 |
-| Predictor blocks | 2, 4, and 6 | all six |
+| Horizons | 1 and 3 | 1 and 3 |
+| Predictor blocks | all six; one preselected for swaps | all six |
 | Signed prototype pairs | 8 | 16 |
 | Dictionaries | PCA and covariance-matched random | add spherical k-means |
 | Swap doses | 0.5 and 1.0 | 0.25, 0.5, 0.75, and 1.0 |
-| Action pairs per state | two most target-separated pairs | four |
+| Action pairs per state | two high-separation, action-disjoint pairs | four |
 | Training | none | none |
 
 The action pairs are selected using true, goal-free target-effect distance
@@ -48,8 +48,8 @@ RUN_MODE = "screen"             # "screen" or "expand"
 ENVIRONMENT = "pusht"
 CONSTRUCTION_STATES = 8
 CALIBRATION_STATES = 4
-HORIZONS = (1,)
-BLOCKS = (1, 3, 5)              # zero-indexed blocks 2, 4, and 6
+HORIZONS = (1, 3)
+BLOCKS = tuple(range(6))
 SIGNED_PROTOTYPE_PAIRS = 8
 SWAP_DOSES = (0.5, 1.0)
 ACTION_PAIRS_PER_STATE = 2
@@ -152,6 +152,11 @@ adapted-model comparisons:
 - results are not carried by one state or one action;
 - gradients and inferred sparse coordinates are numerically stable.
 
+Choose the primary horizon-layer using state-grouped construction-split
+coordinate prediction before examining any causal intervention outcome. Freeze
+that layer for frozen, matched, and shuffled causal gates. In `screen` mode,
+run swaps only at this layer; all-layer swaps are deferred to expansion.
+
 The notebook should report confidence intervals and diagnostics, but this gate
 is a feasibility filter rather than a confirmatory statistical claim.
 
@@ -166,9 +171,11 @@ At each selected block:
 5. measure normalized donor transfer in final predicted target tokens and with
    the already-frozen physical decoder.
 
-Run equal-norm orthogonal and random swaps with the same recipient, donor,
-layer, and dose. Record norm, cosine, Mahalanobis distance from natural
-activations, and resumed-forward error for every intervention.
+Run an equal-norm same-state residual swap and a random orthogonal edit with
+the same recipient, donor, layer, and dose. The residual swap is the primary
+control because it follows a naturally observed donor-recipient activation
+difference outside JOW. Record norm, a local diagonal activation-distance
+ratio, and resumed-forward error for every intervention.
 
 ### 10. Causal gate and treatment sequence
 
@@ -180,11 +187,16 @@ Stop unless the JOW swap:
 - remains within the calibrated activation-distribution envelope;
 - repeats across states.
 
-If it passes, run the same frozen dictionary and lens procedure on the
+If it passes, freeze the base-model lens and reuse it without refitting on the
 seed-11401 matched checkpoint. Load the shuffled checkpoint only if matched
-appears better than frozen. This ordering avoids paying for negative controls
-when the proposed treatment has no signal, while still requiring shuffled
-geometry before any treatment-specific conclusion.
+appears better than frozen. A shared lens makes the treatment comparison more
+controlled and avoids repeating the expensive VJP construction. A
+condition-specific lens is a later secondary analysis, not the primary screen.
+
+Keep two decisions separate: a frozen-model causal pass supports expanding the
+workspace hypothesis even if ARGA does not improve it; the matched-versus-
+frozen-versus-shuffled comparison determines only whether ARGA repairs that
+workspace.
 
 ### 11. Optional Phase 0 expansion
 
@@ -226,16 +238,17 @@ less reliable across Colab G4 runtimes.
 
 A reasonable planning envelope is:
 
-- setup and verified asset retrieval: roughly 10–25 minutes;
+- setup and verified asset retrieval: roughly 15–30 minutes;
 - integrity smoke: roughly 5–10 minutes;
-- frozen screen: roughly 20–45 minutes;
-- matched and conditional shuffled checks: roughly 20–50 minutes;
+- frozen lens, coordinate gate, and one-layer swaps: roughly 25–50 minutes;
+- matched and conditional shuffled shared-lens checks: roughly 10–25 minutes;
 - full Phase 0 expansion after a pass: roughly 1–2.5 additional hours.
 
-Thus a negative hypothesis should usually stop in under an hour after setup.
-A successful screen plus expansion is more likely to occupy roughly 2–4 hours
-on a G4, with the notebook replacing these estimates using measured
-per-item timing.
+Thus a negative hypothesis should usually stop within 60–120 minutes total. A
+successful three-condition screen should usually fit the same envelope, with a
+conservative ceiling of about two hours. A later screen-plus-expansion sequence
+is more likely to occupy roughly 2–3.5 hours on a G4. The notebook replaces
+these estimates using measured per-item timing.
 
 ## What this run can and cannot establish
 

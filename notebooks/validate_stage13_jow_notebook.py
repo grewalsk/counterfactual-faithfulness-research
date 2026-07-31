@@ -72,20 +72,32 @@ def validate_structure():
         'RUN_MODE = "screen"',
         "CONSTRUCTION_STATES = 8",
         "CALIBRATION_STATES = 4",
-        "HORIZONS = [1]",
-        "BLOCKS = [1, 3, 5]",
+        "HORIZONS = [1, 3]",
+        "BLOCKS = list(range(6))",
         "PROTOTYPE_AXES = 8",
         "torch.autograd.grad(",
         "def state_vjp_lens(",
         "def unroll_with_hooks(",
         "def coordinate_gate(",
         "def run_causal_swaps(",
-        '["jow", "orthogonal", "random"]',
+        '["jow", "residual_swap", "random_orthogonal"]',
         "relative_edit_norm",
+        "activation_z_ratio",
+        "activation_variance_fraction",
+        "total_activation_variance_fraction",
+        "action_dependent_activation_variance_fraction",
+        "sparse_coordinate_energy_fraction",
+        "mean_state_lens_alignment",
+        "construction_grouped_cv_r2",
+        '"layer_selection_split":',
+        "CAUSAL_EVALUATE_ALL_LAYERS",
         "decode_physical_pose",
         "STOP_NO_FROZEN_CAUSAL_JOW_SIGNAL",
         "PROMOTE_TO_PHASE0_EXPANSION",
         "PROMOTE_TO_BROADCAST_AND_NEW_TASK_DESIGN",
+        "PROMOTE_ARGA_TREATMENT_TO_EXPANSION",
+        '"primary_lens_source": "frozen"',
+        "SHARED_FROZEN_LENS",
         'shutil.make_archive(str(OUT / "stage13_jow_result_bundle"), "zip"',
         'print(f"RUN_STATUS:',
         "ASSET_COMMIT",
@@ -114,13 +126,25 @@ def validate_structure():
         raise AssertionError("per-state graph cleanup is absent")
 
     swaps = function_source(code_cells, "run_causal_swaps")
-    for required_control in ['"jow"', '"orthogonal"', '"random"']:
+    for required_control in [
+        '"jow"',
+        '"residual_swap"',
+        '"random_orthogonal"',
+    ]:
         if required_control not in swaps:
             raise AssertionError(
                 f"causal swaps omit {required_control} control"
             )
     if "STATE_SELECTION[\"calibration\"]" not in swaps:
         raise AssertionError("causal swaps do not stay on calibration states")
+    run_condition = function_source(code_cells, "run_condition")
+    if "build_condition_lens(" in run_condition:
+        raise AssertionError("adapted conditions refit the primary lens")
+    causal_gate = function_source(code_cells, "causal_gate")
+    if "max(layer_means" in causal_gate or "best_block" in causal_gate:
+        raise AssertionError("causal outcomes select their own primary layer")
+    if "primary_layer" not in causal_gate:
+        raise AssertionError("causal gate lacks a preselected primary layer")
     return code_cells
 
 

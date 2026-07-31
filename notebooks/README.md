@@ -11,17 +11,21 @@ Notebook: `13_jacobian_outcome_workspace_screen.ipynb`
 5. Return `stage13_jow_result_bundle.zip`.
 
 The default screen performs no training. It reconstructs 8 construction and 4
-calibration PushT states, uses horizon 1 and predictor blocks 2/4/6, computes
-eight streamed vector-Jacobian products per state, and applies same-state JOW,
-orthogonal, and random swaps. The matched 22 MB checkpoint is downloaded only
-after the frozen causal gate passes; shuffled geometry is downloaded only if
-matched beats frozen.
+calibration PushT states, uses horizons 1/3 and all six predictor blocks,
+computes eight streamed vector-Jacobian products per state-horizon, preselects
+one causal horizon-layer before intervention outcomes, and applies same-state JOW,
+residual-swap, and random-orthogonal interventions. One lens is frozen in the
+base model and reused across treatment arms. The matched 22 MB checkpoint is
+downloaded only after the frozen causal gate passes; shuffled geometry is
+downloaded only if matched beats frozen.
 
 Plan for roughly 15–30 minutes of first-run setup and verified checkpoint
 downloads. A failed hypothesis should normally stop within another 30–60
-minutes on a G4. A successful three-condition screen can take roughly 1–2
-hours total. The notebook replaces these envelopes with a measured estimate
-from the actual assigned GPU before the main screen.
+minutes on a G4. Because matched and shuffled reuse one frozen lens and one
+preselected causal layer, a successful three-condition screen should usually
+take roughly 60–120 minutes total.
+The notebook replaces these envelopes with a measured estimate from the actual
+assigned GPU before the main screen.
 
 ## Stage 1
 

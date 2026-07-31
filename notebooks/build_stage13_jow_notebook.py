@@ -60,6 +60,10 @@ simulator_helpers = function_sources(
         "exact_restore_test",
     ],
 )
+simulator_helpers = simulator_helpers.replace(
+    'task = TASKS["Wall"][0]',
+    'raise RuntimeError("Stage 13 screen supports PushT only")',
+)
 action_path_helpers = function_sources(
     stage11_adaptation,
     [
@@ -92,8 +96,8 @@ FRAMESKIP = 5
 if RUN_MODE == "screen":
     CONSTRUCTION_STATES = 8
     CALIBRATION_STATES = 4
-    HORIZONS = [1]
-    BLOCKS = [1, 3, 5]  # zero indexed: blocks 2, 4, and 6
+    HORIZONS = [1, 3]
+    BLOCKS = list(range(6))
     PROTOTYPE_AXES = 8
     SWAP_DOSES = [0.5, 1.0]
     ACTION_PAIRS_PER_STATE = 2
@@ -109,11 +113,14 @@ else:
     raise ValueError("RUN_MODE must be 'screen' or 'expand'")
 
 TARGET_STEPS = HORIZONS
+CAUSAL_EVALUATE_ALL_LAYERS = RUN_MODE == "expand"
 SPARSITY = 2
 OUTCOME_PROJECTION_DIM = 128
 OUTCOME_PROJECTION_SEED = 13119
 RANDOM_DICTIONARY_SEED = 13137
 CONTROL_SEED = 13151
+GRADIENT_DIAGNOSTIC_DIM = 256
+GRADIENT_DIAGNOSTIC_SEED = 13169
 ADAPTATION_SEED = 11401
 
 # Provisional feasibility gates, not confirmatory thresholds.
@@ -121,11 +128,16 @@ MIN_RECONSTRUCTION_GAIN = 0.05
 MIN_RECONSTRUCTION_RATIO = 1.25
 MIN_COORDINATE_R2 = 0.05
 MIN_COORDINATE_R2_GAIN = 0.05
+MAX_WORKSPACE_ACTIVATION_VARIANCE = 0.20
+MIN_SPARSE_COORDINATE_ENERGY = 0.40
+MIN_STATE_LENS_ALIGNMENT = 0.10
 MIN_CAUSAL_TRANSFER = 0.05
 MIN_CAUSAL_CONTROL_GAIN = 0.10
 MIN_POSITIVE_STATE_FRACTION = 0.60
 MAX_RELATIVE_EDIT_NORM = 1.50
+MAX_ACTIVATION_Z_RATIO = 1.25
 MAX_OOD_FRACTION = 0.05
+MAX_RESIDUAL_CONTROL_FALLBACK_FRACTION = 0.10
 MIN_MATCHED_OVER_FROZEN_GAIN = 0.05
 STOP_ON_FAILED_GATE = True
 
@@ -197,7 +209,8 @@ It asks whether PushT JEPA-WM contains a small intermediate component whose
 coordinates causally move a predicted outcome toward another action's outcome.
 
 The default `screen` mode uses 8 construction states, 4 calibration states,
-horizon 1, predictor blocks 2/4/6, and 8 outcome axes. It stops before adapted
+horizons 1/3, all six predictor blocks, and 8 outcome axes. It selects one
+primary horizon-layer before causal outcomes, so swaps remain cheap. It stops before adapted
 checkpoints unless the frozen model passes necessary dictionary, coordinate,
 and intervention gates. The 22 MB matched checkpoint is downloaded only after
 the frozen causal gate passes; shuffled geometry is downloaded only if matched
@@ -208,6 +221,8 @@ Run the cells in order on a GPU runtime. The notebook:
 - restores only selected Stage 12 PushT states;
 - performs no model training;
 - uses vector-Jacobian products rather than a full Jacobian;
+- freezes one lens in the base model and reuses it across treatment arms;
+- compares against a same-state residual swap and a random orthogonal edit;
 - keeps one state graph live at a time;
 - benchmarks the real G4 before estimating remaining time;
 - writes atomic, hash-bound progress to Google Drive; and
@@ -259,7 +274,6 @@ import gc
 import hashlib
 import json
 import logging
-import math
 import os
 import platform
 import random
@@ -269,7 +283,6 @@ import sys
 import time
 import traceback
 import urllib.request
-import zipfile
 from collections import defaultdict
 from copy import deepcopy
 from pathlib import Path
@@ -1101,10 +1114,11 @@ def orthonormal_lens(raw):
 def benchmark_gpu():
     state_id = STATE_SELECTION["construction"][0]
     initial, actions = state_model_inputs(state_id)
+    benchmark_horizon = max(HORIZONS)
     started = time.perf_counter()
     with torch.inference_mode():
         clean, _, _ = unroll_with_hooks(
-            initial, actions, HORIZONS[0], capture_blocks=[BLOCKS[0]]
+            initial, actions, benchmark_horizon, capture_blocks=[BLOCKS[0]]
         )
     forward_seconds = time.perf_counter() - started
 
@@ -1119,7 +1133,7 @@ def benchmark_gpu():
         zero_edit, _, _ = unroll_with_hooks(
             initial,
             actions[:, :1],
-            HORIZONS[0],
+            benchmark_horizon,
             capture_blocks=[BLOCKS[0]],
             intervention={"block": BLOCKS[0], "delta": zero},
         )
@@ -1133,7 +1147,7 @@ def benchmark_gpu():
         )
 
     started = time.perf_counter()
-    smoke_lens = state_vjp_lens(state_id, HORIZONS[0])
+    smoke_lens = state_vjp_lens(state_id, benchmark_horizon)
     vjp_seconds = time.perf_counter() - started
     finite = all(
         bool(torch.isfinite(value).all()) for value in smoke_lens.values()
@@ -1147,19 +1161,21 @@ def benchmark_gpu():
 
     interventions = (
         CALIBRATION_STATES
-        * len(HORIZONS)
-        * len(BLOCKS)
+        * (len(HORIZONS) * len(BLOCKS) if CAUSAL_EVALUATE_ALL_LAYERS else 1)
         * ACTION_PAIRS_PER_STATE
         * 2
         * len(SWAP_DOSES)
         * 3
     )
-    frozen_seconds = (
-        CONSTRUCTION_STATES * len(HORIZONS) * vjp_seconds
-        + interventions * intervention_seconds
+    lens_seconds = CONSTRUCTION_STATES * len(HORIZONS) * vjp_seconds
+    one_condition_seconds = interventions * intervention_seconds
+    frozen_seconds = 1.25 * (lens_seconds + one_condition_seconds)
+    three_condition_seconds = 1.25 * (
+        lens_seconds + 3 * one_condition_seconds
     )
     payload = {
         "forward_seconds": forward_seconds,
+        "benchmark_horizon": benchmark_horizon,
         "single_action_intervention_seconds": intervention_seconds,
         "one_state_one_horizon_vjp_seconds": vjp_seconds,
         "zero_dose_max_abs_difference": zero_difference,
@@ -1167,8 +1183,9 @@ def benchmark_gpu():
         "nonzero_vjp": nonzero,
         "estimated_frozen_screen_minutes": frozen_seconds / 60,
         "estimated_successful_three_condition_minutes": (
-            3 * frozen_seconds / 60
+            three_condition_seconds / 60
         ),
+        "adapted_conditions_reuse_frozen_lens": True,
         "estimate_excludes_completed_setup_and_truth": True,
         "peak_gpu_gib": torch.cuda.max_memory_allocated() / 2**30,
     }
@@ -1248,6 +1265,13 @@ def build_condition_lens(condition):
         for block in BLOCKS
     }
     contribution_norms = defaultdict(list)
+    gradient_sketches = defaultdict(list)
+    gradient_projector = CountSketchProjector(
+        256 * int(PREDICTOR.predictor_embed_dim),
+        GRADIENT_DIAGNOSTIC_DIM,
+        GRADIENT_DIAGNOSTIC_SEED,
+        device="cpu",
+    )
     for state_index, state_id in enumerate(
         STATE_SELECTION["construction"]
     ):
@@ -1257,6 +1281,9 @@ def build_condition_lens(condition):
                 raw_sums[(horizon, block)] += state_lens[block]
                 contribution_norms[(horizon, block)].append(
                     float(torch.linalg.vector_norm(state_lens[block]))
+                )
+                gradient_sketches[(horizon, block)].append(
+                    gradient_projector(state_lens[block]).numpy()
                 )
         write_json(
             OUT / f"{condition}_lens_progress.json",
@@ -1270,6 +1297,8 @@ def build_condition_lens(condition):
     ranks = {}
     diagonals = {}
     dominance = {}
+    state_alignment = {}
+    positive_state_alignment_fraction = {}
     for key, value in raw_sums.items():
         mean_lens = value / CONSTRUCTION_STATES
         basis, rank, diagonal = orthonormal_lens(mean_lens)
@@ -1279,6 +1308,21 @@ def build_condition_lens(condition):
         diagonals[name] = diagonal.tolist()
         norms = np.asarray(contribution_norms[key], dtype=np.float64)
         dominance[name] = float(norms.max() / max(norms.sum(), 1e-12))
+        sketches = np.stack(gradient_sketches[key], axis=0)
+        mean_sketch = sketches.mean(axis=0).reshape(-1)
+        state_cosines = []
+        for state_sketch in sketches:
+            flattened = state_sketch.reshape(-1)
+            denominator = np.linalg.norm(flattened) * np.linalg.norm(
+                mean_sketch
+            )
+            state_cosines.append(
+                float(np.dot(flattened, mean_sketch) / max(denominator, 1e-12))
+            )
+        state_alignment[name] = float(np.mean(state_cosines))
+        positive_state_alignment_fraction[name] = float(
+            np.mean(np.asarray(state_cosines) > 0)
+        )
     payload = {
         "condition": condition,
         "condition_checksum": action_path_checksum(
@@ -1288,6 +1332,10 @@ def build_condition_lens(condition):
         "ranks": ranks,
         "r_diagonals": diagonals,
         "maximum_state_norm_share": dominance,
+        "mean_state_lens_alignment": state_alignment,
+        "positive_state_lens_alignment_fraction": (
+            positive_state_alignment_fraction
+        ),
         "elapsed_seconds": time.perf_counter() - started,
     }
     torch.save(payload, destination)
@@ -1310,7 +1358,17 @@ def activation_random_basis(lens_basis, seed):
 
 
 def coordinate_dataset(state_ids, lens_payload, random_bases):
-    values = defaultdict(lambda: {"jow": [], "random": [], "target": []})
+    values = defaultdict(
+        lambda: {
+            "jow": [],
+            "random": [],
+            "target": [],
+            "state_id": [],
+            "action_dependent_activation_fraction": [],
+            "sparse_fraction": [],
+        }
+    )
+    global_statistics = {}
     axes = DICTIONARY["pca_axes"]
     for state_id in state_ids:
         initial, actions = state_model_inputs(state_id)
@@ -1333,28 +1391,102 @@ def coordinate_dataset(state_ids, lens_payload, random_bases):
                     captures[block],
                     int(PREDICTOR.predictor_embed_dim),
                 ).float()
+                raw_flat = activation.flatten(1)
                 activation = activation - activation.mean(
                     dim=0, keepdim=True
                 )
                 flat = activation.flatten(1)
                 basis = lens_payload["bases"][name].float().cuda().flatten(1)
                 random_basis = random_bases[name].float().cuda().flatten(1)
-                values[name]["jow"].append(
-                    (flat @ basis.T).cpu().numpy()
+                raw_coordinates = raw_flat @ basis.T
+                if name not in global_statistics:
+                    global_statistics[name] = {
+                        "sum": torch.zeros(
+                            raw_flat.shape[1], dtype=torch.float64
+                        ),
+                        "sum_squares": 0.0,
+                        "coordinate_sum": torch.zeros(
+                            PROTOTYPE_AXES, dtype=torch.float64
+                        ),
+                        "coordinate_sum_squares": 0.0,
+                        "count": 0,
+                    }
+                statistics = global_statistics[name]
+                statistics["sum"] += raw_flat.sum(dim=0).double().cpu()
+                statistics["sum_squares"] += float(
+                    torch.sum(raw_flat**2).item()
                 )
+                statistics["coordinate_sum"] += (
+                    raw_coordinates.sum(dim=0).double().cpu()
+                )
+                statistics["coordinate_sum_squares"] += float(
+                    torch.sum(raw_coordinates**2).item()
+                )
+                statistics["count"] += raw_flat.shape[0]
+                jow_coordinates = flat @ basis.T
+                sparse = sparse_coordinates(jow_coordinates)
+                values[name]["jow"].append(jow_coordinates.cpu().numpy())
                 values[name]["random"].append(
                     (flat @ random_basis.T).cpu().numpy()
                 )
                 values[name]["target"].append(
                     target_scores[:, horizon_index]
                 )
-    return {
+                values[name]["state_id"].append(
+                    np.full(ACTIONS_PER_STATE, state_id, dtype=np.int64)
+                )
+                values[name]["action_dependent_activation_fraction"].append(
+                    np.asarray(
+                        [
+                            float(
+                                torch.sum(jow_coordinates**2)
+                                / torch.clamp(torch.sum(flat**2), min=1e-12)
+                            )
+                        ]
+                    )
+                )
+                values[name]["sparse_fraction"].append(
+                    np.asarray(
+                        [
+                            float(
+                                torch.sum(sparse**2)
+                                / torch.clamp(
+                                    torch.sum(jow_coordinates**2), min=1e-12
+                                )
+                            )
+                        ]
+                    )
+                )
+    result = {
         name: {
             key: np.concatenate(parts, axis=0)
             for key, parts in payload.items()
         }
         for name, payload in values.items()
     }
+    for name, statistics in global_statistics.items():
+        count = statistics["count"]
+        total_variance = statistics["sum_squares"] - float(
+            torch.sum(statistics["sum"] ** 2).item()
+        ) / count
+        coordinate_variance = statistics[
+            "coordinate_sum_squares"
+        ] - float(
+            torch.sum(statistics["coordinate_sum"] ** 2).item()
+        ) / count
+        if not np.isfinite(total_variance) or total_variance <= 1e-8:
+            raise RuntimeError(
+                f"degenerate total activation variance for {name}"
+            )
+        if coordinate_variance < -1e-5 * total_variance:
+            raise RuntimeError(
+                f"unstable projected activation variance for {name}"
+            )
+        coordinate_variance = max(coordinate_variance, 0.0)
+        result[name]["total_activation_variance_fraction"] = np.asarray(
+            [coordinate_variance / max(total_variance, 1e-12)]
+        )
+    return result
 
 
 def ridge_fit(features, targets, ridge=1e-3):
@@ -1386,7 +1518,24 @@ def ridge_r2(model, features, targets):
     return float(1.0 - residual / max(baseline, 1e-12))
 
 
-def coordinate_gate(condition, lens_payload):
+def grouped_ridge_cv_r2(features, targets, groups):
+    predictions = np.empty_like(targets, dtype=np.float64)
+    baselines = np.empty_like(targets, dtype=np.float64)
+    for group in np.unique(groups):
+        held_out = groups == group
+        model = ridge_fit(features[~held_out], targets[~held_out])
+        x = (features[held_out] - model["mean"]) / model["scale"]
+        predictions[held_out] = (
+            np.column_stack([np.ones(np.sum(held_out)), x])
+            @ model["coefficient"]
+        )
+        baselines[held_out] = model["target_mean"]
+    residual = np.sum((targets - predictions) ** 2)
+    baseline = np.sum((targets - baselines) ** 2)
+    return float(1.0 - residual / max(baseline, 1e-12))
+
+
+def coordinate_gate(condition, lens_payload, fixed_layer=None):
     random_bases = {
         name: activation_random_basis(
             basis,
@@ -1412,6 +1561,11 @@ def coordinate_gate(condition, lens_payload):
                 {
                     "layer": name,
                     "basis": basis_name,
+                    "construction_grouped_cv_r2": grouped_ridge_cv_r2(
+                        construction[name][basis_name],
+                        construction[name]["target"],
+                        construction[name]["state_id"],
+                    ),
                     "calibration_r2": ridge_r2(
                         model,
                         calibration[name][basis_name],
@@ -1420,34 +1574,76 @@ def coordinate_gate(condition, lens_payload):
                 }
             )
     by_layer = defaultdict(dict)
+    selection_by_layer = defaultdict(dict)
     for row in rows:
         by_layer[row["layer"]][row["basis"]] = row["calibration_r2"]
-    layer_gains = {
+        selection_by_layer[row["layer"]][row["basis"]] = row[
+            "construction_grouped_cv_r2"
+        ]
+    calibration_gains = {
         name: payload["jow"] - payload["random"]
         for name, payload in by_layer.items()
     }
-    best_layer = max(
-        layer_gains,
-        key=lambda name: (layer_gains[name], by_layer[name]["jow"]),
+    selection_gains = {
+        name: payload["jow"] - payload["random"]
+        for name, payload in selection_by_layer.items()
+    }
+    best_layer = fixed_layer or max(
+        selection_gains,
+        key=lambda name: (
+            selection_gains[name],
+            selection_by_layer[name]["jow"],
+        ),
     )
-    full_rank = all(
+    all_full_rank = all(
         rank == PROTOTYPE_AXES for rank in lens_payload["ranks"].values()
     )
+    best_full_rank = lens_payload["ranks"][best_layer] == PROTOTYPE_AXES
+    activation_fraction = float(
+        calibration[best_layer]["total_activation_variance_fraction"][0]
+    )
+    action_dependent_fraction = float(
+        np.mean(
+            calibration[best_layer][
+                "action_dependent_activation_fraction"
+            ]
+        )
+    )
+    sparse_fraction = float(
+        np.mean(calibration[best_layer]["sparse_fraction"])
+    )
+    state_alignment = lens_payload["mean_state_lens_alignment"][best_layer]
     gate = {
         "condition": condition,
         "rows": rows,
         "best_layer": best_layer,
         "best_jow_r2": by_layer[best_layer]["jow"],
         "best_random_r2": by_layer[best_layer]["random"],
-        "best_gain": layer_gains[best_layer],
-        "all_lenses_full_rank": full_rank,
+        "best_gain": calibration_gains[best_layer],
+        "selection_jow_r2": selection_by_layer[best_layer]["jow"],
+        "selection_random_r2": selection_by_layer[best_layer]["random"],
+        "selection_gain": selection_gains[best_layer],
+        "layer_selection_split": (
+            "fixed_from_frozen" if fixed_layer else "construction_grouped_cv"
+        ),
+        "all_lenses_full_rank": all_full_rank,
+        "best_lens_full_rank": best_full_rank,
+        "activation_variance_fraction": activation_fraction,
+        "action_dependent_activation_variance_fraction": (
+            action_dependent_fraction
+        ),
+        "sparse_coordinate_energy_fraction": sparse_fraction,
+        "mean_state_lens_alignment": state_alignment,
         "maximum_single_state_norm_share": max(
             lens_payload["maximum_state_norm_share"].values()
         ),
         "passed": bool(
-            full_rank
+            best_full_rank
             and by_layer[best_layer]["jow"] >= MIN_COORDINATE_R2
-            and layer_gains[best_layer] >= MIN_COORDINATE_R2_GAIN
+            and calibration_gains[best_layer] >= MIN_COORDINATE_R2_GAIN
+            and activation_fraction <= MAX_WORKSPACE_ACTIVATION_VARIANCE
+            and sparse_fraction >= MIN_SPARSE_COORDINATE_ENERGY
+            and state_alignment >= MIN_STATE_LENS_ALIGNMENT
         ),
     }
     write_json(OUT / f"{condition}_coordinate_gate.json", gate)
@@ -1495,7 +1691,7 @@ def decode_physical_pose(tokens):
     return torch.stack(outputs, dim=0).mean(dim=0)
 
 
-def top_effect_pairs(true_scores, count):
+def diverse_effect_pairs(true_scores, count):
     candidates = []
     for left in range(ACTIONS_PER_STATE):
         for right in range(left + 1, ACTIONS_PER_STATE):
@@ -1504,7 +1700,20 @@ def top_effect_pairs(true_scores, count):
             )
             candidates.append((distance, left, right))
     candidates.sort(reverse=True)
-    return [(left, right) for _, left, right in candidates[:count]]
+    selected = []
+    used_actions = set()
+    for _, left, right in candidates:
+        if left not in used_actions and right not in used_actions:
+            selected.append((left, right))
+            used_actions.update([left, right])
+            if len(selected) == count:
+                return selected
+    for _, left, right in candidates:
+        if (left, right) not in selected:
+            selected.append((left, right))
+            if len(selected) == count:
+                return selected
+    raise RuntimeError(f"could select only {len(selected)} action pairs")
 
 
 def sparse_coordinates(coordinates):
@@ -1518,24 +1727,36 @@ def sparse_coordinates(coordinates):
     return output
 
 
-def control_direction(kind, jow_delta, basis, seed):
+def control_direction(kind, jow_delta, basis, seed, natural_delta):
     if kind == "jow":
-        return jow_delta
+        return jow_delta, False
+    basis_flat = basis.flatten(1)
+    if kind == "residual_swap":
+        natural = natural_delta.flatten()
+        direction = natural - basis_flat.T @ (basis_flat @ natural)
+        fallback = bool(torch.linalg.vector_norm(direction) <= 1e-12)
+    elif kind == "random_orthogonal":
+        direction = None
+        fallback = False
+    else:
+        raise ValueError(kind)
     generator = torch.Generator(device=jow_delta.device)
     generator.manual_seed(seed)
-    random = torch.randn(
-        jow_delta.numel(),
-        generator=generator,
-        device=jow_delta.device,
-    )
-    if kind == "orthogonal":
-        basis_flat = basis.flatten(1)
-        random = random - basis_flat.T @ (basis_flat @ random)
-    random_norm = torch.linalg.vector_norm(random)
+    if direction is None or fallback:
+        direction = torch.randn(
+            jow_delta.numel(),
+            generator=generator,
+            device=jow_delta.device,
+        )
+        direction = direction - basis_flat.T @ (basis_flat @ direction)
+    direction_norm = torch.linalg.vector_norm(direction)
     target_norm = torch.linalg.vector_norm(jow_delta)
-    if random_norm <= 1e-12:
+    if direction_norm <= 1e-12:
         raise RuntimeError("degenerate control direction")
-    return (random * target_norm / random_norm).reshape_as(jow_delta)
+    return (
+        (direction * target_norm / direction_norm).reshape_as(jow_delta),
+        fallback,
+    )
 
 
 def normalized_transfer(move, donor_gap):
@@ -1544,9 +1765,13 @@ def normalized_transfer(move, donor_gap):
     return float((numerator / torch.clamp(denominator, min=1e-12)).item())
 
 
-def run_causal_swaps(condition, lens_payload):
+def parse_layer_name(name):
+    horizon_text, block_text = name.split("_b")
+    return int(horizon_text[1:]), int(block_text)
+
+
+def run_causal_swaps(condition, lens_payload, primary_layer):
     rows = []
-    axes = DICTIONARY["pca_axes"]
     for state_id in STATE_SELECTION["calibration"]:
         initial, actions = state_model_inputs(state_id)
         with np.load(TRUTH_DIR / f"state_{state_id:04d}.npz") as truth:
@@ -1578,12 +1803,14 @@ def run_causal_swaps(condition, lens_payload):
                     - dictionary_mean
                 ) / dictionary_scale
                 clean_pose = decode_physical_pose(clean_tokens)
-            pairs = top_effect_pairs(
+            pairs = diverse_effect_pairs(
                 true_standardized[:, horizon_index],
                 ACTION_PAIRS_PER_STATE,
             )
             for block in BLOCKS:
                 name = f"h{horizon}_b{block + 1}"
+                if not CAUSAL_EVALUATE_ALL_LAYERS and name != primary_layer:
+                    continue
                 basis = lens_payload["bases"][name].float().cuda()
                 activation = layer_tokens(
                     captures[block],
@@ -1604,6 +1831,29 @@ def run_causal_swaps(condition, lens_payload):
                         )
                 natural_scale = float(
                     torch.median(torch.stack(natural_distances)).item()
+                )
+                activation_mean = activation.mean(dim=0, keepdim=True)
+                activation_std = activation.std(
+                    dim=0, unbiased=False, keepdim=True
+                )
+                positive_std = activation_std[activation_std > 0]
+                std_floor = (
+                    0.10 * torch.median(positive_std)
+                    if positive_std.numel()
+                    else torch.tensor(1e-6, device=activation.device)
+                )
+                natural_z = torch.sqrt(
+                    torch.mean(
+                        (
+                            (activation - activation_mean)
+                            / (activation_std + std_floor)
+                        )
+                        ** 2,
+                        dim=(1, 2),
+                    )
+                )
+                natural_z_limit = float(
+                    torch.quantile(natural_z, 0.95).item()
                 )
 
                 for left, right in pairs:
@@ -1635,11 +1885,14 @@ def run_causal_swaps(condition, lens_payload):
                         true_pose_gap = (
                             true_pose[donor] - true_pose[recipient]
                         )
+                        natural_delta = (
+                            activation[donor] - activation[recipient]
+                        )
 
                         for kind_index, kind in enumerate(
-                            ["jow", "orthogonal", "random"]
+                            ["jow", "residual_swap", "random_orthogonal"]
                         ):
-                            delta = control_direction(
+                            delta, control_fallback = control_direction(
                                 kind,
                                 jow_delta,
                                 basis,
@@ -1650,9 +1903,25 @@ def run_causal_swaps(condition, lens_payload):
                                 + donor * 100
                                 + recipient * 10
                                 + kind_index,
+                                natural_delta,
                             )
                             for dose in SWAP_DOSES:
                                 edit = (dose * delta)[None]
+                                edited_activation = (
+                                    activation[recipient : recipient + 1]
+                                    + edit
+                                )
+                                edited_z = float(
+                                    torch.sqrt(
+                                        torch.mean(
+                                            (
+                                                (edited_activation - activation_mean)
+                                                / (activation_std + std_floor)
+                                            )
+                                            ** 2
+                                        )
+                                    ).item()
+                                )
                                 with torch.inference_mode():
                                     intervention_tokens, _, _ = (
                                         unroll_with_hooks(
@@ -1698,6 +1967,8 @@ def run_causal_swaps(condition, lens_payload):
                                         "recipient": recipient,
                                         "dose": float(dose),
                                         "control": kind,
+                                        "lens_source": "frozen",
+                                        "control_fallback": control_fallback,
                                         "true_latent_transfer": normalized_transfer(
                                             latent_move, true_donor_gap
                                         ),
@@ -1714,6 +1985,10 @@ def run_causal_swaps(condition, lens_payload):
                                             torch.linalg.vector_norm(edit).item()
                                             / max(natural_scale, 1e-12)
                                         ),
+                                        "activation_z_ratio": float(
+                                            edited_z
+                                            / max(natural_z_limit, 1e-12)
+                                        ),
                                     }
                                 )
     path = OUT / f"{condition}_causal_swaps.csv"
@@ -1721,92 +1996,105 @@ def run_causal_swaps(condition, lens_payload):
     return rows
 
 
-def causal_gate(condition, rows):
+def causal_gate(condition, rows, primary_layer):
     maximum_dose = max(SWAP_DOSES)
     minimum_dose = min(SWAP_DOSES)
-    jow_max = [
-        row
-        for row in rows
-        if row["control"] == "jow" and row["dose"] == maximum_dose
-    ]
+    primary_horizon, primary_block = parse_layer_name(primary_layer)
+
+    def primary_rows(control=None, dose=None):
+        return [
+            row
+            for row in rows
+            if row["horizon"] == primary_horizon
+            and row["block"] == primary_block
+            and (control is None or row["control"] == control)
+            and (dose is None or row["dose"] == dose)
+        ]
+
+    jow_max = primary_rows("jow", maximum_dose)
     if not jow_max:
-        gate = {"condition": condition, "passed": False, "reason": "no_rows"}
+        gate = {
+            "condition": condition,
+            "primary_layer": primary_layer,
+            "passed": False,
+            "reason": "no_primary_layer_rows",
+        }
         write_json(OUT / f"{condition}_causal_gate.json", gate)
         return gate
-    block_means = {
-        block: float(
-            np.mean(
-                [
-                    row["true_latent_transfer"]
-                    for row in jow_max
-                    if row["block"] == block
-                ]
-            )
-        )
-        for block in sorted(set(row["block"] for row in jow_max))
-    }
-    best_block = max(block_means, key=block_means.get)
+
+    layer_means = {}
+    for horizon, block in sorted(
+        set((row["horizon"], row["block"]) for row in rows)
+    ):
+        values = [
+            row["true_latent_transfer"]
+            for row in rows
+            if row["horizon"] == horizon
+            and row["block"] == block
+            and row["control"] == "jow"
+            and row["dose"] == maximum_dose
+        ]
+        layer_means[f"h{horizon}_b{block}"] = float(np.mean(values))
 
     def mean_for(control, dose):
         values = [
             row["true_latent_transfer"]
-            for row in rows
-            if row["block"] == best_block
-            and row["control"] == control
-            and row["dose"] == dose
+            for row in primary_rows(control, dose)
         ]
         return float(np.mean(values)) if values else float("nan")
 
     jow_mean = mean_for("jow", maximum_dose)
     control_means = {
         control: mean_for(control, maximum_dose)
-        for control in ["orthogonal", "random"]
+        for control in ["residual_swap", "random_orthogonal"]
     }
     control_gain = jow_mean - max(control_means.values())
     minimum_dose_mean = mean_for("jow", minimum_dose)
     state_means = defaultdict(list)
-    for row in rows:
-        if (
-            row["block"] == best_block
-            and row["control"] == "jow"
-            and row["dose"] == maximum_dose
-        ):
-            state_means[row["state_id"]].append(
-                row["true_latent_transfer"]
-            )
+    for row in jow_max:
+        state_means[row["state_id"]].append(row["true_latent_transfer"])
     positive_fraction = float(
+        np.mean([np.mean(values) > 0 for values in state_means.values()])
+    )
+    jow_rows = primary_rows("jow")
+    relative_norm_ood_fraction = float(
         np.mean(
             [
-                np.mean(values) > 0
-                for values in state_means.values()
+                row["relative_edit_norm"] > MAX_RELATIVE_EDIT_NORM
+                for row in jow_rows
+            ]
+        )
+    )
+    activation_z_ood_fraction = float(
+        np.mean(
+            [
+                row["activation_z_ratio"] > MAX_ACTIVATION_Z_RATIO
+                for row in jow_rows
             ]
         )
     )
     ood_fraction = float(
         np.mean(
             [
-                row["relative_edit_norm"] > MAX_RELATIVE_EDIT_NORM
-                for row in rows
-                if row["block"] == best_block
-                and row["control"] == "jow"
+                (
+                    row["relative_edit_norm"] > MAX_RELATIVE_EDIT_NORM
+                    or row["activation_z_ratio"] > MAX_ACTIVATION_Z_RATIO
+                )
+                for row in jow_rows
             ]
         )
     )
+    residual_rows = primary_rows("residual_swap")
+    residual_fallback_fraction = float(
+        np.mean([row["control_fallback"] for row in residual_rows])
+    )
     physical_mean = float(
-        np.mean(
-            [
-                row["physical_transfer"]
-                for row in rows
-                if row["block"] == best_block
-                and row["control"] == "jow"
-                and row["dose"] == maximum_dose
-            ]
-        )
+        np.mean([row["physical_transfer"] for row in jow_max])
     )
     gate = {
         "condition": condition,
-        "best_block": best_block,
-        "block_means": block_means,
+        "primary_layer": primary_layer,
+        "layer_means_descriptive": layer_means,
         "jow_true_latent_transfer": jow_mean,
         "control_means": control_means,
         "control_gain": control_gain,
@@ -1815,7 +2103,10 @@ def causal_gate(condition, rows):
             jow_mean >= minimum_dose_mean - 0.02
         ),
         "positive_state_fraction": positive_fraction,
+        "relative_norm_ood_fraction": relative_norm_ood_fraction,
+        "activation_z_ood_fraction": activation_z_ood_fraction,
         "ood_fraction": ood_fraction,
+        "residual_control_fallback_fraction": residual_fallback_fraction,
         "physical_transfer_secondary": physical_mean,
         "passed": bool(
             jow_mean >= MIN_CAUSAL_TRANSFER
@@ -1823,20 +2114,25 @@ def causal_gate(condition, rows):
             and jow_mean >= minimum_dose_mean - 0.02
             and positive_fraction >= MIN_POSITIVE_STATE_FRACTION
             and ood_fraction <= MAX_OOD_FRACTION
+            and residual_fallback_fraction
+            <= MAX_RESIDUAL_CONTROL_FALLBACK_FRACTION
         ),
     }
     write_json(OUT / f"{condition}_causal_gate.json", gate)
     return gate
 
 
-def run_condition(condition):
+def run_condition(condition, shared_frozen_lens, primary_layer=None):
     checksum = set_model_condition(condition)
     log.info("running condition %s checksum=%s", condition, checksum)
-    lens = build_condition_lens(condition)
-    coordinates = coordinate_gate(condition, lens)
+    coordinates = coordinate_gate(
+        condition, shared_frozen_lens, fixed_layer=primary_layer
+    )
+    selected_layer = primary_layer or coordinates["best_layer"]
     if not coordinates["passed"] and STOP_ON_FAILED_GATE:
         return {
             "condition": condition,
+            "primary_layer": selected_layer,
             "coordinate_gate": coordinates,
             "causal_gate": {
                 "condition": condition,
@@ -1844,10 +2140,13 @@ def run_condition(condition):
                 "reason": "coordinate_gate_failed",
             },
         }
-    rows = run_causal_swaps(condition, lens)
-    causal = causal_gate(condition, rows)
+    rows = run_causal_swaps(
+        condition, shared_frozen_lens, selected_layer
+    )
+    causal = causal_gate(condition, rows, selected_layer)
     return {
         "condition": condition,
+        "primary_layer": selected_layer,
         "coordinate_gate": coordinates,
         "causal_gate": causal,
     }
@@ -1859,7 +2158,10 @@ condition_sequence = r'''# Sequential compute gate: frozen -> matched -> conditi
 CONDITION_RESULTS = {}
 FINAL_DECISION = {
     "decision": "NOT_RUN",
+    "workspace_decision": "NOT_RUN",
+    "treatment_decision": "NOT_RUN",
     "run_mode": RUN_MODE,
+    "primary_lens_source": "frozen",
     "dictionary_gate": (
         DICTIONARY["gate"] if not PIPELINE_FAILED else None
     ),
@@ -1867,15 +2169,35 @@ FINAL_DECISION = {
 
 if not PIPELINE_FAILED and DICTIONARY_GATE_PASSED:
     try:
-        CONDITION_RESULTS["frozen"] = run_condition("frozen")
+        set_model_condition("frozen")
+        SHARED_FROZEN_LENS = build_condition_lens("frozen")
+        CONDITION_RESULTS["frozen"] = run_condition(
+            "frozen", SHARED_FROZEN_LENS
+        )
+        PRIMARY_CAUSAL_LAYER = CONDITION_RESULTS["frozen"]["primary_layer"]
+        FINAL_DECISION["primary_causal_layer"] = PRIMARY_CAUSAL_LAYER
         frozen_causal = CONDITION_RESULTS["frozen"]["causal_gate"]
         if not frozen_causal["passed"]:
-            FINAL_DECISION["decision"] = "STOP_NO_FROZEN_CAUSAL_JOW_SIGNAL"
+            workspace_decision = "STOP_NO_FROZEN_CAUSAL_JOW_SIGNAL"
+            FINAL_DECISION["workspace_decision"] = workspace_decision
+            FINAL_DECISION["treatment_decision"] = "NOT_TESTED"
+            FINAL_DECISION["decision"] = workspace_decision
         else:
-            CONDITION_RESULTS["matched"] = run_condition("matched")
+            workspace_decision = (
+                "PROMOTE_TO_PHASE0_EXPANSION"
+                if RUN_MODE == "screen"
+                else "PROMOTE_TO_BROADCAST_AND_NEW_TASK_DESIGN"
+            )
+            FINAL_DECISION["workspace_decision"] = workspace_decision
+            FINAL_DECISION["decision"] = workspace_decision
+            CONDITION_RESULTS["matched"] = run_condition(
+                "matched", SHARED_FROZEN_LENS, PRIMARY_CAUSAL_LAYER
+            )
             matched_causal = CONDITION_RESULTS["matched"]["causal_gate"]
             if not matched_causal["passed"]:
-                FINAL_DECISION["decision"] = "STOP_MATCHED_HAS_NO_CAUSAL_SIGNAL"
+                FINAL_DECISION[
+                    "treatment_decision"
+                ] = "STOP_MATCHED_HAS_NO_CAUSAL_SIGNAL"
             else:
                 treatment_gain = (
                     matched_causal["jow_true_latent_transfer"]
@@ -1883,9 +2205,13 @@ if not PIPELINE_FAILED and DICTIONARY_GATE_PASSED:
                 )
                 FINAL_DECISION["matched_over_frozen_gain"] = treatment_gain
                 if treatment_gain < MIN_MATCHED_OVER_FROZEN_GAIN:
-                    FINAL_DECISION["decision"] = "STOP_NO_MATCHED_OVER_FROZEN_GAIN"
+                    FINAL_DECISION[
+                        "treatment_decision"
+                    ] = "STOP_NO_MATCHED_OVER_FROZEN_GAIN"
                 else:
-                    CONDITION_RESULTS["shuffled"] = run_condition("shuffled")
+                    CONDITION_RESULTS["shuffled"] = run_condition(
+                        "shuffled", SHARED_FROZEN_LENS, PRIMARY_CAUSAL_LAYER
+                    )
                     shuffled_causal = CONDITION_RESULTS["shuffled"]["causal_gate"]
                     shuffled_value = shuffled_causal.get(
                         "jow_true_latent_transfer", 0.0
@@ -1899,21 +2225,20 @@ if not PIPELINE_FAILED and DICTIONARY_GATE_PASSED:
                     ] = matched_over_shuffled
                     if matched_over_shuffled <= 0:
                         FINAL_DECISION[
-                            "decision"
+                            "treatment_decision"
                         ] = "STOP_NO_TREATMENT_SPECIFICITY"
-                    elif RUN_MODE == "screen":
-                        FINAL_DECISION[
-                            "decision"
-                        ] = "PROMOTE_TO_PHASE0_EXPANSION"
                     else:
                         FINAL_DECISION[
-                            "decision"
-                        ] = "PROMOTE_TO_BROADCAST_AND_NEW_TASK_DESIGN"
+                            "treatment_decision"
+                        ] = "PROMOTE_ARGA_TREATMENT_TO_EXPANSION"
         FINAL_DECISION["conditions"] = CONDITION_RESULTS
     except Exception:
         record_failure("condition_sequence")
 elif not PIPELINE_FAILED:
-    FINAL_DECISION["decision"] = "STOP_NO_COMPACT_OUTCOME_DICTIONARY"
+    dictionary_stop = "STOP_NO_COMPACT_OUTCOME_DICTIONARY"
+    FINAL_DECISION["workspace_decision"] = dictionary_stop
+    FINAL_DECISION["treatment_decision"] = "NOT_TESTED"
+    FINAL_DECISION["decision"] = dictionary_stop
 
 if PIPELINE_FAILED:
     FINAL_DECISION["decision"] = "PIPELINE_FAILURE"
@@ -1937,8 +2262,8 @@ def plot_causal_summary():
             (
                 condition,
                 gate["jow_true_latent_transfer"],
-                gate["control_means"].get("orthogonal", np.nan),
-                gate["control_means"].get("random", np.nan),
+                gate["control_means"].get("residual_swap", np.nan),
+                gate["control_means"].get("random_orthogonal", np.nan),
             )
         )
     if not summaries:
@@ -1957,13 +2282,13 @@ def plot_causal_summary():
         x,
         [item[2] for item in summaries],
         width,
-        label="orthogonal",
+        label="residual swap",
     )
     axis.bar(
         x + width,
         [item[3] for item in summaries],
         width,
-        label="random",
+        label="random orthogonal",
     )
     axis.axhline(0, color="black", linewidth=0.8)
     axis.set_xticks(x, labels)

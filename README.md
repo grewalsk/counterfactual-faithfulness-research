@@ -61,6 +61,9 @@ downloaded Colab result bundles.
   out-of-distribution safeguards, and the minimal JOW feasibility pilot.
 - `docs/STAGE13_JOW_COMPUTE_MINIMAL_COLAB.md` — sequential compute gates,
   cell-level implementation plan, resumability, and G4 planning envelope.
+- `docs/STAGE13_JOW_OPTIMALITY_AUDIT.md` — pre-run audit separating workspace
+  existence from ARGA treatment, freezing one shared lens across arms, and
+  strengthening residual and activation-distribution controls.
 - `docs/ICLR_RESEARCH_DECISION_AGENT_PROMPT.md` — adversarial, copy-ready
   prompt for an independent agent to audit the work and choose the next
   ICLR-critical experiment.
