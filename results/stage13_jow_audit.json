@@ -1,0 +1,86 @@
+{
+  "audit_version": 1,
+  "bundle": "/Users/kabirgrewal/Documents/Codex/2026-07-29/pro/work/counterfactual-faithfulness-research/results/bundles/stage13_jow_result_bundle",
+  "audit_passed": true,
+  "integrity_checks": {
+    "manifest_hashes_and_sizes_match": true,
+    "manifest_has_no_missing_or_extra_entries": true,
+    "config_signature_matches": true,
+    "failure_trace_is_none": true,
+    "restore_is_bitwise_exact": true,
+    "pretrained_hashes_match_config": true,
+    "dictionary_arrays_are_finite": true,
+    "dictionary_axes_are_orthonormal": true,
+    "singular_values_are_descending": true,
+    "scale_is_strictly_positive": true,
+    "reported_gate_arithmetic_matches": true,
+    "decision_matches_gate": true
+  },
+  "manifest": {
+    "declared_file_count": 11,
+    "hash_or_size_failures": [],
+    "missing_entries": [],
+    "nonexistent_entries": []
+  },
+  "execution": {
+    "run_mode": "screen",
+    "run_signature": "042eeb57e3a6f6356dddeefa30a95d1707c4efe4d8ced194f71bcf391f6a35d7",
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+    "gpu_total_gib": 94.97,
+    "measured_stage_seconds": {
+      "truth_seconds": 182.375478767,
+      "target_encoding_seconds": 2.4990299589999267,
+      "dictionary_seconds": 0.378081247999944
+    },
+    "measured_total_seconds": 185.25258997399987,
+    "failure_trace": "NONE"
+  },
+  "dictionary": {
+    "axis_count": 8,
+    "projected_dimension": 128,
+    "construction_top_k_variance_fraction": 0.48776631184649577,
+    "calibration_pca_fraction": 0.20181287825107574,
+    "calibration_random_fraction": 0.15400266647338867,
+    "calibration_to_construction_fraction_ratio": 0.4137491117151772,
+    "effective_rank_from_construction_spectrum": 23.88438264633332,
+    "numerical_rank_singular_value_gt_1e_5": 120,
+    "pca_orthonormal_max_error": 1.0291951735297289e-08,
+    "random_orthonormal_max_error": 1.0884293244473042e-08,
+    "pca_random_overlap_frobenius_squared": 3.250662176993065
+  },
+  "gate": {
+    "reported": {
+      "pca_fraction": 0.20181287825107574,
+      "random_fraction": 0.15400266647338867,
+      "gain": 0.04781021177768707,
+      "ratio": 1.3104505452569457,
+      "thresholds": {
+        "minimum_gain": 0.05,
+        "minimum_ratio": 1.25
+      },
+      "passed": false
+    },
+    "recomputed_gain": 0.04781021177768707,
+    "recomputed_ratio": 1.3104505452569457,
+    "gain_margin_to_threshold": -0.00218978822231293,
+    "ratio_margin_to_threshold": 0.06045054525694571,
+    "fraction_of_gain_threshold_reached": 0.9562042355537415,
+    "recomputed_passed": false
+  },
+  "evidence_boundary": {
+    "scientific_stage_reached": "outcome_dictionary_gate",
+    "coordinate_screen_performed": false,
+    "jacobian_lens_constructed": false,
+    "causal_interventions_performed": false,
+    "arga_treatment_tested": false,
+    "downstream_artifacts": [],
+    "raw_calibration_effects_in_bundle": false,
+    "exact_notebook_commit_or_hash_in_config": false
+  },
+  "judgment": {
+    "protocol_verdict": "STOP_NO_COMPACT_OUTCOME_DICTIONARY",
+    "scientific_label": "BORDERLINE_NEGATIVE_FIXED_DICTIONARY_FEASIBILITY_SCREEN",
+    "jow_hypothesis_tested": false,
+    "recommended_action": "Do not continue or retune this run post hoc. Archive it as a failure of the fixed eight-axis global outcome dictionary; only a separately specified outcome-representation study should revisit the broader workspace idea."
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "RUN_MODE": "screen",
+  "MOUNT_DRIVE": true,
+  "CONTINUE_AFTER_BENCHMARK": true,
+  "DOWNLOAD_RESULTS": true,
+  "OUTPUT_DIR": "/content/drive/MyDrive/counterfactual_faithfulness_stage13_jow",
+  "DRIVE_OUTPUT_DIR": "/content/drive/MyDrive/counterfactual_faithfulness_stage13_jow",
+  "SEED": 13101,
+  "ENVIRONMENT": "PushT",
+  "MODEL_NAME": "jepa_wm_pusht",
+  "ACTIONS_PER_STATE": 10,
+  "FRAMESKIP": 5,
+  "CONSTRUCTION_STATES": 8,
+  "CALIBRATION_STATES": 4,
+  "HORIZONS": [
+    1,
+    3
+  ],
+  "BLOCKS": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "PROTOTYPE_AXES": 8,
+  "SWAP_DOSES": [
+    0.5,
+    1.0
+  ],
+  "ACTION_PAIRS_PER_STATE": 2,
+  "TARGET_STEPS": [
+    1,
+    3
+  ],
+  "CAUSAL_EVALUATE_ALL_LAYERS": false,
+  "SPARSITY": 2,
+  "OUTCOME_PROJECTION_DIM": 128,
+  "OUTCOME_PROJECTION_SEED": 13119,
+  "RANDOM_DICTIONARY_SEED": 13137,
+  "CONTROL_SEED": 13151,
+  "GRADIENT_DIAGNOSTIC_DIM": 256,
+  "GRADIENT_DIAGNOSTIC_SEED": 13169,
+  "ADAPTATION_SEED": 11401,
+  "MIN_RECONSTRUCTION_GAIN": 0.05,
+  "MIN_RECONSTRUCTION_RATIO": 1.25,
+  "MIN_COORDINATE_R2": 0.05,
+  "MIN_COORDINATE_R2_GAIN": 0.05,
+  "MAX_WORKSPACE_ACTIVATION_VARIANCE": 0.2,
+  "MIN_SPARSE_COORDINATE_ENERGY": 0.4,
+  "MIN_STATE_LENS_ALIGNMENT": 0.1,
+  "MIN_CAUSAL_TRANSFER": 0.05,
+  "MIN_CAUSAL_CONTROL_GAIN": 0.1,
+  "MIN_POSITIVE_STATE_FRACTION": 0.6,
+  "MAX_RELATIVE_EDIT_NORM": 1.5,
+  "MAX_ACTIVATION_Z_RATIO": 1.25,
+  "MAX_OOD_FRACTION": 0.05,
+  "MAX_RESIDUAL_CONTROL_FALLBACK_FRACTION": 0.1,
+  "MIN_MATCHED_OVER_FROZEN_GAIN": 0.05,
+  "STOP_ON_FAILED_GATE": true,
+  "REPO_URL": "https://github.com/facebookresearch/jepa-wms.git",
+  "REPO_COMMIT": "13cf1d9c7e476f53c17714d2e0f1dc239a883ce0",
+  "EXPECTED_HF_REVISION": "9b9c41ef249466630dbf1a20e78391865d07b3b9",
+  "EXPECTED_PRETRAINED_ASSET_SHA256": {
+    "jepa_wm_pusht.pth.tar": "9beca3eafe0739c3b3adb5d734fa435ccbda0fea8a65d53d4cccec176aaaa0eb",
+    "dinov2_vits14_pretrain.pth": "b938bf1bc15cd2ec0feacfe3a1bb553fe8ea9ca46a7e1d8d00217f29aef60cd9"
+  },
+  "ASSET_COMMIT": "2326e74556f6f81db2560e4396f4cc52c16a28f4",
+  "ASSET_REPOSITORY": "grewalsk/counterfactual-faithfulness-research",
+  "ASSET_SPECS": {
+    "pusht_design.npz": {
+      "path": "results/bundles/stage12_result_bundle/pusht_design.npz",
+      "sha256": "bcacd9bf640c0ae779fba1a2e80d3bcb8bc9c77e5c53baf0a9f49878a24d65da"
+    },
+    "tasks.json": {
+      "path": "results/bundles/stage12_result_bundle/tasks.json",
+      "sha256": "90826f91eeaf34214a2aadafe816177f2730a8e2b22ac83c032a869d114e86c7"
+    },
+    "split_manifest.json": {
+      "path": "results/bundles/stage12_result_bundle/split_manifest.json",
+      "sha256": "d04d0db10a31970c311b307473fb1dc268816bf055f714ef4ac9be6c810284c6"
+    },
+    "physical_decoders.pt": {
+      "path": "results/bundles/stage12_result_bundle/frozen_training_decoders/jepa_wm_pusht_f975a0a746e7_training_decoders.pt",
+      "sha256": "51b2dbb0a81df432a2db5b941de83717e9979e761d57365f47d93d2dd0c0c694"
+    },
+    "matched.pt": {
+      "path": "results/bundles/stage12_result_bundle/adapted_action_paths/jepa_wm_pusht_fidelity_constrained_matched_geometry_seed11401_f975a0a746e7.pt",
+      "sha256": "3ae22aa2130f866eea67d27b7681e8f9c38999322b1747f8233895086ffa35b6"
+    },
+    "shuffled.pt": {
+      "path": "results/bundles/stage12_result_bundle/adapted_action_paths/jepa_wm_pusht_fidelity_constrained_shuffled_geometry_seed11401_f975a0a746e7.pt",
+      "sha256": "f5719a44b9465cd73002ba742fb12f6a988a462e381fa0a91eaf2c499fcbfce3"
+    }
+  },
+  "PINNED": [
+    "einops==0.8.1",
+    "tensordict==0.9.1",
+    "timm==1.0.19",
+    "omegaconf==2.3.0",
+    "hydra-core==1.3.2",
+    "PyYAML==6.0.2",
+    "huggingface_hub==0.36.2",
+    "hf-xet==1.5.1",
+    "gym==0.23.1",
+    "pygame==2.6.1",
+    "pymunk==6.8.0",
+    "opencv-python-headless==4.11.0.86",
+    "shapely==2.1.2",
+    "lpips==0.1.4",
+    "ruamel.yaml==0.18.10"
+  ],
+  "run_signature": "042eeb57e3a6f6356dddeefa30a95d1707c4efe4d8ced194f71bcf391f6a35d7"
+}

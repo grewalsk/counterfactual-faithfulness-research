@@ -1,0 +1,57 @@
+[
+  {
+    "path": "FAILURE_TRACE.txt",
+    "size_bytes": 5,
+    "sha256": "51cfd463b6af8a57b3380487f986abf10f137073e9be453e44a7e9a5b4c0e72b"
+  },
+  {
+    "path": "config.json",
+    "size_bytes": 3937,
+    "sha256": "72d570d170e6d9e62e1162b250dbd7abf3fb1368d4e89c33d98eaad6c983769d"
+  },
+  {
+    "path": "dictionary_gate.json",
+    "size_bytes": 240,
+    "sha256": "8ff3b562e7246856e7162eccf80d2d6badeb37d3f0dc165f18492f046299192e"
+  },
+  {
+    "path": "logs/run.log",
+    "size_bytes": 4778,
+    "sha256": "2681478dc50a129d9ef16ae9bea79e1420bdc00522a03551799b08faa383c884"
+  },
+  {
+    "path": "outcome_dictionary.npz",
+    "size_bytes": 10768,
+    "sha256": "18ca229aab838449aed9c891e8999aee5e7d94a1f5ea0fe64b4778276434dcbd"
+  },
+  {
+    "path": "pretrained_asset_verification.json",
+    "size_bytes": 547,
+    "sha256": "c7a342af91a3e1a3d428d4e821a8abafa704c2b69e10671770134934871e5bd3"
+  },
+  {
+    "path": "restore_test.json",
+    "size_bytes": 180,
+    "sha256": "532513571a64f316423a5a404b4ce5f5487ba9ba5c1899b56f06e3b2c7da37b3"
+  },
+  {
+    "path": "stage13_jow_decision.json",
+    "size_bytes": 496,
+    "sha256": "d9d12aefe335fd8257ca2ca2186dce4d2fa06ec6d8b01d40e6a219eb4150f752"
+  },
+  {
+    "path": "state_selection.json",
+    "size_bytes": 274,
+    "sha256": "f9b01b1ed9ace543f6afe0e860ad4ad9b338ab7d3fec75b18f03d6b43bdaa173"
+  },
+  {
+    "path": "timings.json",
+    "size_bytes": 129,
+    "sha256": "2ed6e1a302b10791227ad87de1f737e2cae830aeff778f1673c8a6bde33886bc"
+  },
+  {
+    "path": "versions.json",
+    "size_bytes": 312,
+    "sha256": "883e5e9d683170711f6e7337c49d0dd8dec23157171994dd5d95e4eef9c99e7e"
+  }
+]

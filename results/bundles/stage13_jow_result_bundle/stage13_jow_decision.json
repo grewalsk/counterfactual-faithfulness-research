@@ -1,0 +1,18 @@
+{
+  "decision": "STOP_NO_COMPACT_OUTCOME_DICTIONARY",
+  "workspace_decision": "STOP_NO_COMPACT_OUTCOME_DICTIONARY",
+  "treatment_decision": "NOT_TESTED",
+  "run_mode": "screen",
+  "primary_lens_source": "frozen",
+  "dictionary_gate": {
+    "pca_fraction": 0.20181287825107574,
+    "random_fraction": 0.15400266647338867,
+    "gain": 0.04781021177768707,
+    "ratio": 1.3104505452569457,
+    "thresholds": {
+      "minimum_gain": 0.05,
+      "minimum_ratio": 1.25
+    },
+    "passed": false
+  }
+}

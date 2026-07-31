@@ -64,6 +64,9 @@ downloaded Colab result bundles.
 - `docs/STAGE13_JOW_OPTIMALITY_AUDIT.md` — pre-run audit separating workspace
   existence from ARGA treatment, freezing one shared lens across arms, and
   strengthening residual and activation-distribution controls.
+- `audits/stage13/STAGE13_JOW_RESULT_AUDIT.md` — independent integrity and
+  numerical audit of the returned Stage 13 bundle, with a strict boundary
+  between the failed dictionary screen and the untested JOW hypothesis.
 - `docs/ICLR_RESEARCH_DECISION_AGENT_PROMPT.md` — adversarial, copy-ready
   prompt for an independent agent to audit the work and choose the next
   ICLR-critical experiment.
@@ -276,3 +279,13 @@ its falsification controls are recorded in
 compute gate is implemented in
 `notebooks/13_jacobian_outcome_workspace_screen.ipynb`; it remains a
 feasibility screen rather than a preregistered Stage 13 confirmation.
+
+The returned Stage 13 screen stopped cleanly at its first scientific gate.
+The fixed eight-axis PCA dictionary reconstructed 20.18% of held-out effects
+versus 15.40% for its covariance-matched random control. Its 1.310 ratio passed
+the 1.25 requirement, but its 0.04781 absolute gain missed the 0.05 requirement
+by 0.00219. No Jacobian lens, coordinate test, causal swap, or ARGA comparison
+was run. The correct interpretation is therefore a borderline negative result
+for this fixed dictionary formulation, not evidence against a JEPA outcome
+workspace. The integrity checks and decision boundary are recorded in
+`audits/stage13/STAGE13_JOW_RESULT_AUDIT.md`.

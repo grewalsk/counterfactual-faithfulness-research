@@ -1,0 +1,31 @@
+{
+  "construction": [
+    5,
+    28,
+    45,
+    68,
+    77,
+    94,
+    0,
+    30
+  ],
+  "calibration": [
+    34,
+    63,
+    80,
+    39
+  ],
+  "construction_task_ids": [
+    0,
+    3,
+    5,
+    8,
+    9,
+    11
+  ],
+  "calibration_task_ids": [
+    4,
+    7,
+    10
+  ]
+}
