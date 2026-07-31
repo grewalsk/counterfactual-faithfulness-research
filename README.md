@@ -53,6 +53,9 @@ downloaded Colab result bundles.
 - `docs/RESEARCH_STATE_AFTER_STAGE11_AND_ICLR_ROADMAP.md` — audited synthesis
   of the full evidence chain, the remaining mathematical failure, and the
   proposed shared goal-metric bridge.
+- `docs/STAGE13_JEPA_JACOBIAN_OUTCOME_WORKSPACE_IDEA.md` — post-Stage-12
+  ideation for a Jacobian-derived, causally tested outcome workspace in
+  intermediate JEPA-WM predictor layers; explicitly not a frozen protocol.
 - `docs/ICLR_RESEARCH_DECISION_AGENT_PROMPT.md` — adversarial, copy-ready
   prompt for an independent agent to audit the work and choose the next
   ICLR-critical experiment.
@@ -248,3 +251,13 @@ PSD target metric is impossible. It establishes that the tested fitting recipe
 did not convert the real action-geometry repair into robust goal-conditioned
 planning. The full independent judgment is in
 `audits/stage12/STAGE12_RESULT_AUDIT.md`.
+
+The leading post-Stage-12 research idea is a training-free causal diagnostic
+rather than another endpoint-metric sweep. It replaces the LLM J-space token
+vocabulary with a frozen dictionary of true counterfactual future-effect
+prototypes, derives intermediate predictor directions from average output
+Jacobians, and requires coordinate swaps, ablations, flexible downstream use,
+and layer localization before calling the result a workspace. The idea and
+its falsification controls are recorded in
+`docs/STAGE13_JEPA_JACOBIAN_OUTCOME_WORKSPACE_IDEA.md`; it is not yet a
+preregistered Stage 13 protocol.
