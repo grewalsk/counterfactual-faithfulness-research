@@ -1,5 +1,30 @@
 # Colab instructions
 
+## Stage 13b outcome-geometry diagnostic
+
+Notebook: `13b_outcome_geometry_diagnostic.ipynb`
+
+1. Open the notebook in a fresh Colab GPU runtime.
+2. Leave `RUN_MODE="full"` and `MOUNT_DRIVE=True`.
+3. Select a T4 or L4; no premium accelerator is required.
+4. Run all cells in order. No runtime restart is expected.
+5. Return `stage13b_result_bundle.zip` first. Retain
+   `stage13b_full_evidence_bundle.zip` on Drive for raw-token auditing.
+
+The full run uses 48 E1 states from the 12 existing PushT tasks and 32
+untouched states from eight new task clusters. It executes 13 fixed
+goal-independent actions, fits full-native dual PCA separately at horizons 1
+and 3, freezes one-SE ranks and local bandwidth before confirmation encoding,
+and evaluates 1,024 covariance nulls, 1,024 local task-block permutations, and
+10,000 task-first hierarchical bootstrap draws. It performs no training,
+Jacobians, activation edits, or ARGA evaluation.
+
+Plan for approximately 45–90 minutes and about 8 GiB of free Drive space on a
+T4/L4. Expected terminal markers are a confirmation freeze SHA-256, one of the
+five Stage 13b scientific decisions (or the smoke-only label), and paths for
+both ZIP files. The compact ZIP downloads automatically; the full evidence ZIP
+remains on Drive because it includes all target-token shards.
+
 ## Stage 13 compute-minimal JOW screen
 
 Notebook: `13_jacobian_outcome_workspace_screen.ipynb`

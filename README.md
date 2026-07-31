@@ -64,6 +64,9 @@ downloaded Colab result bundles.
 - `docs/STAGE13_JOW_OPTIMALITY_AUDIT.md` — pre-run audit separating workspace
   existence from ARGA treatment, freezing one shared lens across arms, and
   strengthening residual and activation-distribution controls.
+- `docs/STAGE13B_OUTCOME_GEOMETRY_PROTOCOL.md` — prospective, untouched-task
+  diagnostic separating global, horizon-specific, local, higher-rank, and
+  projection-artifact explanations for the failed Stage 13 dictionary.
 - `audits/stage13/STAGE13_JOW_RESULT_AUDIT.md` — independent integrity and
   numerical audit of the returned Stage 13 bundle, with a strict boundary
   between the failed dictionary screen and the untested JOW hypothesis.
@@ -109,6 +112,9 @@ downloaded Colab result bundles.
   compute-minimal PushT screen using streamed vector-Jacobian products,
   same-state coordinate swaps, matched controls, and conditional checkpoint
   evaluation.
+- `notebooks/13b_outcome_geometry_diagnostic.ipynb` — representation-only
+  native-token diagnostic with a hard E1-to-confirmation freeze boundary,
+  task-level inference, replicated covariance nulls, and no Jacobian compute.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.
 - `audits/` — independent post-run audits and supporting summaries.
 - `results/bundles/` — original Stage 1 through Stage 3 Colab ZIP bundles.
@@ -289,3 +295,12 @@ was run. The correct interpretation is therefore a borderline negative result
 for this fixed dictionary formulation, not evidence against a JEPA outcome
 workspace. The integrity checks and decision boundary are recorded in
 `audits/stage13/STAGE13_JOW_RESULT_AUDIT.md`.
+
+Stage 13b is implemented as the single authorized follow-up. It tests whether
+the failure arose from a global rank-eight assumption, horizon pooling,
+state-dependent geometry, or the original CountSketch projection. The default
+full run uses 48 previously unused E1 states and 32 untouched states from
+eight new task clusters. It freezes all selections before opening confirmation
+and contains no Jacobian or causal-intervention code. The exact protocol is in
+`docs/STAGE13B_OUTCOME_GEOMETRY_PROTOCOL.md`; the executable Colab is
+`notebooks/13b_outcome_geometry_diagnostic.ipynb`.
