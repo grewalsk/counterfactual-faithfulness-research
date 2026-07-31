@@ -6,6 +6,10 @@ The companion
 [`STAGE13_JOW_LITERATURE_AND_FALSIFICATION_PLAN.md`](STAGE13_JOW_LITERATURE_AND_FALSIFICATION_PLAN.md)
 separates direct evidence from analogy and specifies the proposed
 interchange-intervention test in greater detail.
+The
+[`STAGE13_JOW_COMPUTE_MINIMAL_COLAB.md`](STAGE13_JOW_COMPUTE_MINIMAL_COLAB.md)
+turns Phase 0 into a sequentially gated Colab design that can fail cheaply
+before any expanded run.
 
 ## Core idea
 
