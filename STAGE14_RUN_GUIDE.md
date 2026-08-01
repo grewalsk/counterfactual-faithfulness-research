@@ -95,8 +95,8 @@ durable Drive run directory and are committed by the full manifest.
 
 ## Local validation
 
-- Builder SHA-256: `18ca558f631d01c2f82e206e65b1c19b414d329529f0171049dbb1fdcec627d4`
-- Notebook SHA-256: `a2f0d7d504550a35eff98303e8412bd3415c55fcb443dc04c4fbbc946f4e30e0`
+- Builder SHA-256: `4df4d70c6875b0123758565f601cb8949317afe94ad356b19c351e444a9b23d9`
+- Notebook SHA-256: `8b070be216d0e7acad07dd9f31e1194f34b282aa37e35133b8a6c7c0c4ec55f6`
 - Static/reproducibility validator: passed
 - NumPy numerical tests: 6 passed
 - End-to-end frozen-model execution: requires the Colab GPU smoke run above

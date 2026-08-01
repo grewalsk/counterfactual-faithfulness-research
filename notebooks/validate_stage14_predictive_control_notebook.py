@@ -160,6 +160,17 @@ def validate_structure():
     shard = function_source(code_cells, "build_write_read_shard")
     if "metric_invariance_error" not in shard:
         raise AssertionError("hidden metric does not verify G@B invariance")
+    for precision_guard in [
+        "g_raw_all = np.asarray(g_raw_all, dtype=np.float64)",
+        "b_raw = np.asarray(b_raw, dtype=np.float64)",
+    ]:
+        if precision_guard not in shard:
+            raise AssertionError(
+                f"metric invariance reference is not float64: {precision_guard}"
+            )
+    directions = function_source(code_cells, "action_direction_payload")
+    if directions.count("astype(np.float64)") < 3:
+        raise AssertionError("action directions are not normalized in float64")
     adjoint = function_source(code_cells, "adjoint_chain_smoke")
     for safeguard in [
         "def suffix_scalar(",

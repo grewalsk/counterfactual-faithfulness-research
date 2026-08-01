@@ -1877,8 +1877,12 @@ def query_gradients_at_selected_block(record_id, horizon, pairs):
 
 def action_direction_payload(record_id, horizon):
     _, actions = state_model_inputs(record_id, horizon)
-    train = normalized_action_directions(actions, TRAIN_ACTION_INDICES)
-    test = normalized_action_directions(actions, TEST_ACTION_INDICES)
+    train = normalized_action_directions(
+        actions, TRAIN_ACTION_INDICES
+    ).astype(np.float64)
+    test = normalized_action_directions(
+        actions, TEST_ACTION_INDICES
+    ).astype(np.float64)
     test_values = (
         actions[:, TEST_ACTION_INDICES]
         .permute(1, 0, 2)
@@ -1895,7 +1899,7 @@ def action_direction_payload(record_id, horizon):
         .numpy()
         .reshape(-1, 1)
     )
-    raw_test = test_values - base
+    raw_test = (test_values - base).astype(np.float64)
     return train, test, raw_test
 
 
@@ -1927,13 +1931,21 @@ def build_write_read_shard(record, horizon):
     g_raw_all, context = query_gradients_at_selected_block(
         record_id, horizon, gradient_pairs
     )
-    g_raw_all = g_raw_all.reshape(len(gradient_pairs), -1)
+    # The metric transforms deliberately promote to float64. Promote the raw
+    # reference path too, otherwise the 102,400-term native contraction is
+    # accumulated in float32 and can create a false invariance failure.
+    g_raw_all = np.asarray(g_raw_all, dtype=np.float64).reshape(
+        len(gradient_pairs), -1
+    )
     targets = load_target_tokens(record_id)
     all_query_separations = np.asarray(
         [query_separation(targets, horizon, pair)[1] for pair in gradient_pairs],
         dtype=np.float64,
     )
-    b_raw, used_fallback = exact_action_jacobian(record_id, horizon, SELECTED_BLOCK)
+    b_raw, used_fallback = exact_action_jacobian(
+        record_id, horizon, SELECTED_BLOCK
+    )
+    b_raw = np.asarray(b_raw, dtype=np.float64)
     g_all, b = transform_jacobians(g_raw_all, b_raw)
     if record["split"] == "construction":
         g = g_all
