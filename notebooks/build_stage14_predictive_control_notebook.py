@@ -89,6 +89,57 @@ simulator_helpers = simulator_helpers.replace(
         payload = {
             "visual": np.asarray(env.render("rgb_array")).copy(),''',
 )
+cached_repo_setup = '''def configure_repo():
+    repo = CACHE_ROOT / "jepa-wms"
+    if not repo.exists():
+        subprocess.run(["git", "clone", REPO_URL, str(repo)], check=True)
+    subprocess.run(
+        ["git", "-C", str(repo), "fetch", "origin", REPO_COMMIT],
+        check=True,
+    )
+    subprocess.run(
+        ["git", "-C", str(repo), "checkout", "--detach", REPO_COMMIT],
+        check=True,
+    )
+    resolved = subprocess.check_output(
+        ["git", "-C", str(repo), "rev-parse", "HEAD"], text=True
+    ).strip()'''
+ephemeral_repo_setup = r'''def configure_repo():
+    # Google Drive is reliable for immutable model assets but not as a mutable
+    # Git worktree. Use a fresh runtime-local checkout and keep HF/Torch assets
+    # in the persistent cache configured by the setup cell.
+    repo = Path("/content") / f"stage14-jepa-wms-{REPO_COMMIT[:12]}"
+    if repo.exists():
+        shutil.rmtree(repo)
+
+    def run_git(command):
+        completed = subprocess.run(
+            command,
+            text=True,
+            capture_output=True,
+        )
+        if completed.returncode != 0:
+            raise RuntimeError(
+                "git repository setup failed\n"
+                f"command: {command!r}\n"
+                f"stdout:\n{completed.stdout}\n"
+                f"stderr:\n{completed.stderr}"
+            )
+        return completed
+
+    print(f"Preparing clean ephemeral JEPA-WM source at {repo}")
+    run_git(["git", "clone", "--no-checkout", REPO_URL, str(repo)])
+    run_git(["git", "-C", str(repo), "fetch", "origin", REPO_COMMIT])
+    run_git(["git", "-C", str(repo), "checkout", "--detach", REPO_COMMIT])
+    resolved = run_git(
+        ["git", "-C", str(repo), "rev-parse", "HEAD"]
+    ).stdout.strip()'''
+if cached_repo_setup not in simulator_helpers:
+    raise RuntimeError("Stage 11 repository setup source changed unexpectedly")
+simulator_helpers = simulator_helpers.replace(
+    cached_repo_setup,
+    ephemeral_repo_setup,
+)
 
 geometry_helpers = function_sources(
     GEOMETRY.read_text(), ["array_sha256", "frozen_action_bank"]

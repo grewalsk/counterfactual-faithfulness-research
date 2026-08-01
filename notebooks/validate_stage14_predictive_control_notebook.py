@@ -62,6 +62,10 @@ def validate_structure():
         "PROTOCOL_CONFIG_KEYS = (",
         "def build_protocol_config(",
         "CONFIG = build_protocol_config(globals(), PINNED)",
+        'repo = Path("/content") / f"stage14-jepa-wms-{REPO_COMMIT[:12]}"',
+        'run_git(["git", "clone", "--no-checkout", REPO_URL, str(repo)])',
+        "git repository setup failed",
+        "capture_output=True",
         "TARGET_STEPS = HORIZONS",
         "EXPECTED_CARRIER_CHANNELS = 400",
         "TRAIN_QUERY_PAIRS = [(1, 2), (3, 4), (5, 6), (7, 8)]",
@@ -132,6 +136,7 @@ def validate_structure():
         "SPARSE_PREDICTIVE_FRAME_NOT_CAUSAL",
         "manifest_rows(OUT, excluded_roots=compact_exclusions)",
         "for key, value in globals().copy().items()",
+        'repo = CACHE_ROOT / "jepa-wms"',
     ]
     present = [value for value in prohibited if value in joined]
     if present:
@@ -206,6 +211,11 @@ def validate_structure():
     save_scan = function_source(code_cells, "save_scan")
     if "np.float16" in save_scan:
         raise AssertionError("carrier scan still serializes evidence in float16")
+    repo_setup = function_source(code_cells, "configure_repo")
+    if 'Path("/content")' not in repo_setup or "shutil.rmtree(repo)" not in repo_setup:
+        raise AssertionError("repository setup is not a fresh ephemeral checkout")
+    if "completed.stderr" not in repo_setup:
+        raise AssertionError("repository setup does not preserve Git diagnostics")
 
     # Reproduce the Colab failure mode: an unrelated uppercase ambient mapping
     # contains a non-JSON object.  Only the generated protocol allowlist may
