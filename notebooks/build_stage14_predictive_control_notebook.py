@@ -42,6 +42,22 @@ def function_sources(source, names):
     return "\n\n\n".join(found[name] for name in names)
 
 
+def assigned_uppercase_names(source):
+    """Return the protocol constants assigned by one generated source cell."""
+    tree = ast.parse(source)
+    return tuple(
+        sorted(
+            {
+                node.id
+                for node in ast.walk(tree)
+                if isinstance(node, ast.Name)
+                and isinstance(node.ctx, ast.Store)
+                and node.id.isupper()
+            }
+        )
+    )
+
+
 stage11 = json.loads(STAGE11.read_text())
 stage11_helpers = "".join(stage11["cells"][4]["source"])
 simulator_helpers = function_sources(
@@ -299,6 +315,17 @@ assert not set(TRAIN_QUERY_PAIRS) & set(TEST_QUERY_PAIRS)
 assert FRAME_SPARSITY <= FRAME_ATOMS
 '''
 
+# Freeze an explicit allowlist while building the notebook.  Colab may inject
+# unrelated uppercase globals (including dictionaries containing ndarrays), so
+# the runtime must never discover protocol configuration by sweeping globals().
+configuration_keys = assigned_uppercase_names(configuration)
+configuration = (
+    configuration.rstrip()
+    + "\n\nPROTOCOL_CONFIG_KEYS = "
+    + repr(configuration_keys)
+    + "\n"
+)
+
 
 installation = r'''import subprocess
 import sys
@@ -373,15 +400,27 @@ if MOUNT_DRIVE:
     ensure_colab_drive()
     OUTPUT_DIR = DRIVE_OUTPUT_DIR
 
-CONFIG = {
-    key: value
-    for key, value in globals().copy().items()
-    if key.isupper()
-    and isinstance(value, (str, int, float, bool, list, tuple, dict))
-}
-CONFIG["PINNED"] = PINNED
+def build_protocol_config(namespace, pinned):
+    missing = [key for key in PROTOCOL_CONFIG_KEYS if key not in namespace]
+    if missing:
+        raise RuntimeError(f"missing frozen protocol configuration: {missing}")
+    config = {key: namespace[key] for key in PROTOCOL_CONFIG_KEYS}
+    config["PROTOCOL_CONFIG_KEYS"] = list(PROTOCOL_CONFIG_KEYS)
+    config["PINNED"] = list(pinned)
+    # Fail here with a protocol-specific error if a declared value ever ceases
+    # to be JSON-safe.  Ambient notebook globals are deliberately unreachable.
+    try:
+        json.dumps(config, sort_keys=True, allow_nan=False)
+    except (TypeError, ValueError) as error:
+        raise RuntimeError(
+            "a declared Stage 14 protocol value is not JSON serializable"
+        ) from error
+    return config
+
+
+CONFIG = build_protocol_config(globals(), PINNED)
 RUN_SIGNATURE = hashlib.sha256(
-    json.dumps(CONFIG, sort_keys=True).encode()
+    json.dumps(CONFIG, sort_keys=True, allow_nan=False).encode()
 ).hexdigest()
 OUT = Path(OUTPUT_DIR) / f"{RUN_MODE}_{RUN_SIGNATURE[:12]}"
 ASSET_DIR = OUT / "assets"

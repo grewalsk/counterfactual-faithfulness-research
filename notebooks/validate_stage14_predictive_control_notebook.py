@@ -59,6 +59,9 @@ def validate_structure():
     required = [
         'RUN_MODE = "smoke"',
         'NOTEBOOK_PROTOCOL_SHA256 = "',
+        "PROTOCOL_CONFIG_KEYS = (",
+        "def build_protocol_config(",
+        "CONFIG = build_protocol_config(globals(), PINNED)",
         "TARGET_STEPS = HORIZONS",
         "EXPECTED_CARRIER_CHANNELS = 400",
         "TRAIN_QUERY_PAIRS = [(1, 2), (3, 4), (5, 6), (7, 8)]",
@@ -128,6 +131,7 @@ def validate_structure():
         "NO_REUSABLE_PREDICTIVE_CONTROL_INTERFACE",
         "SPARSE_PREDICTIVE_FRAME_NOT_CAUSAL",
         "manifest_rows(OUT, excluded_roots=compact_exclusions)",
+        "for key, value in globals().copy().items()",
     ]
     present = [value for value in prohibited if value in joined]
     if present:
@@ -202,6 +206,20 @@ def validate_structure():
     save_scan = function_source(code_cells, "save_scan")
     if "np.float16" in save_scan:
         raise AssertionError("carrier scan still serializes evidence in float16")
+
+    # Reproduce the Colab failure mode: an unrelated uppercase ambient mapping
+    # contains a non-JSON object.  Only the generated protocol allowlist may
+    # enter CONFIG, so this must remain serializable.
+    namespace = {
+        "json": json,
+        "COLAB_AMBIENT_METADATA": {"array": object()},
+    }
+    exec(code_cells[0], namespace)
+    exec(function_source(code_cells, "build_protocol_config"), namespace)
+    config = namespace["build_protocol_config"](namespace, ["test-pin==1"])
+    if "COLAB_AMBIENT_METADATA" in config:
+        raise AssertionError("ambient Colab globals leaked into CONFIG")
+    json.dumps(config, sort_keys=True, allow_nan=False)
     return code_cells
 
 
