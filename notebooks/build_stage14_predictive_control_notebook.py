@@ -2049,6 +2049,26 @@ def adjoint_chain_smoke(record_id):
         (b_raw @ tangent).reshape(1, 256, EXPECTED_CARRIER_CHANNELS),
         device="cuda",
     )
+
+    def suffix_scalar(delta):
+        perturbed, _, _ = forward_with_carriers(
+            initial,
+            base,
+            horizon,
+            capture_blocks=[SELECTED_BLOCK],
+            intervention={"block": SELECTED_BLOCK, "delta": delta},
+            require_grad=True,
+        )
+        return torch.sum(perturbed[0] * direction)
+
+    zero_delta = torch.zeros_like(write)
+    _, exact_suffix = torch.autograd.functional.jvp(
+        suffix_scalar,
+        (zero_delta,),
+        (write,),
+        strict=True,
+        create_graph=False,
+    )
     epsilon = JVP_EPSILON
     with torch.inference_mode():
         plus, _, _ = forward_with_carriers(
@@ -2067,21 +2087,32 @@ def adjoint_chain_smoke(record_id):
         )
     finite = torch.sum(((plus[0] - minus[0]) / (2 * epsilon)) * direction)
     adjoint = torch.sum(g * write[0])
-    absolute_error = float(torch.abs(finite - adjoint).cpu())
-    error = float(
-        torch.abs(finite - adjoint)
-        / torch.clamp(torch.maximum(torch.abs(finite), torch.abs(adjoint)), min=1e-8)
+    exact_absolute_error = float(torch.abs(exact_suffix - adjoint).cpu())
+    exact_relative_error = float(
+        torch.abs(exact_suffix - adjoint)
+        / torch.clamp(
+            torch.maximum(torch.abs(exact_suffix), torch.abs(adjoint)), min=1e-8
+        )
+    )
+    finite_relative_error = float(
+        torch.abs(finite - exact_suffix)
+        / torch.clamp(
+            torch.maximum(torch.abs(finite), torch.abs(exact_suffix)), min=1e-8
+        )
     )
     result = {
         "finite_suffix_derivative": float(finite.cpu()),
+        "exact_suffix_jvp": float(exact_suffix.cpu()),
         "vjp_jvp_contraction": float(adjoint.cpu()),
-        "absolute_error": absolute_error,
-        "relative_error": error,
+        "exact_absolute_error": exact_absolute_error,
+        "exact_relative_error": exact_relative_error,
+        "finite_vs_exact_relative_error": finite_relative_error,
+        "finite_difference_epsilon": epsilon,
         "threshold": MAX_ADJOINT_RELATIVE_ERROR,
         "absolute_threshold": MAX_ADJOINT_ABS_ERROR,
         "passed": bool(
-            error <= MAX_ADJOINT_RELATIVE_ERROR
-            or absolute_error <= MAX_ADJOINT_ABS_ERROR
+            exact_relative_error <= MAX_ADJOINT_RELATIVE_ERROR
+            or exact_absolute_error <= MAX_ADJOINT_ABS_ERROR
         ),
     }
     write_json(ANALYSIS_DIR / "adjoint_chain_identity.json", result)

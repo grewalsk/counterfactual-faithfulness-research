@@ -160,6 +160,17 @@ def validate_structure():
     shard = function_source(code_cells, "build_write_read_shard")
     if "metric_invariance_error" not in shard:
         raise AssertionError("hidden metric does not verify G@B invariance")
+    adjoint = function_source(code_cells, "adjoint_chain_smoke")
+    for safeguard in [
+        "def suffix_scalar(",
+        "exact_suffix_jvp",
+        "exact_relative_error <= MAX_ADJOINT_RELATIVE_ERROR",
+        "finite_vs_exact_relative_error",
+    ]:
+        if safeguard not in adjoint:
+            raise AssertionError(f"exact adjoint safeguard missing: {safeguard}")
+    if "            error <= MAX_ADJOINT_RELATIVE_ERROR" in adjoint:
+        raise AssertionError("finite-difference error still gates the exact adjoint test")
     causal = function_source(code_cells, "run_causal_mediation")
     for control in [
         '"linear_full"',
