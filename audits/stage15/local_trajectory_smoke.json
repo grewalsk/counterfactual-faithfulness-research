@@ -1,0 +1,88 @@
+{
+  "status": "PASS",
+  "trajectories": [
+    {
+      "trajectory_id": 0,
+      "split": "construction",
+      "state_displacement": 76.00116884823252,
+      "path_contacts": 24,
+      "branch_contacts": 538,
+      "contact_branches": 63,
+      "free_branches": 2
+    },
+    {
+      "trajectory_id": 1,
+      "split": "evaluation",
+      "state_displacement": 72.25292743801992,
+      "path_contacts": 0,
+      "branch_contacts": 15,
+      "contact_branches": 4,
+      "free_branches": 61
+    },
+    {
+      "trajectory_id": 2,
+      "split": "construction",
+      "state_displacement": 72.25292743801985,
+      "path_contacts": 0,
+      "branch_contacts": 20,
+      "contact_branches": 3,
+      "free_branches": 62
+    },
+    {
+      "trajectory_id": 3,
+      "split": "evaluation",
+      "state_displacement": 72.28734631732056,
+      "path_contacts": 1,
+      "branch_contacts": 92,
+      "contact_branches": 15,
+      "free_branches": 50
+    },
+    {
+      "trajectory_id": 4,
+      "split": "construction",
+      "state_displacement": 83.94023377319354,
+      "path_contacts": 13,
+      "branch_contacts": 182,
+      "contact_branches": 37,
+      "free_branches": 28
+    },
+    {
+      "trajectory_id": 5,
+      "split": "evaluation",
+      "state_displacement": 80.58004935547334,
+      "path_contacts": 10,
+      "branch_contacts": 194,
+      "contact_branches": 31,
+      "free_branches": 34
+    },
+    {
+      "trajectory_id": 6,
+      "split": "construction",
+      "state_displacement": 72.25292743801991,
+      "path_contacts": 0,
+      "branch_contacts": 26,
+      "contact_branches": 6,
+      "free_branches": 59
+    },
+    {
+      "trajectory_id": 7,
+      "split": "evaluation",
+      "state_displacement": 72.6814397577878,
+      "path_contacts": 4,
+      "branch_contacts": 146,
+      "contact_branches": 23,
+      "free_branches": 42
+    }
+  ],
+  "states": 40,
+  "action_branches": 520,
+  "simulator_steps": 7960,
+  "initial_agent_block_pearson_x": 0.0,
+  "initial_agent_block_pearson_y": 3.672959372544519e-16,
+  "contact_branches": 182,
+  "free_branches": 338,
+  "total_branch_contacts": 1213,
+  "minimum_trajectory_displacement": 72.25292743801985,
+  "maximum_trajectory_displacement": 83.94023377319354,
+  "maximum_reset_continuation_error": 5.684341886080802e-14
+}

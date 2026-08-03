@@ -1,5 +1,20 @@
 # Colab instructions
 
+## Stage 15 fixed-reader longitudinal bundle pilot
+
+Notebook: `15_longitudinal_predictive_control_bundle.ipynb`
+
+Stage 15 tests whether the state-conditioned spatial field found offline after
+Stage 14 transports along exact PushT trajectories and supports causal physical
+prediction control. It freezes construction-only agent/block pose readers and
+one common action basis before opening evaluation trajectories, restores full
+agent/block dynamic state, extracts all six predictor blocks at five times per
+trajectory, and compares neighboring transported modes with support-matched,
+covariance-shaped, and time-shuffled controls.
+
+Follow `../STAGE15_RUN_GUIDE.md`. The local validation and 7,960-step physics
+smoke are already complete; do not spend a Colab run on smoke mode.
+
 ## Stage 13 compute-minimal JOW screen
 
 Notebook: `13_jacobian_outcome_workspace_screen.ipynb`
