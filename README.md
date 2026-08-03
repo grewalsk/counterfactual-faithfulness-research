@@ -74,10 +74,6 @@ downloaded Colab result bundles.
   Stage 15 reader gate, including dimension-matched random controls,
   coordinate-aware readers, renderer/token geometry, raw-file hashes, and a
   CPU-only reproduction script.
-- `docs/STAGE15_SPATIAL_FIELD_PAPER_IDEATION_AGENT_PROMPT.md` — adversarial,
-  copy-ready prompt for designing fresh confirmation, cross-model
-  generalization, selective causal coordinate operators, and a prospectively
-  predictive mathematical theory.
 - `docs/ICLR_RESEARCH_DECISION_AGENT_PROMPT.md` — adversarial, copy-ready
   prompt for an independent agent to audit the work and choose the next
   ICLR-critical experiment.
