@@ -1047,7 +1047,7 @@ READER_GATE = {}
 COMMON_ACTION_BASES = {}
 if not PIPELINE_FAILED:
     try:
-        MODEL, PREPROCESSOR = load_frozen_model()
+        MODEL, PREPROCESSOR, PREDICTOR, PREDICTOR_BLOCK_MODULES = load_frozen_model()
         encode_target_cache(CONSTRUCTION_RECORDS)
         READER_FREEZE = fit_fixed_readers(CONSTRUCTION_RECORDS)
         READER_ARRAYS, READER_PROJECTORS = load_fixed_readers()

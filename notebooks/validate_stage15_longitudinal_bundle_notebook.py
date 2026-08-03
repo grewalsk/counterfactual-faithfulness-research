@@ -154,6 +154,9 @@ def validate_structure():
     ]:
         if value not in fit_readers:
             raise AssertionError(f"reader-freeze safeguard missing: {value}")
+    model_loader = function_source(code_cells, "load_frozen_model")
+    if "return model, preprocessor, predictor, blocks" not in model_loader:
+        raise AssertionError("frozen-model loader return contract changed")
     reader_cell = next(
         source
         for source in code_cells
@@ -161,6 +164,11 @@ def validate_structure():
             "# Fit and freeze fixed physical readers before opening evaluation trajectories."
         )
     )
+    if (
+        "MODEL, PREPROCESSOR, PREDICTOR, PREDICTOR_BLOCK_MODULES = "
+        "load_frozen_model()"
+    ) not in reader_cell:
+        raise AssertionError("frozen-model loader return contract is not unpacked exactly")
     ordered = [
         reader_cell.index("READER_FREEZE = fit_fixed_readers"),
         reader_cell.index("verify_executed_notebook_through("),
