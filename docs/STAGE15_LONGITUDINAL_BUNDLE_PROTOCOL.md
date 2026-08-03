@@ -26,6 +26,8 @@ again for a single global frame.
   before evaluation targets are opened.
 - One six-dimensional DCT-like action-tangent basis in normalized executable
   action coordinates, identical at every state.
+- Exactly six directional JVPs are evaluated in that frozen basis; the
+  unused 30-coordinate horizon-3 action Jacobian is never materialized.
 - One construction-only channel metric per predictor block.
 - The primary causal assay uses predictor block 4 (zero-indexed block 3) at
   horizon 3. Other blocks and horizon 1 are robustness analyses.

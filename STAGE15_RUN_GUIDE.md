@@ -36,8 +36,11 @@ cannot authorize any claim and is unnecessary after the completed local tests.
 - 6 fixed physical readers and a common 6-dimensional action basis.
 - 16 adjacent evaluation transitions with matched causal controls.
 
-Allow roughly 2–4 hours on a G4, subject to the notebook's measured one-state
-benchmark. Raw resumable evidence may occupy roughly 5–8 GB in Drive; the
+Allow roughly 60–120 minutes on a G4, subject to the notebook's measured
+one-state benchmark. The implementation computes only the six preregistered
+action-tangent JVPs instead of an unused 30-dimensional Jacobian and batches
+each transition's causal controls. Raw resumable evidence may occupy roughly
+5–8 GB in Drive; the
 downloaded compact result bundle excludes those recomputable shards.
 
 ## Automatic stopping and outcomes

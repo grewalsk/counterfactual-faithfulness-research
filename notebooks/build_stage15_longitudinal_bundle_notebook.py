@@ -1230,11 +1230,12 @@ def fixed_reader_gradients_all_blocks(record_id, horizon):
     }
 
 
-def exact_action_jacobians_all_blocks(record_id, horizon):
+def exact_action_tangent_jacobians_all_blocks(record_id, horizon):
     initial, actions = state_model_inputs(record_id, horizon)
     base = actions[:, :1].detach()
     shape = tuple(base.shape)
     carrier_size = 256 * EXPECTED_CARRIER_CHANNELS
+    action_basis = COMMON_ACTION_BASES[horizon]
 
     def capture_function(flat_action):
         action = flat_action.reshape(shape)
@@ -1255,9 +1256,12 @@ def exact_action_jacobians_all_blocks(record_id, horizon):
     flat = base.reshape(-1).detach().requires_grad_(True)
     columns = []
     used_fallback = False
-    for coordinate in range(flat.numel()):
-        tangent = torch.zeros_like(flat)
-        tangent[coordinate] = 1.0
+    for direction_index in range(ACTION_BASIS_DIM):
+        tangent = torch.as_tensor(
+            action_basis[:, direction_index],
+            device=flat.device,
+            dtype=flat.dtype,
+        )
         try:
             _, value = torch.autograd.functional.jvp(
                 capture_function,
@@ -1274,8 +1278,10 @@ def exact_action_jacobians_all_blocks(record_id, horizon):
         columns.append(value.detach().float().cpu())
     combined = torch.stack(columns, dim=1).numpy()
     expected = len(ACTIVE_BLOCKS) * carrier_size
-    if combined.shape != (expected, flat.numel()):
-        raise RuntimeError(f"bad all-block action Jacobian shape {combined.shape}")
+    if combined.shape != (expected, ACTION_BASIS_DIM):
+        raise RuntimeError(
+            f"bad all-block action-tangent Jacobian shape {combined.shape}"
+        )
     matrices = {
         block: combined[
             index * carrier_size : (index + 1) * carrier_size
@@ -1308,7 +1314,7 @@ def build_operator_shard(record, horizon):
     if destination.exists():
         return
     g_raw = fixed_reader_gradients_all_blocks(record["record_id"], horizon)
-    b_raw, used_fallback = exact_action_jacobians_all_blocks(
+    b_raw, used_fallback = exact_action_tangent_jacobians_all_blocks(
         record["record_id"], horizon
     )
     action_basis = COMMON_ACTION_BASES[horizon]
@@ -1320,13 +1326,11 @@ def build_operator_shard(record, horizon):
     all_write_energy = []
     all_metric_error = []
     for block in ACTIVE_BLOCKS:
-        g, b_full = transform_block_operators(block, g_raw[block], b_raw[block])
-        b = b_full @ action_basis
+        g, b = transform_block_operators(block, g_raw[block], b_raw[block])
         k = g @ b
         native_k = (
             np.asarray(g_raw[block], dtype=np.float64)
             @ np.asarray(b_raw[block], dtype=np.float64)
-            @ action_basis
         )
         error = relative_error(k, native_k)
         if error > MAX_METRIC_INVARIANCE_ERROR:
@@ -1458,6 +1462,7 @@ if not PIPELINE_FAILED:
             "active_blocks": ACTIVE_BLOCKS,
             "reader_dimensions": len(READER_LABELS),
             "action_basis_dimensions": ACTION_BASIS_DIM,
+            "jvp_directions_per_state_horizon": ACTION_BASIS_DIM,
             "continue_after_benchmark": CONTINUE_AFTER_BENCHMARK,
         }
         write_json(OUT / "benchmark.json", BENCHMARK)
@@ -1808,15 +1813,20 @@ def native_norm_match_whitened(block, candidate, reference):
     return candidate * scale
 
 
-def causal_direction_response(record, payload, direction, label, null_draw=-1):
-    direction = np.asarray(direction, dtype=np.float64)
-    predicted = payload["G"] @ direction
-    native = whitened_to_native(PRIMARY_BLOCK, direction).reshape(
-        1, 256, EXPECTED_CARRIER_CHANNELS
+def causal_direction_responses(record, payload, conditions):
+    directions = np.stack(
+        [np.asarray(direction, dtype=np.float64) for _, direction, _ in conditions]
     )
+    predicted = directions @ payload["G"].T
+    native = np.stack(
+        [whitened_to_native(PRIMARY_BLOCK, direction) for direction in directions]
+    ).reshape(len(conditions), 256, EXPECTED_CARRIER_CHANNELS)
     delta = torch.as_tensor(native, device="cuda", dtype=torch.float32)
     initial, actions = state_model_inputs(record["record_id"], PRIMARY_HORIZON)
     base_actions = actions[:, :1]
+    batched_actions = base_actions.expand(
+        -1, len(conditions), -1
+    ).contiguous()
     with torch.inference_mode():
         baseline_tokens, _, _ = forward_with_carriers(
             initial,
@@ -1826,7 +1836,7 @@ def causal_direction_response(record, payload, direction, label, null_draw=-1):
         )
         plus_tokens, _, _ = forward_with_carriers(
             initial,
-            base_actions,
+            batched_actions,
             PRIMARY_HORIZON,
             capture_blocks=[PRIMARY_BLOCK],
             intervention={
@@ -1836,7 +1846,7 @@ def causal_direction_response(record, payload, direction, label, null_draw=-1):
         )
         minus_tokens, _, _ = forward_with_carriers(
             initial,
-            base_actions,
+            batched_actions,
             PRIMARY_HORIZON,
             capture_blocks=[PRIMARY_BLOCK],
             intervention={
@@ -1845,24 +1855,33 @@ def causal_direction_response(record, payload, direction, label, null_draw=-1):
             },
         )
         baseline = decode_fixed_physical(baseline_tokens)[0]
-        plus = decode_fixed_physical(plus_tokens)[0]
-        minus = decode_fixed_physical(minus_tokens)[0]
+        plus = decode_fixed_physical(plus_tokens)
+        minus = decode_fixed_physical(minus_tokens)
     observed = ((plus - minus) / (2.0 * CAUSAL_DOSE)).cpu().numpy()
-    zero_center_error = float(
-        torch.max(torch.abs((plus + minus) / 2.0 - baseline)).cpu()
-    )
-    return {
-        "label": label,
-        "null_draw": int(null_draw),
-        "predicted_effect": predicted,
-        "observed_effect": observed,
-        "predicted_norm": float(np.linalg.norm(predicted)),
-        "observed_norm": float(np.linalg.norm(observed)),
-        "linearity_cosine": matrix_cosine(predicted, observed),
-        "linearity_relative_error": relative_error(observed, predicted),
-        "central_nonlinearity": zero_center_error,
-        "native_patch_norm": float(np.linalg.norm(native)),
-    }
+    nonlinear = torch.max(
+        torch.abs((plus + minus) / 2.0 - baseline[None]), dim=1
+    ).values.cpu().numpy()
+    results = []
+    for index, (label, _direction, null_draw) in enumerate(conditions):
+        results.append(
+            {
+                "label": label,
+                "null_draw": int(null_draw),
+                "predicted_effect": predicted[index],
+                "observed_effect": observed[index],
+                "predicted_norm": float(np.linalg.norm(predicted[index])),
+                "observed_norm": float(np.linalg.norm(observed[index])),
+                "linearity_cosine": matrix_cosine(
+                    predicted[index], observed[index]
+                ),
+                "linearity_relative_error": relative_error(
+                    observed[index], predicted[index]
+                ),
+                "central_nonlinearity": float(nonlinear[index]),
+                "native_patch_norm": float(np.linalg.norm(native[index])),
+            }
+        )
+    return results
 
 
 def zero_edit_check(record):
@@ -1963,15 +1982,11 @@ def causal_transport_rows():
                         ("covariance_shaped_null", covariance, draw),
                     ]
                 )
-            condition_results = []
-            for label, direction, draw in conditions:
-                result = causal_direction_response(
-                    destination,
-                    destination_payload,
-                    direction,
-                    label,
-                    null_draw=draw,
-                )
+            condition_results = causal_direction_responses(
+                destination, destination_payload, conditions
+            )
+            for result in condition_results:
+                label = result["label"]
                 if label == "transported_neighbor":
                     source_effect = modes[source_index]["effect"]
                     result["source_destination_semantic_cosine"] = matrix_cosine(

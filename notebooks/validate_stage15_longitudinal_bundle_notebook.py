@@ -83,7 +83,7 @@ def validate_structure():
         'def common_action_basis(',
         'def fit_channel_metrics(',
         'def fixed_reader_gradients_all_blocks(',
-        'def exact_action_jacobians_all_blocks(',
+        'def exact_action_tangent_jacobians_all_blocks(',
         'def build_operator_shard(',
         'def permutation_geometry_summary(',
         'def causal_transport_rows(',
@@ -172,11 +172,15 @@ def validate_structure():
     for value in ["np.linalg.qr", "plus_indices", "ACTION_BASIS_DIM"]:
         if value not in action_basis:
             raise AssertionError(f"common action-basis safeguard missing: {value}")
-    extraction = function_source(code_cells, "exact_action_jacobians_all_blocks")
+    extraction = function_source(
+        code_cells, "exact_action_tangent_jacobians_all_blocks"
+    )
     for value in [
         "capture_blocks=ACTIVE_BLOCKS",
         "torch.autograd.functional.jvp(",
         "for block in ACTIVE_BLOCKS",
+        "for direction_index in range(ACTION_BASIS_DIM)",
+        "action_basis[:, direction_index]",
     ]:
         if value not in extraction:
             raise AssertionError(f"all-layer JVP extraction missing: {value}")
@@ -203,12 +207,13 @@ def validate_structure():
     ]:
         if value not in causal:
             raise AssertionError(f"causal control missing: {value}")
-    response = function_source(code_cells, "causal_direction_response")
+    response = function_source(code_cells, "causal_direction_responses")
     for value in [
         "CAUSAL_DOSE * delta",
         "-CAUSAL_DOSE * delta",
         "decode_fixed_physical",
         "linearity_cosine",
+        "batched_actions",
     ]:
         if value not in response:
             raise AssertionError(f"causal response safeguard missing: {value}")
