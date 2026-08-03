@@ -39,7 +39,9 @@ cannot authorize any claim and is unnecessary after the completed local tests.
 Allow roughly 60–120 minutes on a G4, subject to the notebook's measured
 one-state benchmark. The implementation computes only the six preregistered
 action-tangent JVPs instead of an unused 30-dimensional Jacobian and batches
-each transition's causal controls. Raw resumable evidence may occupy roughly
+each transition's causal controls. If the measured upper-bound ETA exceeds
+150 minutes, an automatic credit guard stops the run before the full operator
+sweep. Raw resumable evidence may occupy roughly
 5–8 GB in Drive; the
 downloaded compact result bundle excludes those recomputable shards.
 

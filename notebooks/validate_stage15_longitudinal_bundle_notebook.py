@@ -91,6 +91,8 @@ def validate_structure():
         '"covariance_shaped_null"',
         '"time_shuffled"',
         'REQUIRED_POSITIVE_CAUSAL_TRAJECTORIES = 4',
+        'MAX_ESTIMATED_TOTAL_MINUTES = 150.0',
+        'automatic credit guard stopped Stage 15',
         'positive_trajectories >= required_positive',
         '"local_positive"',
         '"transported_neighbor"',

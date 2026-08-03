@@ -119,6 +119,7 @@ except Exception:
 MOUNT_DRIVE = True
 DOWNLOAD_RESULTS = True
 CONTINUE_AFTER_BENCHMARK = True
+MAX_ESTIMATED_TOTAL_MINUTES = 150.0
 
 OUTPUT_DIR = "/content/counterfactual_faithfulness_stage15_bundle"
 DRIVE_OUTPUT_DIR = (
@@ -1464,9 +1465,16 @@ if not PIPELINE_FAILED:
             "action_basis_dimensions": ACTION_BASIS_DIM,
             "jvp_directions_per_state_horizon": ACTION_BASIS_DIM,
             "continue_after_benchmark": CONTINUE_AFTER_BENCHMARK,
+            "maximum_estimated_total_minutes": MAX_ESTIMATED_TOTAL_MINUTES,
         }
         write_json(OUT / "benchmark.json", BENCHMARK)
         print(json.dumps(BENCHMARK, indent=2))
+        if BENCHMARK["estimated_total_minutes"] > MAX_ESTIMATED_TOTAL_MINUTES:
+            raise RuntimeError(
+                "automatic credit guard stopped Stage 15 because the measured "
+                f"upper-bound ETA is {BENCHMARK['estimated_total_minutes']:.1f} "
+                f"minutes, above {MAX_ESTIMATED_TOTAL_MINUTES:.1f} minutes"
+            )
         if not CONTINUE_AFTER_BENCHMARK:
             raise RuntimeError(
                 "Benchmark complete. Set CONTINUE_AFTER_BENCHMARK=True to continue."
