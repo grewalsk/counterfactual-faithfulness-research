@@ -713,6 +713,10 @@ def main():
         },
     }
     write_json(output / "reader_failure_audit.json", payload)
+    write_json(
+        output / "raw_full_manifest.json",
+        json.loads((root / "full_manifest.json").read_text()),
+    )
     write_csv(output / "model_metrics.csv", metric_rows)
     write_csv(output / "construction_cv.csv", cv_rows)
     write_csv(output / "renderer_geometry.csv", renderer_rows)

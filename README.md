@@ -67,6 +67,17 @@ downloaded Colab result bundles.
 - `audits/stage13/STAGE13_JOW_RESULT_AUDIT.md` — independent integrity and
   numerical audit of the returned Stage 13 bundle, with a strict boundary
   between the failed dictionary screen and the untested JOW hypothesis.
+- `docs/STAGE15_LONGITUDINAL_BUNDLE_PROTOCOL.md` — source-bound test of a
+  fixed-reader, longitudinal predictive-control bundle with transported-mode
+  causal controls.
+- `audits/stage15/reader_failure_audit/` — complete local audit of the stopped
+  Stage 15 reader gate, including dimension-matched random controls,
+  coordinate-aware readers, renderer/token geometry, raw-file hashes, and a
+  CPU-only reproduction script.
+- `docs/STAGE15_SPATIAL_FIELD_PAPER_IDEATION_AGENT_PROMPT.md` — adversarial,
+  copy-ready prompt for designing fresh confirmation, cross-model
+  generalization, selective causal coordinate operators, and a prospectively
+  predictive mathematical theory.
 - `docs/ICLR_RESEARCH_DECISION_AGENT_PROMPT.md` — adversarial, copy-ready
   prompt for an independent agent to audit the work and choose the next
   ICLR-critical experiment.
@@ -289,3 +300,17 @@ was run. The correct interpretation is therefore a borderline negative result
 for this fixed dictionary formulation, not evidence against a JEPA outcome
 workspace. The integrity checks and decision boundary are recorded in
 `audits/stage13/STAGE13_JOW_RESULT_AUDIT.md`.
+
+Stage 15 then tested whether a fixed physical reader could support a
+longitudinal predictive-control assay. Its preregistered 192-dimensional flat
+CountSketch failed before any operators or causal shards were computed. A
+manifest-verified offline audit reproduced the failure and found that simply
+increasing random-sketch dimensionality did not repair it. Fixed linear
+coordinate moments did recover substantially more physical information and
+passed the old pooled gate at both horizons, supporting a spatially structured
+measurement hypothesis. This remains post-hoc and trajectory-fragile: each
+coordinate reader passed only one of four leave-one-evaluation-trajectory-out
+subsets. The next authorized scientific step is therefore an entirely fresh,
+reader-only confirmation—not a causal or bundle claim. The evidence and
+frozen next-step boundary are in
+`audits/stage15/reader_failure_audit/AUDIT.md`.

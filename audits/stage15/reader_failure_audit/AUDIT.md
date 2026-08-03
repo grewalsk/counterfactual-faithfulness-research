@@ -160,8 +160,12 @@ semantic measurement is independently validated.
 ## Files
 
 - `reader_failure_audit.json`: complete machine-readable results
+- `raw_full_manifest.json`: paths, sizes, and SHA-256 hashes for all 113 raw
+  evidence files; the 382 MB tensor bundle remains external to Git
 - `model_metrics.csv`: model/output R² table
 - `construction_cv.csv`: construction-only ridge selection losses
 - `renderer_geometry.csv`: per-example renderer/token-coordinate diagnostics
 - `reader_model_comparison.png`: compact comparison plot
 - `scripts/audit_stage15_reader_failure.py`: deterministic audit program
+- `RAW_EVIDENCE.md`: raw-bundle identity, retrieval location, and exact local
+  reproduction command
