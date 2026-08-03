@@ -169,6 +169,13 @@ def validate_structure():
         "load_frozen_model()"
     ) not in reader_cell:
         raise AssertionError("frozen-model loader return contract is not unpacked exactly")
+    for value in [
+        "len(PREDICTOR_BLOCK_MODULES) != len(PREDICTOR_BLOCKS)",
+        "isinstance(module, torch.nn.Module)",
+        'getattr(module, "register_forward_hook", None)',
+    ]:
+        if value not in reader_cell:
+            raise AssertionError(f"predictor block module runtime guard missing: {value}")
     ordered = [
         reader_cell.index("READER_FREEZE = fit_fixed_readers"),
         reader_cell.index("verify_executed_notebook_through("),
@@ -227,6 +234,15 @@ def validate_structure():
     ]:
         if value not in response:
             raise AssertionError(f"causal response safeguard missing: {value}")
+
+    carrier_forward = function_source(code_cells, "forward_with_carriers")
+    if (
+        "PREDICTOR_BLOCK_MODULES[block_index].register_forward_hook(hook)"
+        not in carrier_forward
+    ):
+        raise AssertionError("carrier hooks do not use loaded predictor block modules")
+    if "PREDICTOR_BLOCKS[block_index]" in carrier_forward:
+        raise AssertionError("carrier hooks confuse block indices with block modules")
 
     decision_cell = next(
         source

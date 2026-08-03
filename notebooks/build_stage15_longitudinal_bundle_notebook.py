@@ -340,6 +340,10 @@ model_helpers = function_sources(
     ],
 )
 model_helpers = model_helpers.replace("stage14-jepa-wms", "stage15-jepa-wms")
+model_helpers = model_helpers.replace(
+    "PREDICTOR_BLOCKS[block_index].register_forward_hook(hook)",
+    "PREDICTOR_BLOCK_MODULES[block_index].register_forward_hook(hook)",
+)
 
 
 design = r'''# Freeze trajectory paths, common action coordinates, and all null schedules.
@@ -1048,6 +1052,17 @@ COMMON_ACTION_BASES = {}
 if not PIPELINE_FAILED:
     try:
         MODEL, PREPROCESSOR, PREDICTOR, PREDICTOR_BLOCK_MODULES = load_frozen_model()
+        if len(PREDICTOR_BLOCK_MODULES) != len(PREDICTOR_BLOCKS):
+            raise RuntimeError(
+                "predictor block module/index count mismatch: "
+                f"{len(PREDICTOR_BLOCK_MODULES)} != {len(PREDICTOR_BLOCKS)}"
+            )
+        if not all(
+            isinstance(module, torch.nn.Module)
+            and callable(getattr(module, "register_forward_hook", None))
+            for module in PREDICTOR_BLOCK_MODULES
+        ):
+            raise RuntimeError("predictor block module contract failed")
         encode_target_cache(CONSTRUCTION_RECORDS)
         READER_FREEZE = fit_fixed_readers(CONSTRUCTION_RECORDS)
         READER_ARRAYS, READER_PROJECTORS = load_fixed_readers()
