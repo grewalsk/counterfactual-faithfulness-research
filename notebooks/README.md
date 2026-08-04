@@ -1,5 +1,20 @@
 # Colab instructions
 
+## Stage 17 finite action-contrast causal interchange
+
+Notebook: `17_finite_action_contrast_interchange.ipynb`
+
+Stage 17 tests whether a proper, construction-fitted part of the internal
+same-state action-contrast geometry causally transfers donor-specific predicted
+consequences. It uses finite activation interchanges only—no Jacobians—and
+scores held-out donor transfer with an independent output sketch. The complete
+activation swap is an on-manifold positive control, while shuffled-fit,
+empirical-span random, wrong-state, common-mode, negative-dose, and compression
+controls determine whether a smaller subspace is specifically causal.
+
+Follow `../STAGE17_RUN_GUIDE.md`. The full run requires Colab secrets
+`STAGE17_RUN_MODE=pilot` and `STAGE17_SOURCE_COMMIT=<full 40-hex commit>`.
+
 ## Stage 15 fixed-reader longitudinal bundle pilot
 
 Notebook: `15_longitudinal_predictive_control_bundle.ipynb`
