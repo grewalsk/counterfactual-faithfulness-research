@@ -760,6 +760,11 @@ model_and_construction = checked_replace(
     '        extract_baselines(CONSTRUCTION_RECORDS, ACTIVE_BLOCKS)',
     '        extract_baselines(CONSTRUCTION_RECORDS, [FIXED_BLOCK])',
 )
+model_and_construction = checked_replace(
+    model_and_construction,
+    "        if len(PREDICTOR_BLOCK_MODULES) != len(PREDICTOR_BLOCKS):",
+    "        if len(PREDICTOR_BLOCK_MODULES) != 6:",
+)
 
 
 construction_geometry = r'''# Verify the fixed block-4 construction geometry without selecting a layer.

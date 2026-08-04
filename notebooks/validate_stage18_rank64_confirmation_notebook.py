@@ -77,6 +77,7 @@ def validate_structure():
         "CAUSAL_RANDOM_DRAWS = 4",
         "CAUSAL_DOSES = [-0.5, 0.25, 0.5, 1.0]",
         "INTERVENTION_FORWARDS_PER_RECORD = 42",
+        "if len(PREDICTOR_BLOCK_MODULES) != 6:",
         "def candidate_action_bank(",
         "def physical_diversity_metrics(",
         "def projection_ablation_delta(",
@@ -116,6 +117,7 @@ def validate_structure():
         "coordinate_moments",
         "fit_fixed_readers",
         "SELECTED_BLOCK",
+        "len(PREDICTOR_BLOCKS)",
     ]
     present = [value for value in prohibited if value in joined]
     if present:
