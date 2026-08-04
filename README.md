@@ -74,6 +74,9 @@ downloaded Colab result bundles.
   action-contrast interchange test with no Jacobians.
 - `docs/STAGE18_RANK64_CONFIRMATION_PROTOCOL.md` — preregistered block-4,
   rank-64 sufficiency-and-necessity confirmation with fresh-run provenance.
+- `docs/STAGE19_UNSEEN_ACTION_TRANSFER_PROTOCOL.md` — exact-artifact,
+  no-refit transfer test across unseen directions, magnitudes, and temporal
+  action profiles.
 - `audits/stage15/reader_failure_audit/` — complete local audit of the stopped
   Stage 15 reader gate, including dimension-matched random controls,
   coordinate-aware readers, renderer/token geometry, raw-file hashes, and a
@@ -124,6 +127,8 @@ downloaded Colab result bundles.
   action-contrast causal interchange without Jacobians.
 - `notebooks/18_rank64_action_contrast_confirmation.ipynb` — fixed block-4,
   rank-64 causal confirmation with bidirectional intervention gates.
+- `notebooks/19_unseen_action_family_transfer.ipynb` — frozen Stage 18
+  subspace transfer across five prespecified unseen action families.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.
 - `audits/` — independent post-run audits and supporting summaries.
 - `results/bundles/` — original Stage 1 through Stage 3 Colab ZIP bundles.

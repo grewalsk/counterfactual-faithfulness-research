@@ -1,5 +1,20 @@
 # Colab instructions
 
+## Stage 19 frozen-subspace unseen-action transfer
+
+Notebook: `19_unseen_action_family_transfer.ipynb`
+
+Stage 19 imports the exact successful Stage 18 block-4 artifact by SHA-256 and
+tests it without refitting on interleaved directions, two unseen magnitudes,
+and two equal-impulse temporal profiles. Each family receives model-blind
+physical selection and separate sufficiency/necessity gates with frozen
+random, shuffled, wrong-state, common-mode, dose, and rank controls.
+
+Follow `../STAGE19_RUN_GUIDE.md`. A pilot requires
+`STAGE19_RUN_MODE=pilot`, `STAGE19_SOURCE_COMMIT=<full 40-hex commit>`, and a
+new `STAGE19_RUN_NONCE`. The successful Stage 18 raw subspace must remain in
+Google Drive at the exact expected hash.
+
 ## Stage 18 rank-64 action-contrast confirmation
 
 Notebook: `18_rank64_action_contrast_confirmation.ipynb`
