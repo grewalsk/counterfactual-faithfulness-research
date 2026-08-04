@@ -80,6 +80,7 @@ def validate_structure():
         "if len(PREDICTOR_BLOCK_MODULES) != 6:",
         "def candidate_action_bank(",
         "def physical_diversity_metrics(",
+        "def nested_orthonormalize_basis(",
         "def projection_ablation_delta(",
         "def action_contrast_energy_metrics(",
         "def exact_dynamic_restore_test(",
@@ -206,6 +207,23 @@ def validate_structure():
     ]:
         if value not in ablation:
             raise AssertionError(f"necessity algebra missing: {value}")
+
+    orthonormalize = function_source(code_cells, "nested_orthonormalize_basis")
+    for value in [
+        "gram = array.T @ array",
+        "upper = np.linalg.cholesky(gram).T",
+        "np.linalg.solve(upper.T, array.T).T",
+        "error > 1e-10",
+    ]:
+        if value not in orthonormalize:
+            raise AssertionError(f"stable basis correction missing: {value}")
+
+    fit_basis = function_source(code_cells, "fit_basis_gpu")
+    random_basis = function_source(code_cells, "random_basis_gpu")
+    if "nested_orthonormalize_basis(" not in fit_basis:
+        raise AssertionError("learned basis is not re-orthonormalized before freezing")
+    if "nested_orthonormalize_basis(" not in random_basis:
+        raise AssertionError("random basis is not re-orthonormalized before freezing")
 
     specs = function_source(code_cells, "intervention_specs")
     for value in [

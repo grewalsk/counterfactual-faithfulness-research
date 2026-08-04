@@ -8,9 +8,39 @@ from cf_faithfulness.stage18_rank_confirmation import (
     fit_dual_ridge_basis,
     fixed_derangement,
     lower_triangle_principal_overlap,
+    nested_orthonormalize_basis,
     physical_diversity_metrics,
     projection_ablation_delta,
 )
+
+
+def test_nested_orthonormalization_repairs_float_drift_and_preserves_prefixes():
+    rng = np.random.default_rng(1800)
+    orthonormal, _ = np.linalg.qr(rng.normal(size=(80, 12)))
+    upper = np.eye(12) + np.triu(rng.normal(scale=2e-5, size=(12, 12)))
+    drifted = orthonormal @ upper
+    stored = drifted.astype(np.float32)
+    repaired = nested_orthonormalize_basis(stored)
+    assert np.max(np.abs(repaired.T @ repaired - np.eye(12))) < 1e-10
+    for rank in [1, 4, 8, 12]:
+        left, _ = np.linalg.qr(stored[:, :rank].astype(np.float64))
+        assert np.allclose(
+            repaired[:, :rank] @ repaired[:, :rank].T,
+            left @ left.T,
+            atol=1e-9,
+            rtol=1e-9,
+        )
+
+
+def test_nested_orthonormalization_rejects_malformed_basis():
+    malformed = np.eye(8)
+    malformed[:, 1] = malformed[:, 0]
+    try:
+        nested_orthonormalize_basis(malformed)
+    except ValueError as error:
+        assert "small numerical perturbation" in str(error)
+    else:
+        raise AssertionError("rank-deficient basis was accepted")
 
 
 def test_projection_ablation_removes_only_selected_action_contrast():

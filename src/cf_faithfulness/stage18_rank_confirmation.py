@@ -28,6 +28,38 @@ from .stage17_action_contrast import (  # re-export the frozen Stage 17 algebra
 )
 
 
+def nested_orthonormalize_basis(basis):
+    """Stably orthonormalize columns while preserving every prefix span.
+
+    A thin QR would have the same mathematical property, but using the
+    Cholesky factor of the small Gram matrix is faster for the very tall
+    Stage 18 bases.  If ``G = B.T @ B = R.T @ R``, then ``Q = B @ inv(R)``.
+    Because ``R`` is upper triangular, ``Q[:, :r]`` spans ``B[:, :r]`` for
+    every prefix rank ``r`` used by the nested sensitivity analysis.
+    """
+
+    array = np.asarray(basis, dtype=np.float64)
+    if array.ndim != 2 or array.shape[0] < array.shape[1] or array.shape[1] == 0:
+        raise ValueError("basis must be a nonempty tall matrix")
+    if not np.all(np.isfinite(array)):
+        raise ValueError("basis contains nonfinite values")
+    gram = array.T @ array
+    eigenvalues = np.linalg.eigvalsh(gram)
+    if eigenvalues[0] < 0.5 or eigenvalues[-1] > 1.5:
+        raise ValueError(
+            "stored basis is not a small numerical perturbation of an "
+            "orthonormal basis"
+        )
+    upper = np.linalg.cholesky(gram).T
+    corrected = np.linalg.solve(upper.T, array.T).T
+    error = np.max(
+        np.abs(corrected.T @ corrected - np.eye(corrected.shape[1]))
+    )
+    if not np.isfinite(error) or error > 1e-10:
+        raise ValueError(f"basis re-orthonormalization failed: {error}")
+    return corrected
+
+
 def projection_ablation_delta(values, basis, dose=1.0):
     """Remove an action-centered component lying in ``span(basis)``.
 

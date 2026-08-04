@@ -87,6 +87,11 @@ empirical-action-span random bases are then frozen. Each random rank-128 basis
 is orthogonal to the primary rank-128 basis. The independent evaluation output
 sketch never participates in fitting or selection.
 
+Before freezing, each float32 GPU basis is re-orthonormalized in float64 with
+an upper-triangular Cholesky correction. This preserves every ordered prefix
+span used by the rank sensitivities while preventing serialization-scale
+orthogonality drift; malformed or rank-deficient bases fail closed.
+
 At every tested rank, learned, shuffled-fit, and four random subspaces receive
 exactly norm-matched dose-one sufficiency edits. The rank-64 primary also gets
 doses -0.5, 0.25, 0.5, and 1.0, plus wrong-state and common-mode controls.

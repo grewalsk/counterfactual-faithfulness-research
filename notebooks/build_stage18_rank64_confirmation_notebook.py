@@ -312,6 +312,7 @@ analysis_helpers = analysis_helpers.replace("Stage 17", "Stage 18")
 analysis_helpers += "\n\n\n" + function_sources(
     NUMERICAL.read_text(),
     [
+        "nested_orthonormalize_basis",
         "projection_ablation_delta",
         "action_contrast_energy_metrics",
         "physical_diversity_metrics",
@@ -893,7 +894,9 @@ def fit_basis_gpu(features, targets, penalty, max_rank):
     keep = min(int(max_rank), left.shape[1], int(torch.sum(singular > 1e-7).item()))
     if keep < int(ACTIVE_MAX_SUBSPACE_RANK):
         raise RuntimeError(f"ridge map rank {keep} is below required rank {ACTIVE_MAX_SUBSPACE_RANK}")
-    result = left[:, :keep].detach().cpu().numpy().astype(np.float32)
+    result = nested_orthonormalize_basis(
+        left[:, :keep].detach().cpu().numpy().astype(np.float64)
+    )
     singular_values = singular.detach().cpu().numpy().astype(np.float64)
     del x, y, gram, alpha, weight, left, singular
     torch.cuda.empty_cache()
@@ -914,7 +917,9 @@ def random_basis_gpu(features, rank, seed, excluded):
     diagonal = torch.abs(torch.diag(triangular))
     if int(torch.sum(diagonal > torch.max(diagonal) * 1e-6).item()) < int(rank):
         raise RuntimeError("empirical action span is too small for requested random rank")
-    result = basis[:, : int(rank)].detach().cpu().numpy().astype(np.float32)
+    result = nested_orthonormalize_basis(
+        basis[:, : int(rank)].detach().cpu().numpy().astype(np.float64)
+    )
     del x, excluded_tensor, coefficients, candidate, basis, triangular, diagonal
     torch.cuda.empty_cache()
     return result
@@ -982,6 +987,16 @@ def fit_and_freeze_subspaces():
         "primary_basis_shape": list(primary_basis.shape),
         "shuffled_basis_shape": list(shuffled_basis.shape),
         "random_draws": len(random_bases),
+        "primary_basis_orthonormality_max_error": float(np.max(np.abs(
+            primary_basis.T @ primary_basis - np.eye(primary_basis.shape[1])
+        ))),
+        "shuffled_basis_orthonormality_max_error": float(np.max(np.abs(
+            shuffled_basis.T @ shuffled_basis - np.eye(shuffled_basis.shape[1])
+        ))),
+        "random_basis_orthonormality_max_errors": [
+            float(np.max(np.abs(basis.T @ basis - np.eye(basis.shape[1]))))
+            for basis in random_bases
+        ],
         "random_bases_orthogonal_to_primary_max_rank": True,
         "shuffled_primary_overlap": lower_triangle_principal_overlap(
             primary_basis[:, :ACTIVE_PRIMARY_RANK], shuffled_basis[:, :ACTIVE_PRIMARY_RANK]
