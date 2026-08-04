@@ -1,5 +1,20 @@
 # Colab instructions
 
+## Stage 20 frozen-subspace causal planner steering
+
+Notebook: `20_causal_planner_steering.ipynb`
+
+Stage 20 binds the exact successful Stage 18 subspace and Stage 19 decision,
+then tests whether targeted internal edits causally move predicted scores,
+near-frontier action ranks, and the model's numerical action choice. It uses
+two fresh transferred action families and no visual evaluation, human scoring,
+training, or subspace refitting.
+
+Follow `../STAGE20_RUN_GUIDE.md`. A pilot requires
+`STAGE20_RUN_MODE=pilot`, `STAGE20_SOURCE_COMMIT=<full 40-hex commit>`, and a
+new `STAGE20_RUN_NONCE`. Keep both successful prior run directories and their
+provenance files in Drive.
+
 ## Stage 19 frozen-subspace unseen-action transfer
 
 Notebook: `19_unseen_action_family_transfer.ipynb`
