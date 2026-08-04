@@ -61,6 +61,8 @@ def validate_structure():
         "STAGE18_RUN_MODE",
         "STAGE18_SOURCE_COMMIT",
         "STAGE18_RUN_NONCE",
+        ").strip().lower()",
+        'f"received {RUN_MODE!r}"',
         'PROTOCOL_ID = "stage18-rank64-action-contrast-confirmation-v1"',
         "FRESH_RUN_REQUIRED = True",
         "FIXED_BLOCK = 4",

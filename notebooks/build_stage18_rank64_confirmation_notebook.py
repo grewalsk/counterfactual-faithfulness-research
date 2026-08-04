@@ -127,11 +127,15 @@ RUN_NONCE = "smoke"
 try:
     from google.colab import userdata as _colab_userdata
 
-    RUN_MODE = _colab_userdata.get("STAGE18_RUN_MODE") or RUN_MODE
+    RUN_MODE = str(
+        _colab_userdata.get("STAGE18_RUN_MODE") or RUN_MODE
+    ).strip().lower()
     EXPERIMENT_SOURCE_REF = (
         _colab_userdata.get("STAGE18_SOURCE_COMMIT") or EXPERIMENT_SOURCE_REF
-    )
-    RUN_NONCE = _colab_userdata.get("STAGE18_RUN_NONCE") or RUN_NONCE
+    ).strip()
+    RUN_NONCE = str(
+        _colab_userdata.get("STAGE18_RUN_NONCE") or RUN_NONCE
+    ).strip()
 except Exception:
     pass
 
@@ -244,7 +248,10 @@ elif RUN_MODE == "pilot":
     ACTIVE_CAUSAL_DOSES = CAUSAL_DOSES
     ACTIVE_BOOTSTRAP_DRAWS = BOOTSTRAP_DRAWS
 else:
-    raise ValueError("RUN_MODE must be 'smoke' or 'pilot'")
+    raise ValueError(
+        "STAGE18_RUN_MODE must contain only smoke or pilot; "
+        f"received {RUN_MODE!r}"
+    )
 
 REPO_URL = "https://github.com/facebookresearch/jepa-wms.git"
 REPO_COMMIT = "13cf1d9c7e476f53c17714d2e0f1dc239a883ce0"
