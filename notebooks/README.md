@@ -1,5 +1,20 @@
 # Colab instructions
 
+## Stage 18 rank-64 action-contrast confirmation
+
+Notebook: `18_rank64_action_contrast_confirmation.ipynb`
+
+Stage 18 freezes the Stage 17 block-4/rank-64 hypothesis and tests both
+sufficiency (donor-action contrast transfer) and necessity (selective removal
+of native action-dependent output energy). It uses 24 construction and 32
+held-out evaluation trajectories, model-blind simulator eligibility, nested
+rank sensitivities, shuffled-fit and empirical-span controls, and fresh-run
+provenance. It uses no Jacobians.
+
+Follow `../STAGE18_RUN_GUIDE.md`. A confirmatory run requires Colab secrets
+`STAGE18_RUN_MODE=pilot`, `STAGE18_SOURCE_COMMIT=<full 40-hex commit>`, and a
+new `STAGE18_RUN_NONCE`.
+
 ## Stage 17 finite action-contrast causal interchange
 
 Notebook: `17_finite_action_contrast_interchange.ipynb`
