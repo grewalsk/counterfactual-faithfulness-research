@@ -1,5 +1,20 @@
 # Colab instructions
 
+## Stage 21 coherent interface and held-out utility
+
+Notebook: `21_coherent_interface_and_heldout_utility.ipynb`
+
+Stage 21 first checks whether complete candidate swaps become exact after the
+last action-conditioned predictor block. It then fits equal-budget,
+goal-independent pose-error corrections from the frozen learned, shuffled, and
+random rank-128 coordinates. Evaluation score vectors and selected actions are
+frozen before evaluation endpoint truth is opened.
+
+Follow `../STAGE21_RUN_GUIDE.md`. A pilot requires
+`STAGE21_RUN_MODE=pilot`, `STAGE21_SOURCE_COMMIT=<full 40-hex commit>`, and a
+new `STAGE21_RUN_NONCE`. Keep the complete successful Stage 18, Stage 19, and
+Stage 20 Drive directories.
+
 ## Stage 20 frozen-subspace causal planner steering
 
 Notebook: `20_causal_planner_steering.ipynb`
