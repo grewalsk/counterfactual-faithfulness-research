@@ -796,6 +796,7 @@ def freeze_evaluation_predictions_and_choices():
             "baseline": {
                 "selected_action": int(np.argmin(baseline_scores)),
                 "score_sha256": array_sha256(baseline_scores),
+                "coordinate_record_id": record_id,
             }
         }
         for condition in correction_condition_names():
@@ -803,6 +804,7 @@ def freeze_evaluation_predictions_and_choices():
             condition_map[condition] = {
                 "selected_action": int(np.argmin(scores)),
                 "score_sha256": array_sha256(scores),
+                "coordinate_record_id": record_id,
             }
         wrong_id = int(WRONG_EVALUATION_RECORD[str(record_id)])
         _, _, scores = correction_prediction(
@@ -860,6 +862,17 @@ def freeze_evaluation_predictions_and_choices():
                 }
             )
         targets[str(record_id)] = entries
+    choice_schema = {
+        "record_id",
+        "trajectory_id",
+        "action_family",
+        "condition",
+        "selected_action",
+        "score_sha256",
+        "coordinate_record_id",
+    }
+    if any(set(row) != choice_schema for row in choice_rows):
+        raise RuntimeError("evaluation choice rows do not share one frozen schema")
     write_csv(DESIGN_DIR / "evaluation_choice_rows.csv", choice_rows)
     write_csv(DESIGN_DIR / "interface_target_rows.csv", target_rows)
     freeze = {

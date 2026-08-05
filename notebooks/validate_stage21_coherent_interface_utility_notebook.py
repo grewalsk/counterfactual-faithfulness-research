@@ -109,6 +109,9 @@ def validate():
     assert "endpoint_states" not in freeze_function
     assert "score_sha256" in freeze_function
     assert "selected_action" in freeze_function
+    assert freeze_function.count('"coordinate_record_id": record_id') == 2
+    assert '"coordinate_record_id": wrong_id' in freeze_function
+    assert "if any(set(row) != choice_schema for row in choice_rows)" in freeze_function
     truth_function = function_source(code_cells, "true_pose_for_record")
     assert "EVALUATION_ENDPOINT_TRUTH_OPENED" in truth_function
     assert "sealed until all evaluation choices are frozen" in truth_function
