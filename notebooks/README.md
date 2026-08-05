@@ -1,5 +1,21 @@
 # Colab instructions
 
+## Stage 22 latent hybrid gate interaction
+
+Notebook: `22_latent_hybrid_gate_interaction.ipynb`
+
+Stage 22 asks whether JEPA-WM contains a genuine event-gated hybrid mechanism,
+not merely a predictive action subspace. It discovers a two-mode split using
+construction activations and predicted consequences only, freezes a gate
+direction and an orthogonal rank-32 effect subspace, and then runs an exact
+held-out 2-by-2 gate/effect intervention. Simulator contact is withheld until
+the discovery, block choice, and evaluation pairs have been frozen.
+
+Follow `../STAGE22_RUN_GUIDE.md`. A pilot requires
+`STAGE22_RUN_MODE=pilot`, `STAGE22_SOURCE_COMMIT=<full 40-hex commit>`, and a
+new `STAGE22_RUN_NONCE`. Stage 22 is standalone and does not import prior-stage
+artifacts.
+
 ## Stage 21 coherent interface and held-out utility
 
 Notebook: `21_coherent_interface_and_heldout_utility.ipynb`

@@ -83,6 +83,9 @@ downloaded Colab result bundles.
 - `docs/STAGE21_COHERENT_INTERFACE_UTILITY_PROTOCOL.md` — final-block handoff
   localization plus goal-independent, split-safe correction of held-out
   physical action selection.
+- `docs/STAGE22_HYBRID_GATE_PROTOCOL.md` — falsification-first test for a
+  label-free latent event gate whose causal effect is expressed through a
+  separate low-rank consequence subspace.
 - `audits/stage15/reader_failure_audit/` — complete local audit of the stopped
   Stage 15 reader gate, including dimension-matched random controls,
   coordinate-aware readers, renderer/token geometry, raw-file hashes, and a
@@ -139,6 +142,9 @@ downloaded Colab result bundles.
   near-frontier action ranks and choices with the frozen Stage 18 subspace.
 - `notebooks/21_coherent_interface_and_heldout_utility.ipynb` — separates a
   coherent last-block intervention check from held-out causal-subspace utility.
+- `notebooks/22_latent_hybrid_gate_interaction.ipynb` — discovers a two-mode
+  internal partition without simulator contact labels, then tests its held-out
+  physical alignment and gate-by-effect causal interaction.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.
 - `audits/` — independent post-run audits and supporting summaries.
 - `results/bundles/` — original Stage 1 through Stage 3 Colab ZIP bundles.
