@@ -1,5 +1,21 @@
 # Colab instructions
 
+## Stage 26 contact-frame causal transport
+
+Notebook: `26_contact_frame_causal_transport.ipynb`
+
+Stage 26 tests whether contact computation occupies a spatial causal response
+fiber that moves with the contact point and normal. Construction-only data
+select one predictor block and freeze a rank-at-most-four canonical fiber.
+Sealed evaluation transports natural low-impulse donor coordinates into the
+recipient contact frame and compares them with world-axis, donor-location,
+random-local, reverse-sign, and full-local-swap controls. It uses finite
+forwards only and exact ordinary-versus-collision-disabled simulator targets.
+
+Follow `../STAGE26_RUN_GUIDE.md`. A pilot requires
+`STAGE26_RUN_MODE=pilot`, `STAGE26_SOURCE_COMMIT=<full 40-hex commit>`, and a
+new `STAGE26_RUN_NONCE`. Keep the complete successful Stage 25 Drive directory.
+
 ## Stage 25 causal KKT tomography
 
 Notebook: `25_causal_kkt_tomography.ipynb`

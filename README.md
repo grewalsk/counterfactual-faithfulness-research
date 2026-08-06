@@ -89,6 +89,10 @@ downloaded Colab result bundles.
 - `docs/STAGE25_CAUSAL_KKT_TOMOGRAPHY_PROTOCOL.md` — paired-contact
   counterfactual and finite-intervention test of a causally used latent
   contact-impulse coordinate, with the Stage 23 mode coordinates protected.
+- `docs/STAGE26_CONTACT_FRAME_CAUSAL_TRANSPORT_PROTOCOL.md` — construction-only
+  discovery and sealed finite transport of a contact-frame causal response
+  fiber, with world-axis, location, local-random, reverse, and full-swap
+  controls.
 - `audits/stage15/reader_failure_audit/` — complete local audit of the stopped
   Stage 15 reader gate, including dimension-matched random controls,
   coordinate-aware readers, renderer/token geometry, raw-file hashes, and a
@@ -148,6 +152,9 @@ downloaded Colab result bundles.
 - `notebooks/22_latent_hybrid_gate_interaction.ipynb` — discovers a two-mode
   internal partition without simulator contact labels, then tests its held-out
   physical alignment and gate-by-effect causal interaction.
+- `notebooks/26_contact_frame_causal_transport.ipynb` — tests whether a
+  state-conditioned spatial contact fiber causally transports natural donor
+  coordinates across held-out contact geometries.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.
 - `audits/` — independent post-run audits and supporting summaries.
 - `results/bundles/` — original Stage 1 through Stage 3 Colab ZIP bundles.
