@@ -93,6 +93,8 @@ downloaded Colab result bundles.
   discovery and sealed finite transport of a contact-frame causal response
   fiber, with world-axis, location, local-random, reverse, and full-swap
   controls.
+- `STAGE27_RUN_GUIDE.md` — no-secret Colab handoff for the source-bound finite
+  action-commutator experiment.
 - `audits/stage15/reader_failure_audit/` — complete local audit of the stopped
   Stage 15 reader gate, including dimension-matched random controls,
   coordinate-aware readers, renderer/token geometry, raw-file hashes, and a
@@ -155,6 +157,9 @@ downloaded Colab result bundles.
 - `notebooks/26_contact_frame_causal_transport.ipynb` — tests whether a
   state-conditioned spatial contact fiber causally transports natural donor
   coordinates across held-out contact geometries.
+- `notebooks/27_causal_action_commutator.ipynb` — tests whether equal-control
+  pulse order creates contact-amplified physical and model commutators and
+  whether the frozen Stage 18 carrier causally mediates them.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.
 - `audits/` — independent post-run audits and supporting summaries.
 - `results/bundles/` — original Stage 1 through Stage 3 Colab ZIP bundles.
