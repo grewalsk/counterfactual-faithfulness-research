@@ -1,5 +1,21 @@
 # Colab instructions
 
+## Stage 25 causal KKT tomography
+
+Notebook: `25_causal_kkt_tomography.ipynb`
+
+Stage 25 tests whether the contact-aligned variable found earlier is the active
+set of a richer, causally used latent contact-impulse computation. It creates
+ordinary and agent–block-collision-disabled PushT counterfactuals from the same
+dynamic state, records exact Pymunk contact impulses, freezes a
+construction-only two-coordinate impulse readout, and erases those coordinates
+on held-out states while protecting the eight Stage 23 mode coordinates.
+
+Follow `../STAGE25_RUN_GUIDE.md`. A pilot requires
+`STAGE25_RUN_MODE=pilot`, `STAGE25_SOURCE_COMMIT=<full 40-hex commit>`, and a
+new `STAGE25_RUN_NONCE`. Keep the complete source-bound Stage 24 Drive run at
+the path specified in the guide.
+
 ## Stage 22 latent hybrid gate interaction
 
 Notebook: `22_latent_hybrid_gate_interaction.ipynb`

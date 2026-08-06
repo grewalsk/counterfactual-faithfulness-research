@@ -86,6 +86,9 @@ downloaded Colab result bundles.
 - `docs/STAGE22_HYBRID_GATE_PROTOCOL.md` — falsification-first test for a
   label-free latent event gate whose causal effect is expressed through a
   separate low-rank consequence subspace.
+- `docs/STAGE25_CAUSAL_KKT_TOMOGRAPHY_PROTOCOL.md` — paired-contact
+  counterfactual and finite-intervention test of a causally used latent
+  contact-impulse coordinate, with the Stage 23 mode coordinates protected.
 - `audits/stage15/reader_failure_audit/` — complete local audit of the stopped
   Stage 15 reader gate, including dimension-matched random controls,
   coordinate-aware readers, renderer/token geometry, raw-file hashes, and a
