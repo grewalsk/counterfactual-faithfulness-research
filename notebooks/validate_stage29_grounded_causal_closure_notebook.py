@@ -107,6 +107,16 @@ def validate():
     assert assigned_value(tree, "EXPECTED_STAGE28_SOURCE_COMMIT") == "917228edb9e7143c58bdd9640afe08ead75fa34c"
     assert assigned_value(tree, "EXPECTED_STAGE28_RECORDS") == 36
     assert assigned_value(tree, "EXPECTED_STAGE28_MAGNITUDES") == [0.10, 0.14, 0.18, 0.22]
+    assert assigned_value(tree, "SCHEDULE_STRINGS") == [
+        "uuuuuvvvvv",
+        "uuvuuvvuvv",
+        "uvuvuvuvuv",
+        "vuvuvuvuvu",
+        "vvuvvuuvuu",
+        "vvvvvuuuuu",
+    ]
+    assert assigned_value(tree, "SCHEDULE_INVERSION_COUNTS") == [0, 5, 10, 15, 20, 25]
+    assert assigned_value(tree, "SIGNED_AREA_LEVELS") == [25, 15, 5, -5, -15, -25]
     assert assigned_value(tree, "PRIMARY_RANK") == 128
     assert assigned_value(tree, "PILOT_INTERVENTION_FORWARDS_PER_RECORD") == 9
     assert "token_hex(4)" in config
@@ -115,6 +125,29 @@ def validate():
         assert forbidden not in "\n".join(code_cells)
 
     joined = "\n".join(code_cells)
+    config_names = {
+        target.id
+        for node in ast.parse(config).body
+        if isinstance(node, ast.Assign)
+        for target in node.targets
+        if isinstance(target, ast.Name)
+    }
+    helper_tree = ast.parse(code_cells[3])
+    default_names = set()
+    for node in helper_tree.body:
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        defaults = list(node.args.defaults) + [
+            value for value in node.args.kw_defaults if value is not None
+        ]
+        for default in defaults:
+            default_names.update(
+                child.id for child in ast.walk(default) if isinstance(child, ast.Name)
+            )
+    assert default_names <= config_names | {"None", "True", "False"}, (
+        "helper default arguments reference undefined configuration names: "
+        f"{sorted(default_names - config_names)}"
+    )
     for required in [
         "def encode_true_tokens(",
         "def tensor_area_component(",
