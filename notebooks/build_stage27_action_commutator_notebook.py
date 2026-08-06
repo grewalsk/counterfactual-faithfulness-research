@@ -1400,9 +1400,9 @@ def model_commutator_gate():
     if not contact:
         raise RuntimeError("model commutator evidence contains no contact pairs")
     dimensions = sorted(
-        int(key.split("_")[-1])
+        int(key.removeprefix("truth_"))
         for key in contact[0]
-        if key.startswith("truth_")
+        if key.startswith("truth_") and key.removeprefix("truth_").isdigit()
     )
     predicted = np.asarray([
         [row[f"predicted_{value}"] for value in dimensions] for row in contact
