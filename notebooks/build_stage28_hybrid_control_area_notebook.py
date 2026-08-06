@@ -215,8 +215,8 @@ REPO_URL = "https://github.com/facebookresearch/jepa-wms.git"
 REPO_COMMIT = "13cf1d9c7e476f53c17714d2e0f1dc239a883ce0"
 EXPECTED_HF_REVISION = "9b9c41ef249466630dbf1a20e78391865d07b3b9"
 EXPECTED_PRETRAINED_ASSET_SHA256 = {
-    "jepa_wm_pusht.pth.tar": "5bd5da68d7198d79a589026e6fe3980ef72e4420d0c00199d90919bb71d9f743",
-    "jepa_wm_pusht_decoder.pth.tar": "a28d210fa75a0ea7350fe5842664d5437ca37f92ca343fd0a6305410c6c5ea42",
+    "jepa_wm_pusht.pth.tar": "9beca3eafe0739c3b3adb5d734fa435ccbda0fea8a65d53d4cccec176aaaa0eb",
+    "dinov2_vits14_pretrain.pth": "b938bf1bc15cd2ec0feacfe3a1bb553fe8ea9ca46a7e1d8d00217f29aef60cd9",
 }
 ASSET_REPOSITORY = "grewalsk/counterfactual-faithfulness-research"
 ASSET_COMMIT = "2326e74556f6f81db2560e4396f4cc52c16a28f4"

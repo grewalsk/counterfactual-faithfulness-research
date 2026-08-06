@@ -70,6 +70,12 @@ def validate():
     assert assigned_value(tree, "PRIMARY_RANK") == 128
     assert assigned_value(tree, "SENSITIVITY_RANKS") == [64, 128]
     assert assigned_value(tree, "INTERVENTION_FORWARDS_PER_RECORD") == 30
+    assert assigned_value(tree, "EXPECTED_PRETRAINED_ASSET_SHA256") == {
+        "jepa_wm_pusht.pth.tar":
+            "9beca3eafe0739c3b3adb5d734fa435ccbda0fea8a65d53d4cccec176aaaa0eb",
+        "dinov2_vits14_pretrain.pth":
+            "b938bf1bc15cd2ec0feacfe3a1bb553fe8ea9ca46a7e1d8d00217f29aef60cd9",
+    }
     assert assigned_value(tree, "ASSET_SPECS") == {
         "physical_decoders.pt": {
             "path": "results/bundles/stage12_result_bundle/frozen_training_decoders/"
