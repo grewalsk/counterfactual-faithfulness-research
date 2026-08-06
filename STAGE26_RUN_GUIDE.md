@@ -25,9 +25,12 @@ or selectively rerun source-bound cells.
 The run creates new paired simulator truth for two 100-state pools, opens 40
 construction and 40 evaluation states, captures all six blocks only on
 construction, then runs six patched candidate batches per evaluation state.
-Plan for approximately 15--35 minutes after cached dependency/checkpoint
-downloads. Simulator rendering is mostly CPU-bound, and the notebook prints a
-machine-specific estimate for its evaluation-forward phase.
+Plan for approximately 8--20 minutes after cached dependency/checkpoint
+downloads on an L4/G4-class runtime. A first runtime may add several minutes
+for installation and verified asset downloads. Simulator rendering is mostly
+CPU-bound, and the notebook prints a machine-specific estimate for its
+evaluation-forward phase; a fast GPU does not greatly accelerate truth
+generation.
 
 Keep the complete new Drive directory. The final cell also downloads
 `stage26_contact_transport_result_bundle_<signature>.zip` containing the
