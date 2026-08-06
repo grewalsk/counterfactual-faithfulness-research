@@ -1,5 +1,23 @@
 # Colab instructions
 
+## Stage 29 grounded causal closure
+
+Notebook: `29_grounded_causal_closure.ipynb`
+
+Stage 29 reuses the exact 36 source-bound Stage 28 states and simulator
+endpoint images. It compares each predicted future directly with the frozen
+encoder representation of that exact future in the model's full native token
+space. The frozen rank-128 intervention is then scored against both the
+model's own opposite-schedule prediction and the encoded opposite-schedule
+simulator future, separating self-consistent causal steering from grounded
+causal closure. No new reader or subspace is fit.
+
+Follow `../STAGE29_RUN_GUIDE.md`. No Stage 29 secrets are required; a fresh
+nonce and exact source commit are resolved automatically. Keep the complete
+successful Stage 18 directory and the complete source-bound Stage 28 Drive
+directory. The compact downloaded Stage 28 zip does not contain the endpoint
+image shards required by this experiment.
+
 ## Stage 26 contact-frame causal transport
 
 Notebook: `26_contact_frame_causal_transport.ipynb`

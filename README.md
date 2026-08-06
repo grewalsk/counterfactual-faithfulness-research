@@ -95,6 +95,9 @@ downloaded Colab result bundles.
   controls.
 - `STAGE27_RUN_GUIDE.md` — no-secret Colab handoff for the source-bound finite
   action-commutator experiment.
+- `STAGE29_RUN_GUIDE.md` — no-secret native target-latent closure test that
+  localizes the Stage 28 failure to encoder sensitivity, predictor dynamics,
+  physical readout, or causal grounding.
 - `audits/stage15/reader_failure_audit/` — complete local audit of the stopped
   Stage 15 reader gate, including dimension-matched random controls,
   coordinate-aware readers, renderer/token geometry, raw-file hashes, and a
