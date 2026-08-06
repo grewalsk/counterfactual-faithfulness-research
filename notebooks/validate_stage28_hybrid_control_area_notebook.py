@@ -70,6 +70,13 @@ def validate():
     assert assigned_value(tree, "PRIMARY_RANK") == 128
     assert assigned_value(tree, "SENSITIVITY_RANKS") == [64, 128]
     assert assigned_value(tree, "INTERVENTION_FORWARDS_PER_RECORD") == 30
+    assert assigned_value(tree, "ASSET_SPECS") == {
+        "physical_decoders.pt": {
+            "path": "results/bundles/stage12_result_bundle/frozen_training_decoders/"
+            "jepa_wm_pusht_f975a0a746e7_training_decoders.pt",
+            "sha256": "51b2dbb0a81df432a2db5b941de83717e9979e761d57365f47d93d2dd0c0c694",
+        }
+    }
     assert "token_hex(4)" in config
     assert '_colab_userdata.get("HF_TOKEN")' in config
     for forbidden in ["STAGE28_RUN_MODE", "STAGE28_SOURCE_COMMIT", "STAGE28_RUN_NONCE"]:
@@ -137,4 +144,3 @@ def validate():
 
 if __name__ == "__main__":
     validate()
-

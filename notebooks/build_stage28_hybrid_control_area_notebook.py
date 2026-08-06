@@ -221,13 +221,9 @@ EXPECTED_PRETRAINED_ASSET_SHA256 = {
 ASSET_REPOSITORY = "grewalsk/counterfactual-faithfulness-research"
 ASSET_COMMIT = "2326e74556f6f81db2560e4396f4cc52c16a28f4"
 ASSET_SPECS = {
-    "stage3b_training_decoders.pt": {
-        "path": "artifacts/stage3b_training_decoders.pt",
-        "sha256": "1942b9391bc86f65d73622e764981e04ae2c5aec89db1b779615ece310ecb03b",
-    },
-    "stage3b_pusht_decoder_manifest.json": {
-        "path": "artifacts/stage3b_pusht_decoder_manifest.json",
-        "sha256": "1f3ca2ad75db81cac65ac4db7f1cc88b97921fb7b08bf789e7611756cad905eb",
+    "physical_decoders.pt": {
+        "path": "results/bundles/stage12_result_bundle/frozen_training_decoders/jepa_wm_pusht_f975a0a746e7_training_decoders.pt",
+        "sha256": "51b2dbb0a81df432a2db5b941de83717e9979e761d57365f47d93d2dd0c0c694",
     },
 }
 PINNED = [
