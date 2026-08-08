@@ -98,6 +98,9 @@ downloaded Colab result bundles.
 - `STAGE29_RUN_GUIDE.md` — no-secret native target-latent closure test that
   localizes the Stage 28 failure to encoder sensitivity, predictor dynamics,
   physical readout, or causal grounding.
+- `STAGE30_RUN_GUIDE.md` — fresh-state, decoder-free test of whether grounded
+  causal closure adds held-out information about native planning regret and
+  the physical decision value of the frozen carrier.
 - `audits/stage15/reader_failure_audit/` — complete local audit of the stopped
   Stage 15 reader gate, including dimension-matched random controls,
   coordinate-aware readers, renderer/token geometry, raw-file hashes, and a
@@ -163,6 +166,10 @@ downloaded Colab result bundles.
 - `notebooks/27_causal_action_commutator.ipynb` — tests whether equal-control
   pulse order creates contact-amplified physical and model commutators and
   whether the frozen Stage 18 carrier causally mediates them.
+- `notebooks/30_grounded_causal_planning_value.ipynb` — estimates closure on
+  interior schedules and tests planning on disjoint extreme-schedule goals,
+  with exact simulator regret, causal ablations, and state-grouped
+  cross-fitting.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.
 - `audits/` — independent post-run audits and supporting summaries.
 - `results/bundles/` — original Stage 1 through Stage 3 Colab ZIP bundles.

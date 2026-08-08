@@ -1,5 +1,18 @@
 # Colab instructions
 
+## Stage 30 grounded causal planning value
+
+Notebook: `30_grounded_causal_planning_value.ipynb`
+
+Stage 30 uses 120 fresh contact-stratified PushT states to test whether
+grounded causal closure predicts native terminal planning regret and the
+physical planning-value loss caused by ablating the frozen Stage 18 carrier.
+Closure is measured on interior schedules while planning goals use disjoint
+extreme schedules. No learned decoder, reader, or subspace refit is used.
+
+Follow `../STAGE30_RUN_GUIDE.md`. No Stage 30 secrets are required. Keep the
+complete successful Stage 18 and exact Stage 29 Drive directories.
+
 ## Stage 29 grounded causal closure
 
 Notebook: `29_grounded_causal_closure.ipynb`
