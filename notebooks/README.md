@@ -1,5 +1,21 @@
 # Colab instructions
 
+## Stage 32 powered bounded cross-model confirmation
+
+Notebook: `32_powered_bounded_cross_model_confirmation.ipynb`
+
+Stage 32 resolves the Stage 31 near-miss without reusing its evaluation states
+or tuning its model-specific rank-128 bases. It selects 160 new states that
+maintain contact across all 72 branches from ±20°, ±30°, and ±40° action
+families. Grounded closure is represented only by a cosine bounded to [-1, 1]
+and is excluded below a frozen target-energy floor. The primary DINO-minus-JEPA
+gate must improve grouped held-out prediction, remain positive in every action
+family, and beat shuffled plus empirical-span random-subspace placebos.
+
+Follow `../STAGE32_RUN_GUIDE.md`. No Stage 32 secrets are required. Keep the
+complete source-bound Stage 31 Drive directory because the compact download
+does not include its large basis arrays.
+
 ## Stage 31 cross-model grounded causal closure certificate
 
 Notebook: `31_cross_model_grounded_closure_certificate.ipynb`

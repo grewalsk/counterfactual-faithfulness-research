@@ -175,6 +175,10 @@ downloaded Colab result bundles.
   DINO-WM PushT checkpoints, then tests whether their paired difference in
   physically grounded closure explains their paired difference in planning
   regret under the official visual-plus-proprio objective.
+- `notebooks/32_powered_bounded_cross_model_confirmation.ipynb` — imports the
+  exact frozen Stage 31 bases and tests bounded, energy-eligible grounded
+  cosine on 160 new all-family persistent-contact states across three action
+  geometries, with paired shuffled/random-subspace placebo gates.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.
 - `audits/` — independent post-run audits and supporting summaries.
 - `results/bundles/` — original Stage 1 through Stage 3 Colab ZIP bundles.
