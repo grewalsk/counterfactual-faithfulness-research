@@ -1,5 +1,21 @@
 # Colab instructions
 
+## Stage 31 cross-model grounded causal closure certificate
+
+Notebook: `31_cross_model_grounded_closure_certificate.ipynb`
+
+Stage 31 compares the official JEPA-WM and DINO-WM PushT checkpoints on the
+same 120 fresh physical counterfactual states. Each model receives its own
+construction-only layer screen and rank-128 output-aligned subspace; both are
+frozen before evaluation. The primary paired gate asks whether the difference
+in physically grounded closure improves held-out prediction of DINO-minus-JEPA
+physical planning regret beyond differences in ordinary error and
+self-consistent causal closure. The planner score is the exact official visual
+MSE plus 0.1 proprio MSE objective.
+
+Follow `../STAGE31_RUN_GUIDE.md`. No Stage 31 secrets or prior Drive artifacts
+are required; a public-checkpoint token is optional.
+
 ## Stage 30 grounded causal planning value
 
 Notebook: `30_grounded_causal_planning_value.ipynb`

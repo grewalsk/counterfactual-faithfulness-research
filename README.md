@@ -170,6 +170,11 @@ downloaded Colab result bundles.
   interior schedules and tests planning on disjoint extreme-schedule goals,
   with exact simulator regret, causal ablations, and state-grouped
   cross-fitting.
+- `notebooks/31_cross_model_grounded_closure_certificate.ipynb` — learns
+  separate construction-only rank-128 carriers for official JEPA-WM and
+  DINO-WM PushT checkpoints, then tests whether their paired difference in
+  physically grounded closure explains their paired difference in planning
+  regret under the official visual-plus-proprio objective.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.
 - `audits/` — independent post-run audits and supporting summaries.
 - `results/bundles/` — original Stage 1 through Stage 3 Colab ZIP bundles.
