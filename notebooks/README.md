@@ -18,9 +18,13 @@ Follow `../STAGE33_RUN_GUIDE.md`. The pilot is resumable through source-bound,
 hash-validated checkpoints and shards. No Stage 33 secret is required; a
 public-checkpoint token is optional.
 
-Protocol v2 records the model-free v1 15/16 coverage failure, retains the
-16-trajectory evaluation target, and uses expanded disjoint screening pools
-with stable trajectory-ID geometry. No v1 model output was observed or reused.
+Protocol v3 retains v2's model-free repair of the v1 15/16 coverage failure.
+The v2 run then stopped before any scientific statistic because the official
+feature-conditioned proprio output is a 256-patch latent field rather than a
+short physical-state vector. V3 freezes spatial mean pooling into the native
+16-channel JEPA or 20-channel DINO feature, pads that vector to 64 coordinates,
+and runs a real shape/finiteness preflight for both checkpoints before fitting.
+No v1/v2 scientific outcome was observed or reused.
 
 ## Stage 32 powered bounded cross-model confirmation
 

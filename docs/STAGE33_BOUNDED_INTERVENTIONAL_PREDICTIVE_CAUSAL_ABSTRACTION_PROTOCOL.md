@@ -2,12 +2,48 @@
 
 ## Status and decision
 
-**Protocol ID:** `stage33-bounded-interventional-predictive-causal-abstraction-v2`
+**Protocol ID:** `stage33-bounded-interventional-predictive-causal-abstraction-v3`
 
 **Evidence status:** prospective, source-bound pilot. Smoke output is never
 scientific evidence. The pilot is confirmation-eligible only if every split,
 asset, source, cache, and evaluation-lock check below passes before the locked
 evaluation is opened.
+
+### V3 model-interface amendment
+
+The source-bound v2 pilot
+(`stage33_bipca_result_bundle_0e63f7cb92cd`) completed the repaired physical
+selection and all 160 physical-truth records. It loaded the exact pinned JEPA
+checkpoint and executed the first real construction prediction, then stopped
+before fitting any grounded decoder because the notebook flattened the native
+proprio output into a block frozen at 64 entries. All compact-manifest and
+selection-sidecar hashes matched. No decoder, rank, operator, mode choice,
+cross-model map, interchange effect, planning result, p-value, or scientific
+gate was computed. Its status is `INCONCLUSIVE_PIPELINE_FAILURE`.
+
+Inspection of the pinned public implementation resolves the contract without
+using outcome values. Both PushT checkpoints use feature-conditioned
+proprioception. The target encoder repeats one global latent proprio feature
+over the 16-by-16 visual patch grid, and the predictor returns that field as
+`[time, 256 patches, channels]`: 16 channels for JEPA-WM and 20 for DINO-WM.
+Flattening therefore produces 4,096 or 5,120 entries even though the semantic
+proprio feature is only 16- or 20-dimensional.
+
+V3 freezes spatial mean pooling over exactly 256 patches, preserving the
+native channel vector before padding it to the unchanged 64-coordinate
+readout block. This is the architecture-aligned invariant summary of a global
+feature-conditioned signal. Merely increasing the pad to 5,120 would create a
+model-asymmetric high-dimensional decoder and is rejected. V3 also requires a
+one-word real construction preflight for each checkpoint that verifies the
+complete visual, proprio-field, pooled-readout, and carrier shapes and
+finiteness before any fitted artifact is reused or created. The preflight
+records no scientific metric and uses no model-selection, calibration, or
+evaluation row.
+
+V3 otherwise preserves v2's selected physical design, action banks, split
+roles, estimands, rank/operator rules, controls, thresholds, and automatic
+decision labels. The amendment is explicitly interface-informed but remains
+scientific-outcome-blind.
 
 ### V2 model-free coverage amendment
 
@@ -249,9 +285,12 @@ performed.
 
 For every recurrent prediction, the native output feature is a deterministic
 256-dimensional CountSketch of the visual prediction concatenated with the
-native proprioceptive prediction padded to 64 coordinates. A model-specific
-grouped-ridge decoder is fit on construction trajectories only to predict the
-11 grounded coordinates.
+spatial mean of the native feature-conditioned proprio field, padded to 64
+coordinates. The patch axis is fixed at 256; the pooled channel width is fixed
+at 16 for JEPA-WM and 20 for DINO-WM. It is a latent proprio feature, not a
+decoded four-coordinate physical state. A model-specific grouped-ridge decoder
+is fit on construction trajectories only to predict the 11 grounded
+coordinates.
 The penalties are selected by trajectory-grouped inner folds from
 
 \[
@@ -1048,6 +1087,8 @@ The returned bundle must contain at least:
 
 - configuration, versions, source identity, checkpoint identity, and
   fresh/resumed-run certificate;
+- per-checkpoint real output-contract preflights binding visual, spatial
+  proprio-field, pooled-readout, and carrier shapes before fitted artifacts;
 - trajectory/state-family/action-composition split manifests and design freeze;
 - restoration, executable-action, prefix-closure, coverage, and two-restore
   simulator-determinism audits;

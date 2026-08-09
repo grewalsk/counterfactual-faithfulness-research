@@ -27,6 +27,22 @@ function_sources = STAGE32.function_sources
 
 introduction = r'''# Stage 33: bounded interventional predictive causal abstraction
 
+## V3 model-interface amendment
+
+The source-bound v2 pilot completed all 160 physical-truth records and loaded
+the exact JEPA checkpoint, then stopped before fitting the first grounded
+decoder.  The notebook had treated the checkpoint's predicted proprio output
+as a short vector, but the official feature-conditioned predictor returns one
+latent proprio feature per visual patch.  V3 applies the architecture-aligned
+spatial mean over the frozen 256-patch axis, retains the native 16-dimensional
+JEPA or 20-dimensional DINO feature vector, and pads that pooled vector to the
+unchanged 64-coordinate readout block.  A real one-word construction preflight
+now verifies both checkpoints' complete visual, proprio, and carrier shapes
+before any fitted artifact is reused or created.  The v2 run exposed only this
+interface shape and no decoder, rank, operator, map, interchange, planning
+metric, p-value, or scientific gate.  No scientific threshold or target is
+changed by this amendment.
+
 ## V2 model-free coverage amendment
 
 The source-bound v1 pilot stopped before loading either world model because
@@ -128,9 +144,9 @@ OUTPUT_DIR = "/content/counterfactual_faithfulness_stage33_bipca"
 DRIVE_OUTPUT_DIR = "/content/drive/MyDrive/counterfactual_faithfulness_stage33_bipca"
 RUN_REQUEST_PATH = "/content/drive/MyDrive/counterfactual_faithfulness_stage33_bipca/stage33_run_request.json"
 
-PROTOCOL_ID = "stage33-bounded-interventional-predictive-causal-abstraction-v2"
+PROTOCOL_ID = "stage33-bounded-interventional-predictive-causal-abstraction-v3"
 NOTEBOOK_PROTOCOL_SHA256 = "__PROTOCOL_DIGEST__"
-EVIDENCE_STATUS = "CONFIRMATORY_V2_ONLY_IF_SOURCE_BOUND_SPLIT_LOCKED_AND_CAUSALLY_TRANSPORTED"
+EVIDENCE_STATUS = "CONFIRMATORY_V3_ONLY_IF_SOURCE_BOUND_SPLIT_LOCKED_AND_CAUSALLY_TRANSPORTED"
 EXPERIMENT_REPOSITORY = "grewalsk/counterfactual-faithfulness-research"
 EXPERIMENT_NOTEBOOK_PATH = "notebooks/33_bounded_interventional_predictive_causal_abstraction.ipynb"
 EXPERIMENT_BUILDER_PATH = "notebooks/build_stage33_bounded_interventional_abstraction_notebook.py"
@@ -150,6 +166,7 @@ MODEL_NAMES = ["jepa_wm_pusht", "dino_wm_pusht"]
 MODEL_SHORT_NAMES = {"jepa_wm_pusht": "jepa", "dino_wm_pusht": "dino"}
 EXPECTED_MODEL_TYPES = {"jepa_wm_pusht": "AdaLN", "dino_wm_pusht": "dino_wm"}
 EXPECTED_CARRIER_WIDTHS = {"jepa_wm_pusht": 400, "dino_wm_pusht": 414}
+EXPECTED_PROPRIO_FEATURE_WIDTHS = {"jepa_wm_pusht": 16, "dino_wm_pusht": 20}
 INTERVENTION_BLOCK = 4
 FRAMESKIP = 5
 MAX_WORD_LENGTH = 4
@@ -211,6 +228,10 @@ GROUNDED_OBSERVABLES = [
     "agent_vx", "agent_vy", "block_vx", "block_vy", "block_angular_velocity",
 ]
 VISUAL_SKETCH_DIM = 256
+EXPECTED_VISUAL_TOKENS = 256
+EXPECTED_VISUAL_WIDTH = 384
+EXPECTED_PROPRIO_TOKENS = 256
+PROPRIO_FEATURE_POOLING = "spatial_mean_over_256_tokens"
 PROPRIO_PAD_DIM = 64
 DECODER_RIDGES = [1e-4, 1e-3, 1e-2, 1e-1, 1.0, 10.0]
 OPERATOR_RIDGES = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0]
@@ -296,6 +317,8 @@ PINNED = [
     "model_native_internal_interchange", "planning_transport",
     "shared_dinov2_target_is_a_declared_confound", "no_synthetic_fallback",
     "model_free_v1_coverage_amendment", "stable_trajectory_id_geometry",
+    "v2_proprio_feature_field_amendment", "proprio_feature_spatial_mean_pooling",
+    "both_model_output_contract_preflight",
     "hash_validated_resume", "no_required_colab_secret",
 ]
 
@@ -522,6 +545,7 @@ RUN_STARTED_AT = time.time()
 analysis_helpers = function_sources(
     NUMERICAL.read_text(),
     [
+        "pool_spatial_proprio_features",
         "signature_pseudometric",
         "effective_rank",
         "select_stable_rank",
@@ -999,7 +1023,14 @@ def model_feature_rows(outputs, names):
                 visual[step : step + 1], VISUAL_SKETCH_DIM,
                 stable_seed(DECODER_SEED, "visual_sketch"),
             )[0]
-            rows.append(np.concatenate([sketch, proprio[step].reshape(-1)]))
+            pooled = pool_spatial_proprio_features(
+                proprio[step],
+                expected_tokens=EXPECTED_PROPRIO_TOKENS,
+                max_width=PROPRIO_PAD_DIM,
+            )
+            padded = np.zeros(PROPRIO_PAD_DIM, dtype=np.float64)
+            padded[: len(pooled)] = pooled
+            rows.append(np.concatenate([sketch, padded]))
     return np.asarray(rows, dtype=np.float64)
 
 
@@ -1049,6 +1080,9 @@ def trajectory_split_manifest():
         "trajectory_geometry_version": TRAJECTORY_GEOMETRY_VERSION,
         "trajectory_phase_increment": TRAJECTORY_PHASE_INCREMENT,
         "v1_model_outputs_observed_before_amendment": False,
+        "v2_model_interface_shape_observed_before_amendment": True,
+        "v2_scientific_outcomes_observed_before_amendment": False,
+        "v3_proprio_feature_pooling": PROPRIO_FEATURE_POOLING,
         "model_outputs_used": False,
         "physical_effect_magnitudes_used": False,
     }
@@ -1071,6 +1105,9 @@ DESIGN_FREEZE = {
     "models_loaded": False,
     "trajectory_geometry_version": TRAJECTORY_GEOMETRY_VERSION,
     "v1_model_free_coverage_amendment": True,
+    "v2_proprio_feature_field_amendment": True,
+    "v2_scientific_outcomes_observed_before_amendment": False,
+    "proprio_feature_pooling": PROPRIO_FEATURE_POOLING,
     "evaluation_rank_map_or_mode_selection_allowed": False,
 }
 write_json(DESIGN_DIR / "design_freeze.json", DESIGN_FREEZE)
@@ -1093,6 +1130,7 @@ PROVENANCE_COUNTS = {
     "trajectory_families_selected": 0,
     "physical_state_records": 0,
     "truth_words_generated": 0,
+    "model_output_contract_preflights": {"jepa": 0, "dino": 0},
     "model_record_forwards": {"jepa": 0, "dino": 0},
     "native_forward_pred_calls": {"jepa": 0, "dino": 0},
     "native_predicted_word_sequences": {"jepa": 0, "dino": 0},
@@ -1353,29 +1391,103 @@ def feature_tensor_from_outputs(outputs, names):
     tensor = np.zeros(
         (len(names), MAX_WORD_LENGTH, VISUAL_SKETCH_DIM + PROPRIO_PAD_DIM), dtype=np.float32
     )
-    # The proprio width is checkpoint-defined and much smaller than the frozen pad.  A
-    # fixed padded chart makes every saved shard schema-stable without mixing
-    # the JEPA and DINO fitted decoders.
+    # Both public checkpoints return a feature-conditioned proprio field with
+    # one latent vector per visual patch.  Their target encoder repeats a global
+    # proprio feature across that patch axis, so spatial mean pooling is the
+    # architecture-aligned summary.  Padding only the pooled 16/20 channels
+    # keeps the model-specific decoders schema-stable without flattening 4,096
+    # or 5,120 spatially replicated values.
     widths = []
     for word_index, name in enumerate(names):
-        visual, proprio = outputs[name]
+        visual, proprio = (np.asarray(value) for value in outputs[name])
+        expected_length = int(WORD_BY_NAME[name]["length"])
+        if visual.shape != (
+            expected_length, EXPECTED_VISUAL_TOKENS, EXPECTED_VISUAL_WIDTH
+        ):
+            raise RuntimeError(
+                f"{name} visual output shape changed: {tuple(visual.shape)}"
+            )
+        if (
+            proprio.ndim != 3
+            or proprio.shape[0] != expected_length
+            or proprio.shape[1] != EXPECTED_PROPRIO_TOKENS
+        ):
+            raise RuntimeError(
+                f"{name} proprio feature field shape changed: {tuple(proprio.shape)}"
+            )
+        if not np.all(np.isfinite(visual)) or not np.all(np.isfinite(proprio)):
+            raise RuntimeError(f"{name} model output contains nonfinite values")
         for step in range(len(visual)):
             sketch = count_sketch(
                 visual[step : step + 1], VISUAL_SKETCH_DIM,
                 stable_seed(DECODER_SEED, "visual_sketch"),
             )[0]
-            flat_proprio = np.asarray(proprio[step], dtype=np.float32).reshape(-1)
-            if len(flat_proprio) > PROPRIO_PAD_DIM:
-                raise RuntimeError("proprio prediction exceeded frozen padding")
+            pooled_proprio = pool_spatial_proprio_features(
+                proprio[step],
+                expected_tokens=EXPECTED_PROPRIO_TOKENS,
+                max_width=PROPRIO_PAD_DIM,
+            )
             tensor[word_index, step, :VISUAL_SKETCH_DIM] = sketch.astype(np.float32)
             tensor[
                 word_index, step,
-                VISUAL_SKETCH_DIM : VISUAL_SKETCH_DIM + len(flat_proprio),
-            ] = flat_proprio
-            widths.append(len(flat_proprio))
+                VISUAL_SKETCH_DIM : VISUAL_SKETCH_DIM + len(pooled_proprio),
+            ] = pooled_proprio.astype(np.float32)
+            widths.append(len(pooled_proprio))
     if len(set(widths)) != 1:
-        raise RuntimeError("proprio prediction width changed within a model")
+        raise RuntimeError("pooled proprio feature width changed within a model")
     return tensor, int(widths[0])
+
+
+def preflight_model_output_contract(bundle):
+    """Exercise one real construction word and freeze the native output schema."""
+
+    name = "L"
+    record = SELECTED_RECORDS["construction"][0]
+    outputs, traces = grouped_model_words(bundle, record, [name])
+    visual, proprio = outputs[name]
+    carrier = traces[name]
+    expected_width = EXPECTED_PROPRIO_FEATURE_WIDTHS[bundle["name"]]
+    expected_shapes = {
+        "visual": (1, EXPECTED_VISUAL_TOKENS, EXPECTED_VISUAL_WIDTH),
+        "proprio": (1, EXPECTED_PROPRIO_TOKENS, expected_width),
+        "carrier": (1, EXPECTED_VISUAL_TOKENS, bundle["carrier_width"]),
+    }
+    observed = {
+        "visual": tuple(visual.shape),
+        "proprio": tuple(proprio.shape),
+        "carrier": tuple(carrier.shape),
+    }
+    if observed != expected_shapes:
+        raise RuntimeError(
+            f"{bundle['name']} model output contract changed: "
+            f"observed={observed}, expected={expected_shapes}"
+        )
+    tensor, pooled_width = feature_tensor_from_outputs(outputs, [name])
+    expected_tensor_shape = (
+        1, MAX_WORD_LENGTH, VISUAL_SKETCH_DIM + PROPRIO_PAD_DIM
+    )
+    if tensor.shape != expected_tensor_shape or pooled_width != expected_width:
+        raise RuntimeError(f"{bundle['name']} pooled feature contract changed")
+    contract = {
+        "model": bundle["name"],
+        "model_short": bundle["short"],
+        "predictor_type": bundle["pred_type"],
+        "construction_record_id": int(record["record_id"]),
+        "word": name,
+        "visual_output_shape": list(observed["visual"]),
+        "proprio_feature_field_shape": list(observed["proprio"]),
+        "carrier_shape": list(observed["carrier"]),
+        "proprio_pooling": PROPRIO_FEATURE_POOLING,
+        "pooled_proprio_width": int(pooled_width),
+        "padded_proprio_width": int(PROPRIO_PAD_DIM),
+        "grounded_readout_width": int(tensor.shape[-1]),
+        "all_outputs_finite": True,
+        "scientific_metrics_computed": False,
+        "evaluation_rows_used": 0,
+    }
+    write_json(OUT / f"model_output_contract_{bundle['short']}.json", contract)
+    PROVENANCE_COUNTS["model_output_contract_preflights"][bundle["short"]] += 1
+    return contract
 
 
 def response_rows_from_feature_tensor(tensor, names):
@@ -1671,6 +1783,8 @@ def save_frozen_model_artifacts(short, decoder, carrier, chart, width):
         "rank_training_split": "construction",
         "carrier_training_split": "construction",
         "evaluation_rows_used": 0, "shared_physical_labels_used_by_decoder": True,
+        "proprio_feature_pooling": PROPRIO_FEATURE_POOLING,
+        "proprio_feature_pad_dim": int(PROPRIO_PAD_DIM),
         "carrier_rank": int(carrier["rank"]), "ambient_carrier_dimension": int(256 * width),
     })
 
@@ -1682,6 +1796,11 @@ def load_frozen_artifacts(short):
         "chart": SUBSPACE_DIR / f"predictive_chart_{short}.npz",
     }
     manifest = json.loads((SUBSPACE_DIR / f"artifact_manifest_{short}.json").read_text())
+    if (
+        manifest.get("proprio_feature_pooling") != PROPRIO_FEATURE_POOLING
+        or int(manifest.get("proprio_feature_pad_dim", -1)) != PROPRIO_PAD_DIM
+    ):
+        raise RuntimeError(f"frozen {short} proprio feature contract mismatch")
     for label, path in paths.items():
         digest_path = Path(str(path) + ".sha256")
         if not path.is_file() or not digest_path.is_file():
@@ -1724,6 +1843,7 @@ def generate_model_record(bundle, record, split, decoder, carrier):
     )
     required = {
         "identity", "word_names", "word_lengths", "feature_tensor", "proprio_width",
+        "proprio_token_count", "proprio_pooling",
         "grounded_predictions", "pair_coordinates", "pair_metadata",
         "response_coordinates", "response_metadata",
     }
@@ -1749,6 +1869,8 @@ def generate_model_record(bundle, record, split, decoder, carrier):
         word_lengths=np.asarray([WORD_BY_NAME[name]["length"] for name in names], dtype=np.int64),
         feature_tensor=tensor,
         proprio_width=np.asarray(proprio_width, dtype=np.int64),
+        proprio_token_count=np.asarray(EXPECTED_PROPRIO_TOKENS, dtype=np.int64),
+        proprio_pooling=np.asarray(PROPRIO_FEATURE_POOLING),
         grounded_predictions=grounded.astype(np.float32),
         pair_coordinates=pair_coordinates.astype(np.float32),
         pair_metadata=np.asarray([json.dumps(row, sort_keys=True) for row in pair_meta]),
@@ -1846,6 +1968,7 @@ if not PIPELINE_FAILED:
             bundle = load_world_model(model_name)
             short = bundle["short"]
             try:
+                output_contract = preflight_model_output_contract(bundle)
                 if all((SUBSPACE_DIR / name).is_file() for name in [
                     f"decoder_{short}.npz", f"carrier_basis_{short}.npz",
                     f"predictive_chart_{short}.npz",
@@ -1860,6 +1983,7 @@ if not PIPELINE_FAILED:
                 MODEL_ARTIFACTS[short] = {
                     "decoder": decoder, "carrier": carrier, "chart": chart,
                     "carrier_width": int(bundle["carrier_width"]),
+                    "output_contract": output_contract,
                 }
                 for split in ["construction", "model_selection", "calibration", "evaluation"]:
                     for index, record in enumerate(SELECTED_RECORDS[split]):
@@ -1880,9 +2004,13 @@ if not PIPELINE_FAILED:
                 short: sha256_file(SUBSPACE_DIR / f"artifact_manifest_{short}.json")
                 for short in MODEL_ARTIFACTS
             },
+            "model_output_contracts": {
+                short: sha256_file(OUT / f"model_output_contract_{short}.json")
+                for short in MODEL_ARTIFACTS
+            },
         })
     except Exception:
-        record_failure("stage33_construction_decoder_rank_carrier_or_model_shards")
+        record_failure("stage33_model_contract_construction_decoder_rank_carrier_or_shards")
 '''
 
 

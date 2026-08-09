@@ -17,11 +17,38 @@ from cf_faithfulness.stage33_interventional_abstraction import (
     interchange_metrics,
     operator_intertwining_metrics,
     planning_decision_metrics,
+    pool_spatial_proprio_features,
     predict_affine_bilinear,
     reachability_observability_diagnostics,
     select_stable_rank,
     signature_pseudometric,
 )
+
+
+def test_spatial_proprio_pooling_recovers_global_feature_and_rejects_bad_contracts():
+    feature = np.linspace(-1.0, 1.0, 16)
+    offsets = np.linspace(-0.2, 0.2, 256)[:, None]
+    field = feature[None, :] + offsets
+    pooled = pool_spatial_proprio_features(field)
+    assert pooled.shape == (16,)
+    assert np.allclose(pooled, feature)
+    dino_feature = np.linspace(0.0, 1.0, 20)
+    dino_pooled = pool_spatial_proprio_features(
+        np.repeat(dino_feature[None, :], 256, axis=0)
+    )
+    assert dino_pooled.shape == (20,)
+    assert np.allclose(dino_pooled, dino_feature)
+
+    with pytest.raises(ValueError, match="shape"):
+        pool_spatial_proprio_features(np.zeros(16))
+    with pytest.raises(ValueError, match="token count changed"):
+        pool_spatial_proprio_features(np.zeros((255, 16)))
+    with pytest.raises(ValueError, match="outside"):
+        pool_spatial_proprio_features(np.zeros((256, 65)))
+    nonfinite = np.zeros((256, 16))
+    nonfinite[0, 0] = np.nan
+    with pytest.raises(ValueError, match="nonfinite"):
+        pool_spatial_proprio_features(nonfinite)
 
 
 def _operator(mode=0):

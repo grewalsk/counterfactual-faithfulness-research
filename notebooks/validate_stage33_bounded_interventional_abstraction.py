@@ -215,7 +215,10 @@ def validate():
     config = code_cells[0]
     tree = ast.parse(config)
     assert assigned_value(tree, "PROTOCOL_ID") == (
-        "stage33-bounded-interventional-predictive-causal-abstraction-v2"
+        "stage33-bounded-interventional-predictive-causal-abstraction-v3"
+    )
+    assert assigned_value(tree, "EVIDENCE_STATUS") == (
+        "CONFIRMATORY_V3_ONLY_IF_SOURCE_BOUND_SPLIT_LOCKED_AND_CAUSALLY_TRANSPORTED"
     )
     assert assigned_value(tree, "RUN_MODE") == "pilot"
     assert assigned_value(tree, "EXPERIMENT_SOURCE_REF") == (
@@ -230,6 +233,16 @@ def validate():
     assert assigned_value(tree, "EXPECTED_CARRIER_WIDTHS") == {
         "jepa_wm_pusht": 400, "dino_wm_pusht": 414
     }
+    assert assigned_value(tree, "EXPECTED_PROPRIO_FEATURE_WIDTHS") == {
+        "jepa_wm_pusht": 16, "dino_wm_pusht": 20
+    }
+    assert assigned_value(tree, "EXPECTED_VISUAL_TOKENS") == 256
+    assert assigned_value(tree, "EXPECTED_VISUAL_WIDTH") == 384
+    assert assigned_value(tree, "EXPECTED_PROPRIO_TOKENS") == 256
+    assert assigned_value(tree, "PROPRIO_FEATURE_POOLING") == (
+        "spatial_mean_over_256_tokens"
+    )
+    assert assigned_value(tree, "PROPRIO_PAD_DIM") == 64
     assert assigned_value(tree, "INTERVENTION_BLOCK") == 4
     assert assigned_value(tree, "REPO_COMMIT") == (
         "13cf1d9c7e476f53c17714d2e0f1dc239a883ce0"
@@ -299,6 +312,9 @@ def validate():
             "shared_dinov2_target_is_a_declared_confound",
             "model_free_v1_coverage_amendment",
             "stable_trajectory_id_geometry",
+            "v2_proprio_feature_field_amendment",
+            "proprio_feature_spatial_mean_pooling",
+            "both_model_output_contract_preflight",
         ],
         "configuration contract",
     )
@@ -314,6 +330,8 @@ def validate():
             "def reachability_observability_diagnostics(",
             "def interchange_metrics(", "def clustered_bootstrap_interval(",
             "def holm_adjust(", "def derive_decision(",
+            "def pool_spatial_proprio_features(",
+            "def preflight_model_output_contract(",
             "def forward_with_trace(", "register_forward_hook",
             "intervention_by_step", "reconstruct_carrier_delta(",
             "WITHIN_MODEL_BRIDGES", '"cross_model_map_count": 1',
@@ -347,6 +365,34 @@ def validate():
     )
     assert joined.count("forward_with_trace(") >= 2, (
         "forward_with_trace is defined but never used for a real intervention"
+    )
+
+    feature_source = function_source(code_cells, "feature_tensor_from_outputs")
+    require_all(
+        feature_source,
+        [
+            "pool_spatial_proprio_features(",
+            "EXPECTED_PROPRIO_TOKENS",
+            "PROPRIO_PAD_DIM",
+            "pooled_proprio",
+        ],
+        "spatial proprio feature pooling",
+    )
+    assert "flat_proprio" not in feature_source
+    preflight_source = function_source(code_cells, "preflight_model_output_contract")
+    require_all(
+        preflight_source,
+        [
+            'SELECTED_RECORDS["construction"][0]',
+            "EXPECTED_PROPRIO_FEATURE_WIDTHS",
+            '"scientific_metrics_computed": False',
+            '"evaluation_rows_used": 0',
+            '"all_outputs_finite": True',
+        ],
+        "real model-output contract preflight",
+    )
+    assert joined.index("output_contract = preflight_model_output_contract(bundle)") < (
+        joined.index("decoder, carrier, chart = construction_model_data(bundle)")
     )
 
     require_all(

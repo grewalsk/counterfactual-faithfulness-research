@@ -1700,6 +1700,41 @@ __all__ = [
 # richer typed functions above remain the repository-facing implementation.
 
 
+def pool_spatial_proprio_features(
+    field,
+    expected_tokens=256,
+    max_width=64,
+):
+    """Pool a feature-conditioned proprio field over its spatial token axis.
+
+    The public PushT checkpoints use ``proprio_encoding='feature'``.  Their
+    predictor therefore returns one latent proprio feature vector per visual
+    patch, not a decoded four-coordinate physical state.  The target encoder
+    repeats the same global proprio feature over those patches, so the spatial
+    mean is the architecture-aligned global summary used by the Stage 33
+    grounded readout.
+    """
+
+    values = np.asarray(field, dtype=np.float64)
+    if values.ndim != 2:
+        raise ValueError("proprio feature field must have shape (tokens, channels)")
+    token_count, width = map(int, values.shape)
+    if token_count != int(expected_tokens):
+        raise ValueError(
+            f"proprio feature token count changed: {token_count} != {int(expected_tokens)}"
+        )
+    if width < 1 or width > int(max_width):
+        raise ValueError(
+            f"pooled proprio feature width is outside [1, {int(max_width)}]: {width}"
+        )
+    if not np.all(np.isfinite(values)):
+        raise ValueError("proprio feature field contains nonfinite values")
+    pooled = np.mean(values, axis=0, dtype=np.float64)
+    if pooled.shape != (width,) or not np.all(np.isfinite(pooled)):
+        raise RuntimeError("pooled proprio feature contract failed")
+    return pooled
+
+
 def signature_pseudometric(
     left,
     right,
@@ -2750,6 +2785,7 @@ __all__ += [
     "fit_whitened_similarity",
     "holm_adjust",
     "interchange_metrics",
+    "pool_spatial_proprio_features",
     "reachability_observability_diagnostics",
     "select_stable_rank",
     "signature_pseudometric",

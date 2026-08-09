@@ -185,8 +185,10 @@ downloaded Colab result bundles.
   then uses calibration-only operators and one cross-model map to test
   held-out mode-conditioned compositions, recurrent internal interchange, and
   physical planning transport without inheriting the Stage 31/32 bases.
-  Protocol v2 transparently repairs the model-free v1 15/16 evaluation-pool
-  coverage failure without changing scientific targets or gates.
+  Protocol v3 retains v2's model-free coverage repair and transparently fixes
+  the official checkpoints' feature-conditioned proprio-field contract by
+  spatially pooling its 256 patch features before the frozen readout, without
+  changing scientific targets or gates.
 - `docs/STAGE14_32_EVIDENCE_AUDIT.md` — frozen-result ledger separating
   common decodability and model-self mediation from grounded causal evidence.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.

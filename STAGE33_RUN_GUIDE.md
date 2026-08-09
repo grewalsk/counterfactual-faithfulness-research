@@ -8,11 +8,16 @@ between the two public PushT world models. It does not test or claim a globally
 minimal physical realization. The mathematical and decision contract is in
 `docs/STAGE33_BOUNDED_INTERVENTIONAL_PREDICTIVE_CAUSAL_ABSTRACTION_PROTOCOL.md`.
 
-This guide describes protocol v2. The source-bound v1 run stopped before model
+This guide describes protocol v3. The source-bound v1 run stopped before model
 loading after finding 15 rather than 16 complete evaluation trajectories. V2
-keeps the scientific design and target counts unchanged, uses stable
-trajectory-ID geometry, expands only the model-free candidate pools, and saves
-complete screening rows before any coverage exception.
+repaired that model-free coverage issue and completed all 160 physical-truth
+records, but then exposed an interface-contract error before the first decoder
+fit: the official feature-conditioned proprio output is a 256-patch latent
+field, not a short physical-state vector. V3 spatially averages that frozen
+patch axis, preserves the native 16-channel JEPA or 20-channel DINO feature,
+pads it to the unchanged 64-coordinate block, and preflights the complete real
+output contract for both checkpoints. No v2 scientific metric or gate was
+observed, and no target, threshold, split role, or decision rule changed.
 
 The implemented v2 selector was also preflighted without model loading against
 the pinned simulator: it reached the 8/8/8/16 targets after screening
@@ -124,14 +129,18 @@ Before locked evaluation, the notebook must print:
 5. the empirical simulator-determinism floor: two exact restored rollouts for
    each of `a`, `ab`, `AAB`, and `ABAB` on every evaluation record, with branch
    count, maximum absolute difference, and RMSE saved;
-6. construction and model-selection rank spectra and bootstrap stability;
-7. the frozen common rank (cap 12), carrier-basis rank (cap 16),
+6. real JEPA and DINO output-contract preflights showing visual shapes
+   `[1,256,384]`, proprio-field shapes `[1,256,16]` and `[1,256,20]`, carrier
+   shapes `[1,256,400]` and `[1,256,414]`, and spatial-mean pooling into the
+   fixed 320-coordinate grounded-readout input;
+7. construction and model-selection rank spectra and bootstrap stability;
+8. the frozen common rank (cap 12), carrier-basis rank (cap 16),
    interface/operator/mode-cluster hashes, and intervention locality/fidelity
    checks;
-8. the two within-model bridge hashes, the sole calibration-only JEPA-to-DINO
+9. the two within-model bridge hashes, the sole calibration-only JEPA-to-DINO
    map hash, strict-fit and conditioning diagnostics, and the evaluation-open
    certificate; and
-9. expected versus observed simulator branches and model forward passes.
+10. expected versus observed simulator branches and model forward passes.
 
 The locked evaluation then reports global, physical-mode, and label-free
 hybrid errors; the 208-feature cap-matched (or rank-overmatched) nonlinear
@@ -167,7 +176,7 @@ resume does not select the intended incomplete run:
 1. create
    `MyDrive/counterfactual_faithfulness_stage33_bipca/stage33_run_request.json`
    containing
-   `{"protocol_id":"stage33-bounded-interventional-predictive-causal-abstraction-v2","run_nonce":"<exact nonce>"}`;
+   `{"protocol_id":"stage33-bounded-interventional-predictive-causal-abstraction-v3","run_nonce":"<exact nonce>"}`;
 2. keep `MANUAL_RUN_NONCE` blank in the committed notebook; and
 3. keep run mode, committed source, checkpoints, configuration, Drive root, and design
    unchanged, then use **Runtime -> Run all** from a fresh runtime.
@@ -201,7 +210,8 @@ The notebook downloads a ZIP named like:
 The compact ZIP must include:
 
 - configuration, versions, source and checkpoint identities, cache state,
-  nonce/resume provenance, and integrity certificates;
+  nonce/resume provenance, both real model-output contract preflights, and
+  integrity certificates;
 - physical design, trajectory/state-family/action-composition splits, action
   values, prefix-closure and coverage manifests;
 - restore and executable-action audits, the exact two-restore simulator floor
