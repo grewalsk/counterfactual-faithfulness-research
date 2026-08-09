@@ -1,14 +1,3 @@
-"""Build the source-bound Stage 33 Colab notebook.
-
-The notebook deliberately does not import the Stage 31/32 carrier bases.  It
-learns a bounded predictive chart on construction trajectories, locks rank and
-operator choices on model-selection trajectories, fits the sole map on
-calibration trajectories, and opens a trajectory-,
-state-family-, and action-composition-disjoint evaluation only afterward.
-"""
-
-from __future__ import annotations
-
 import hashlib
 import importlib.util
 import json
@@ -20,22 +9,15 @@ REPOSITORY = ROOT.parent
 TARGET = ROOT / "33_bounded_interventional_predictive_causal_abstraction.ipynb"
 NUMERICAL = REPOSITORY / "src/cf_faithfulness/stage33_interventional_abstraction.py"
 
-
-def load_builder(name: str, path: Path):
-    spec = importlib.util.spec_from_file_location(name, path)
-    module = importlib.util.module_from_spec(spec)
-    assert spec.loader is not None
-    spec.loader.exec_module(module)
-    return module
-
-
 # Reuse the audited source-binding, official model loader, and hook semantics.
 # The generated Stage 33 notebook is self-contained; this dependency exists
 # only while deterministically building the JSON artifact.
-STAGE32 = load_builder(
+spec = importlib.util.spec_from_file_location(
     "stage32_builder",
     ROOT / "build_stage32_powered_bounded_confirmation_notebook.py",
 )
+STAGE32 = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(STAGE32)
 
 code = STAGE32.code
 markdown = STAGE32.markdown
@@ -103,18 +85,21 @@ directory containing the resumable raw shards.
 '''
 
 
-configuration = r'''# SINGLE CONFIGURATION BLOCK -- no Stage 33 secret is required.
+configuration = r'''# SINGLE CONFIGURATION BLOCK — no Stage 33 secrets required.
 import secrets as _secrets
 import time as _time
 
-RUN_MODE = "pilot"  # "smoke" or "pilot"; pilot never inherits smoke counts.
+# `pilot` never inherits smoke counts.
+RUN_MODE = "pilot"
 EXPERIMENT_SOURCE_REF = "codex/stage33-bounded-interventional-abstraction"
-MANUAL_RUN_NONCE = ""  # Prefer the optional Drive request file; never a secret.
+# Prefer the optional Drive request file; this value is never a secret.
+MANUAL_RUN_NONCE = ""
 RUN_NONCE = f"auto_{_time.strftime('%Y%m%d_%H%M%S')}_{_secrets.token_hex(4)}"
 
 try:
     import os as _os
     from google.colab import userdata as _colab_userdata
+
     _hf_token = str(_colab_userdata.get("HF_TOKEN") or "").strip()
     if _hf_token:
         _os.environ["HF_TOKEN"] = _hf_token
@@ -303,12 +288,15 @@ PINNED = [
 assert INTERVENTION_BLOCK in range(6)
 assert MAX_WORD_LENGTH == 4 and STATES_PER_TRAJECTORY == len(MODE_LABELS)
 _split_pools = [
-    CONSTRUCTION_TRAJECTORY_POOL, MODEL_SELECTION_TRAJECTORY_POOL,
-    CALIBRATION_TRAJECTORY_POOL, EVALUATION_TRAJECTORY_POOL,
+    CONSTRUCTION_TRAJECTORY_POOL,
+    MODEL_SELECTION_TRAJECTORY_POOL,
+    CALIBRATION_TRAJECTORY_POOL,
+    EVALUATION_TRAJECTORY_POOL,
 ]
 assert all(
     not set(_split_pools[left]) & set(_split_pools[right])
-    for left in range(len(_split_pools)) for right in range(left + 1, len(_split_pools))
+    for left in range(len(_split_pools))
+    for right in range(left + 1, len(_split_pools))
 )
 assert {len(row["angles"]) for row in CORE_WORD_SPECS} == {1, 2, 3}
 assert {len(row["angles"]) for row in EVALUATION_WORD_SPECS} == {1, 2, 3, 4}
@@ -3593,11 +3581,20 @@ if "__PROTOCOL_DIGEST__" in configuration:
     raise RuntimeError("protocol digest placeholder was not replaced")
 
 cells = [
-    markdown(introduction), code(configuration), code(installation), code(setup),
-    code(analysis_helpers), code(model_helpers), code(design_and_runtime_helpers),
-    code(physical_truth), code(construction_and_models),
-    code(model_selection_and_calibration), code(locked_evaluation),
-    code(causal_transport), code(decision_and_reporting), code(packaging),
+    markdown(introduction),
+    code(configuration),
+    code(installation),
+    code(setup),
+    code(analysis_helpers),
+    code(model_helpers),
+    code(design_and_runtime_helpers),
+    code(physical_truth),
+    code(construction_and_models),
+    code(model_selection_and_calibration),
+    code(locked_evaluation),
+    code(causal_transport),
+    code(decision_and_reporting),
+    code(packaging),
 ]
 for index, cell in enumerate(cells):
     cell["id"] = f"stage33-{index:02d}"
@@ -3607,10 +3604,15 @@ notebook = {
     "metadata": {
         "accelerator": "GPU",
         "colab": {"gpuType": "L4", "name": TARGET.name, "provenance": []},
-        "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+        "kernelspec": {
+            "display_name": "Python 3",
+            "language": "python",
+            "name": "python3",
+        },
         "language_info": {"name": "python", "version": "3"},
     },
-    "nbformat": 4, "nbformat_minor": 5,
+    "nbformat": 4,
+    "nbformat_minor": 5,
 }
 TARGET.write_text(json.dumps(notebook, indent=1) + "\n")
 print(f"Wrote {TARGET}")

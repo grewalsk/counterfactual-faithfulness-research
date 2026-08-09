@@ -174,13 +174,36 @@ def validate():
 
     notebook = json.loads(after)
     assert notebook["nbformat"] == 4
+    assert notebook["nbformat_minor"] == 5
     assert notebook["metadata"]["accelerator"] == "GPU"
     assert notebook["metadata"]["colab"]["gpuType"] == "L4"
-    assert len(notebook["cells"]) >= 10
+    assert notebook["metadata"]["kernelspec"] == {
+        "display_name": "Python 3",
+        "language": "python",
+        "name": "python3",
+    }
+    assert len(notebook["cells"]) == 14
+    assert notebook["cells"][0]["cell_type"] == "markdown"
+    assert source(notebook["cells"][0]).startswith(
+        "# Stage 33: bounded interventional predictive causal abstraction\n"
+    )
     code_cells = [
         source(cell) for cell in notebook["cells"] if cell["cell_type"] == "code"
     ]
-    assert len(code_cells) >= 9
+    assert len(code_cells) == 13
+    assert code_cells[0].startswith(
+        "# SINGLE CONFIGURATION BLOCK — no Stage 33 secrets required.\n"
+    )
+    assert [cell.splitlines()[0] for cell in code_cells[5:]] == [
+        "# Freeze trajectory families and action compositions before simulator or model access.",
+        "# Select complete physical trajectories and materialize exact multi-step truth without model access.",
+        "# Fit grounded readouts, predictive charts, and carrier bases on construction trajectories only.",
+        "# Lock rank, operator class, and regularization on model-selection trajectories; fit maps on calibration only.",
+        "# Open the locked evaluation once and score multi-step realization and conjugacy controls.",
+        "# Transport reachable internal responses through the single frozen predictive map and test planning.",
+        "# Apply preregistered cumulative gates, multiplicity correction, and automatic interpretation.",
+        "# Package compact audit evidence while retaining the complete resumable Drive directory.",
+    ]
     for index, cell in enumerate(notebook["cells"]):
         assert cell["id"] == f"stage33-{index:02d}"
         assert not cell.get("outputs")
