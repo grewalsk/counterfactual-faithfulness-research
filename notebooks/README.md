@@ -1,5 +1,23 @@
 # Colab instructions
 
+## Stage 33 bounded interventional predictive causal abstraction
+
+Notebook: `33_bounded_interventional_predictive_causal_abstraction.ipynb`
+
+Stage 33 starts from fresh, trajectory-disjoint PushT construction,
+model-selection, calibration, and locked evaluation panels. It tests a bounded claim: whether
+the official JEPA-WM and DINO-WM checkpoints admit low-effective-rank,
+mode-conditioned predictive realizations connected by one calibration-only
+map, and whether that map transports real recurrent internal interventions on
+unseen action compositions without degrading physical planning value. The
+design does not import the Stage 31 or Stage 32 bases; construction fits only
+decoders, charts, and carrier coordinates, model selection locks rank and
+operator choices, and calibration fits operators and the cross-model map.
+
+Follow `../STAGE33_RUN_GUIDE.md`. The pilot is resumable through source-bound,
+hash-validated checkpoints and shards. No Stage 33 secret is required; a
+public-checkpoint token is optional.
+
 ## Stage 32 powered bounded cross-model confirmation
 
 Notebook: `32_powered_bounded_cross_model_confirmation.ipynb`

@@ -179,6 +179,14 @@ downloaded Colab result bundles.
   exact frozen Stage 31 bases and tests bounded, energy-eligible grounded
   cosine on 160 new all-family persistent-contact states across three action
   geometries, with paired shuffled/random-subspace placebo gates.
+- `notebooks/33_bounded_interventional_predictive_causal_abstraction.ipynb` —
+  fits fresh construction-only predictive charts for official JEPA-WM and
+  DINO-WM, locks rank/operator choices on a separate model-selection split,
+  then uses calibration-only operators and one cross-model map to test
+  held-out mode-conditioned compositions, recurrent internal interchange, and
+  physical planning transport without inheriting the Stage 31/32 bases.
+- `docs/STAGE14_32_EVIDENCE_AUDIT.md` — frozen-result ledger separating
+  common decodability and model-self mediation from grounded causal evidence.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.
 - `audits/` — independent post-run audits and supporting summaries.
 - `results/bundles/` — original Stage 1 through Stage 3 Colab ZIP bundles.
