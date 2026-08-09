@@ -8,12 +8,24 @@ between the two public PushT world models. It does not test or claim a globally
 minimal physical realization. The mathematical and decision contract is in
 `docs/STAGE33_BOUNDED_INTERVENTIONAL_PREDICTIVE_CAUSAL_ABSTRACTION_PROTOCOL.md`.
 
+This guide describes protocol v2. The source-bound v1 run stopped before model
+loading after finding 15 rather than 16 complete evaluation trajectories. V2
+keeps the scientific design and target counts unchanged, uses stable
+trajectory-ID geometry, expands only the model-free candidate pools, and saves
+complete screening rows before any coverage exception.
+
+The implemented v2 selector was also preflighted without model loading against
+the pinned simulator: it reached the 8/8/8/16 targets after screening
+209/197/277/307 candidates respectively. The notebook still recomputes and
+hashes the selection from source.
+
 ## What to run
 
 1. Open the notebook from its committed GitHub branch in a fresh Google Colab
    runtime.
-2. Select a G4- or L4-class GPU. Another CUDA GPU with at least 16 GiB device
-   memory is acceptable, but the estimates below are for G4/L4.
+2. Prefer a full Google G4 runtime (NVIDIA RTX PRO 6000 Blackwell Server
+   Edition). An L4 or another CUDA GPU with at least 16 GiB device memory is
+   acceptable but slower.
 3. Leave `RUN_MODE = "pilot"` for the scientific run. Use `"smoke"` only to
    validate plumbing.
 4. Choose **Runtime -> Run all**. Do not edit protocol cells or selectively run
@@ -33,8 +45,8 @@ The pilot configuration must print and assert the complete frozen design:
 - 8 construction, 8 model-selection, 8 calibration, and 16 locked-evaluation
   complete trajectories;
 - exactly four mode records per trajectory: 32/32/32/64 records, 160 total;
-- disjoint candidate pools `[6000,6200)`, `[6200,6400)`, `[6400,6600)`, and
-  `[6600,7000)` in split order;
+- disjoint candidate pools `[6000,6800)`, `[6800,7600)`, `[7600,8400)`, and
+  `[8400,10000)` in split order, with pool-size-independent candidate geometry;
 - the 11 core words of lengths 1--3 for construction/model
   selection/calibration and the 12 composition-held-out evaluation words of
   lengths 1--4, plus hashed actual prefixes and zero words of lengths 1--4;
@@ -87,10 +99,10 @@ A nonce is provenance, never a secret.
 
 These are planning estimates, not guarantees:
 
-| Mode | G4/L4 wall time | Peak GPU memory | CPU RAM | Drive storage |
-|---|---:|---:|---:|---:|
-| smoke | 20--40 minutes | below 6 GiB | 8--16 GiB available | below the pilot allocation |
-| pilot | 3--6 hours | below 6 GiB | 8--16 GiB | 8--15 GiB |
+| Mode | Full G4 Blackwell | L4 wall time | Peak GPU memory | CPU RAM | Drive storage |
+|---|---:|---:|---:|---:|---:|
+| smoke | 10--25 minutes | 20--40 minutes | below 6 GiB | 8--16 GiB available | below the pilot allocation |
+| pilot | 1.5--3 hours | 3--6 hours | below 6 GiB | 8--16 GiB | 8--15 GiB |
 
 Simulator screening, Google Drive latency, cache state, and Colab preemption
 can dominate wall time. A free Colab GPU may have enough device memory but is
@@ -155,7 +167,7 @@ resume does not select the intended incomplete run:
 1. create
    `MyDrive/counterfactual_faithfulness_stage33_bipca/stage33_run_request.json`
    containing
-   `{"protocol_id":"stage33-bounded-interventional-predictive-causal-abstraction-v1","run_nonce":"<exact nonce>"}`;
+   `{"protocol_id":"stage33-bounded-interventional-predictive-causal-abstraction-v2","run_nonce":"<exact nonce>"}`;
 2. keep `MANUAL_RUN_NONCE` blank in the committed notebook; and
 3. keep run mode, committed source, checkpoints, configuration, Drive root, and design
    unchanged, then use **Runtime -> Run all** from a fresh runtime.

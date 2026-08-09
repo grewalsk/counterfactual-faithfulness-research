@@ -18,6 +18,10 @@ Follow `../STAGE33_RUN_GUIDE.md`. The pilot is resumable through source-bound,
 hash-validated checkpoints and shards. No Stage 33 secret is required; a
 public-checkpoint token is optional.
 
+Protocol v2 records the model-free v1 15/16 coverage failure, retains the
+16-trajectory evaluation target, and uses expanded disjoint screening pools
+with stable trajectory-ID geometry. No v1 model output was observed or reused.
+
 ## Stage 32 powered bounded cross-model confirmation
 
 Notebook: `32_powered_bounded_cross_model_confirmation.ipynb`

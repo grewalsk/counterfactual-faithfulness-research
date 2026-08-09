@@ -2,12 +2,41 @@
 
 ## Status and decision
 
-**Protocol ID:** `stage33-bounded-interventional-predictive-causal-abstraction-v1`
+**Protocol ID:** `stage33-bounded-interventional-predictive-causal-abstraction-v2`
 
 **Evidence status:** prospective, source-bound pilot. Smoke output is never
 scientific evidence. The pilot is confirmation-eligible only if every split,
 asset, source, cache, and evaluation-lock check below passes before the locked
 evaluation is opened.
+
+### V2 model-free coverage amendment
+
+The source-bound v1 pilot (`stage33_bipca_result_bundle_5f0ab5e6e24a`) stopped
+after 168 seconds because its evaluation candidate pool yielded 15 complete
+four-mode physical trajectories rather than the required 16. The bundle bound
+commit `f1a59715675c54886e1fade66dbdd8e95e547dcd`; all compact-manifest hashes
+matched, `models_loaded` was false, GPU allocation remained zero, and no model
+activation, prediction, decoded effect, planning score, or scientific gate was
+observed. The v1 status is therefore `INCONCLUSIVE_PIPELINE_FAILURE`.
+
+V2 preserves the 8/8/8/16 complete-trajectory targets, all action banks,
+estimands, rank/operator rules, controls, thresholds, and automatic result
+labels. It makes candidate geometry a deterministic function of trajectory ID
+rather than pool length, expands the four mutually disjoint model-free
+candidate pools, logs the selected count after accepting a candidate, and
+writes every physical-screen row before raising a coverage exception. This is
+a prospective design repair following model-free feasibility information, not
+an outcome-informed scientific refit.
+
+A simulator-only preflight of the implemented v2 selector against the exact
+pinned `jepa-wms` commit reached construction 8/8 after 209 candidates,
+model-selection 8/8 after 197, calibration 8/8 after 277, and evaluation 16/16
+after 307 of 1,600 available candidates. The corresponding evaluation IDs were
+`8431, 8436, 8448, 8486, 8491, 8541, 8546, 8571, 8596, 8601, 8626, 8648,
+8651, 8681, 8703, 8706`. The preflight imported the simulator only and did not
+load either world model or inspect any scientific outcome. The source-bound
+notebook recomputes and hashes selection independently; these diagnostic IDs
+are a coverage audit, not an input manifest or a scientific result.
 
 Stage 33 rejects the proposed **minimal hybrid predictive realization** as the
 name of the empirical object. The original proposal combines three claims that
@@ -531,10 +560,10 @@ records, not 160 independent trajectories.
 
 | Split | Candidate trajectory IDs | Complete trajectories | Four-mode records | Permitted use |
 |---|---:|---:|---:|---|
-| construction | `[6000,6200)` | 8 | 32 | fit normalization, grouped-ridge decoders, predictive charts, native carrier bases, and structured null machinery |
-| model selection | `[6200,6400)` | 8 | 32 | lock the common rank, operator ridges, global/physical/label-free variant, and nonlinear-control capacity |
-| calibration | `[6400,6600)` | 8 | 32 | refit final frozen operators and within-model bridges, then fit exactly one cross-model affine map with every choice fixed |
-| locked evaluation | `[6600,7000)` | 16 | 64 | one sealed opening for all primary metrics, controls, intervals, and the mechanical decision |
+| construction | `[6000,6800)` | 8 | 32 | fit normalization, grouped-ridge decoders, predictive charts, native carrier bases, and structured null machinery |
+| model selection | `[6800,7600)` | 8 | 32 | lock the common rank, operator ridges, global/physical/label-free variant, and nonlinear-control capacity |
+| calibration | `[7600,8400)` | 8 | 32 | refit final frozen operators and within-model bridges, then fit exactly one cross-model affine map with every choice fixed |
+| locked evaluation | `[8400,10000)` | 16 | 64 | one sealed opening for all primary metrics, controls, intervals, and the mechanical decision |
 
 The smoke plumbing check uses 1/1/1/2 complete trajectories, or 4/4/4/8
 records, and is never scientific evidence. Exact selected IDs, record IDs,
@@ -549,6 +578,11 @@ trajectories and therefore 16 records in every stratum; at least 12 distinct
 evaluation trajectories and at least 10 trajectories per stratum are required
 for an evidence-eligible result. Inadequate coverage is inconclusive, not
 negative evidence.
+
+Candidate phase is generated from an absolute golden-angle sequence keyed by
+trajectory ID, and distance is generated from a separate deterministic
+trajectory-ID slot. Neither depends on candidate-pool length. Expanding a pool
+therefore adds candidates without changing the geometry of existing IDs.
 
 ### 5.2 Action words and composition holdout
 

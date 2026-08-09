@@ -27,6 +27,17 @@ function_sources = STAGE32.function_sources
 
 introduction = r'''# Stage 33: bounded interventional predictive causal abstraction
 
+## V2 model-free coverage amendment
+
+The source-bound v1 pilot stopped before loading either world model because
+its frozen evaluation candidate pool yielded 15 complete four-mode physical
+trajectories rather than the required 16.  No activation, prediction, decoded
+effect, planning score, or scientific gate was observed.  V2 therefore keeps
+all targets, estimands, action banks, thresholds, and decision gates unchanged
+while replacing pool-size-dependent candidate geometry with a stable
+trajectory-ID design, enlarging the four disjoint model-free screening pools,
+and writing complete screening evidence before any coverage exception.
+
 ## Verdict before computation
 
 The proposed **minimal hybrid predictive realization** is not identifiable
@@ -117,9 +128,9 @@ OUTPUT_DIR = "/content/counterfactual_faithfulness_stage33_bipca"
 DRIVE_OUTPUT_DIR = "/content/drive/MyDrive/counterfactual_faithfulness_stage33_bipca"
 RUN_REQUEST_PATH = "/content/drive/MyDrive/counterfactual_faithfulness_stage33_bipca/stage33_run_request.json"
 
-PROTOCOL_ID = "stage33-bounded-interventional-predictive-causal-abstraction-v1"
+PROTOCOL_ID = "stage33-bounded-interventional-predictive-causal-abstraction-v2"
 NOTEBOOK_PROTOCOL_SHA256 = "__PROTOCOL_DIGEST__"
-EVIDENCE_STATUS = "CONFIRMATORY_ONLY_IF_SOURCE_BOUND_SPLIT_LOCKED_AND_CAUSALLY_TRANSPORTED"
+EVIDENCE_STATUS = "CONFIRMATORY_V2_ONLY_IF_SOURCE_BOUND_SPLIT_LOCKED_AND_CAUSALLY_TRANSPORTED"
 EXPERIMENT_REPOSITORY = "grewalsk/counterfactual-faithfulness-research"
 EXPERIMENT_NOTEBOOK_PATH = "notebooks/33_bounded_interventional_predictive_causal_abstraction.ipynb"
 EXPERIMENT_BUILDER_PATH = "notebooks/build_stage33_bounded_interventional_abstraction_notebook.py"
@@ -143,11 +154,13 @@ INTERVENTION_BLOCK = 4
 FRAMESKIP = 5
 MAX_WORD_LENGTH = 4
 MODE_LABELS = ["free", "pre_contact", "contact", "post_contact"]
+TRAJECTORY_GEOMETRY_VERSION = "absolute_golden_angle_v2"
+TRAJECTORY_PHASE_INCREMENT = 0.6180339887498949
 
-CONSTRUCTION_TRAJECTORY_POOL = list(range(6000, 6200))
-MODEL_SELECTION_TRAJECTORY_POOL = list(range(6200, 6400))
-CALIBRATION_TRAJECTORY_POOL = list(range(6400, 6600))
-EVALUATION_TRAJECTORY_POOL = list(range(6600, 7000))
+CONSTRUCTION_TRAJECTORY_POOL = list(range(6000, 6800))
+MODEL_SELECTION_TRAJECTORY_POOL = list(range(6800, 7600))
+CALIBRATION_TRAJECTORY_POOL = list(range(7600, 8400))
+EVALUATION_TRAJECTORY_POOL = list(range(8400, 10000))
 CONSTRUCTION_TRAJECTORIES = 8
 MODEL_SELECTION_TRAJECTORIES = 8
 CALIBRATION_TRAJECTORIES = 8
@@ -247,10 +260,10 @@ ASSET_COMMIT = "2326e74556f6f81db2560e4396f4cc52c16a28f4"
 ASSET_SPECS = {}
 
 if RUN_MODE == "smoke":
-    ACTIVE_CONSTRUCTION_TRAJECTORY_POOL = CONSTRUCTION_TRAJECTORY_POOL[:24]
-    ACTIVE_MODEL_SELECTION_TRAJECTORY_POOL = MODEL_SELECTION_TRAJECTORY_POOL[:24]
-    ACTIVE_CALIBRATION_TRAJECTORY_POOL = CALIBRATION_TRAJECTORY_POOL[:24]
-    ACTIVE_EVALUATION_TRAJECTORY_POOL = EVALUATION_TRAJECTORY_POOL[:36]
+    ACTIVE_CONSTRUCTION_TRAJECTORY_POOL = CONSTRUCTION_TRAJECTORY_POOL[:256]
+    ACTIVE_MODEL_SELECTION_TRAJECTORY_POOL = MODEL_SELECTION_TRAJECTORY_POOL[:256]
+    ACTIVE_CALIBRATION_TRAJECTORY_POOL = CALIBRATION_TRAJECTORY_POOL[:256]
+    ACTIVE_EVALUATION_TRAJECTORY_POOL = EVALUATION_TRAJECTORY_POOL[:512]
     ACTIVE_CONSTRUCTION_TRAJECTORIES = 1
     ACTIVE_MODEL_SELECTION_TRAJECTORIES = 1
     ACTIVE_CALIBRATION_TRAJECTORIES = 1
@@ -282,6 +295,7 @@ PINNED = [
     "free_pre_contact_contact_post_contact", "one_map_all_actions_modes_steps",
     "model_native_internal_interchange", "planning_transport",
     "shared_dinov2_target_is_a_declared_confound", "no_synthetic_fallback",
+    "model_free_v1_coverage_amendment", "stable_trajectory_id_geometry",
     "hash_validated_resume", "no_required_colab_secret",
 ]
 
@@ -671,18 +685,25 @@ def reset_dynamic_environment(dynamic_state, goal, seed):
 
 
 def initial_trajectory_record(trajectory_id, split, pool):
-    index = pool.index(int(trajectory_id))
-    phase = 0.413 + 2.0 * np.pi * index / max(len(pool), 1)
+    trajectory_id = int(trajectory_id)
+    if trajectory_id not in pool:
+        raise ValueError("trajectory_id lies outside its declared split pool")
+    phase_fraction = float(
+        np.mod((trajectory_id + 1) * TRAJECTORY_PHASE_INCREMENT, 1.0)
+    )
+    phase = 0.413 + 2.0 * np.pi * phase_fraction
     center = np.asarray([256.0, 256.0], dtype=np.float64)
     block = center + 38.0 * np.asarray([np.cos(phase), np.sin(phase)])
-    distance = float(DISTANCE_GRID[(3 * index + index // len(DISTANCE_GRID)) % len(DISTANCE_GRID)])
+    distance_slot = (37 * trajectory_id + DESIGN_SEED) % len(DISTANCE_GRID)
+    distance = float(DISTANCE_GRID[distance_slot])
     approach = phase + np.pi + 0.17 * np.sin(3.0 * phase)
     agent = block + distance * np.asarray([np.cos(approach), np.sin(approach)])
     goal_phase = phase + 1.9
     goal_xy = center + 72.0 * np.asarray([np.cos(goal_phase), np.sin(goal_phase)])
     return {
-        "trajectory_id": int(trajectory_id), "split": str(split),
-        "state_family_id": int(trajectory_id),
+        "trajectory_id": trajectory_id, "split": str(split),
+        "state_family_id": trajectory_id,
+        "trajectory_geometry_version": TRAJECTORY_GEOMETRY_VERSION,
         "evaluation_seed": int(DESIGN_SEED + 1009 * trajectory_id),
         "task_id": int(TASK_ID_OFFSET + trajectory_id),
         "state": np.asarray([
@@ -1025,6 +1046,9 @@ def trajectory_split_manifest():
         "calibration_interchange_pairs": CALIBRATION_INTERCHANGE_PAIRS,
         "evaluation_words": EVALUATION_WORD_SPECS,
         "evaluation_interchange_pairs": EVALUATION_INTERCHANGE_PAIRS,
+        "trajectory_geometry_version": TRAJECTORY_GEOMETRY_VERSION,
+        "trajectory_phase_increment": TRAJECTORY_PHASE_INCREMENT,
+        "v1_model_outputs_observed_before_amendment": False,
         "model_outputs_used": False,
         "physical_effect_magnitudes_used": False,
     }
@@ -1045,6 +1069,8 @@ DESIGN_FREEZE = {
     "split_manifest_sha256": sha256_file(DESIGN_DIR / "trajectory_action_split_manifest.json"),
     "word_manifest_sha256": sha256_file(DESIGN_DIR / "action_word_manifest.json"),
     "models_loaded": False,
+    "trajectory_geometry_version": TRAJECTORY_GEOMETRY_VERSION,
+    "v1_model_free_coverage_amendment": True,
     "evaluation_rank_map_or_mode_selection_allowed": False,
 }
 write_json(DESIGN_DIR / "design_freeze.json", DESIGN_FREEZE)
@@ -1099,6 +1125,8 @@ def select_complete_trajectories(split, pool, target):
             or payload.get("split") != split
             or payload.get("pool") != list(pool)
             or payload.get("target") != int(target)
+            or payload.get("trajectory_geometry_version")
+            != TRAJECTORY_GEOMETRY_VERSION
         ):
             raise RuntimeError(f"stale selected-trajectory manifest for {split}")
         records = [restore_json_record(row) for row in payload["records"]]
@@ -1115,15 +1143,17 @@ def select_complete_trajectories(split, pool, target):
             "split": split, "trajectory_id": int(trajectory_id),
             "complete_four_mode_family": bool(snapshots is not None),
         })
-        write_json(OUT / f"physical_screen_{split}_progress.json", {
-            "screened": len(screen_rows), "pool": len(pool),
-            "selected": len({row["trajectory_id"] for row in selected}),
-            "target": int(target), "last_trajectory_id": int(trajectory_id),
-        })
         if snapshots is not None:
             selected.extend(snapshots)
-        if len({row["trajectory_id"] for row in selected}) == int(target):
+        selected_count = len({row["trajectory_id"] for row in selected})
+        write_json(OUT / f"physical_screen_{split}_progress.json", {
+            "screened": len(screen_rows), "pool": len(pool),
+            "selected": selected_count,
+            "target": int(target), "last_trajectory_id": int(trajectory_id),
+        })
+        if selected_count == int(target):
             break
+    write_csv(EVIDENCE_DIR / f"physical_screen_{split}_rows.csv", screen_rows)
     if len({row["trajectory_id"] for row in selected}) != int(target):
         raise RuntimeError(
             f"{split} produced fewer than {target} complete four-mode trajectories"
@@ -1131,12 +1161,12 @@ def select_complete_trajectories(split, pool, target):
     payload = {
         "protocol_id": PROTOCOL_ID, "split": split, "pool": list(pool),
         "target": int(target), "selection_uses_contact_timing_only": True,
+        "trajectory_geometry_version": TRAJECTORY_GEOMETRY_VERSION,
         "model_outputs_used": False, "effect_magnitude_used": False,
         "records": [json_record(row) for row in selected],
     }
     write_json(path, payload)
     write_digest_sidecar(path)
-    write_csv(EVIDENCE_DIR / f"physical_screen_{split}_rows.csv", screen_rows)
     PROVENANCE_COUNTS["trajectory_families_selected"] += int(target)
     return selected
 

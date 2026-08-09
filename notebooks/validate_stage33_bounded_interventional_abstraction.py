@@ -215,7 +215,7 @@ def validate():
     config = code_cells[0]
     tree = ast.parse(config)
     assert assigned_value(tree, "PROTOCOL_ID") == (
-        "stage33-bounded-interventional-predictive-causal-abstraction-v1"
+        "stage33-bounded-interventional-predictive-causal-abstraction-v2"
     )
     assert assigned_value(tree, "RUN_MODE") == "pilot"
     assert assigned_value(tree, "EXPERIMENT_SOURCE_REF") == (
@@ -252,6 +252,12 @@ def validate():
     assert assigned_value(tree, "MODE_LABELS") == [
         "free", "pre_contact", "contact", "post_contact"
     ]
+    assert assigned_value(tree, "TRAJECTORY_GEOMETRY_VERSION") == (
+        "absolute_golden_angle_v2"
+    )
+    assert assigned_value(tree, "TRAJECTORY_PHASE_INCREMENT") == (
+        0.6180339887498949
+    )
     assert assigned_value(tree, "CONSTRUCTION_TRAJECTORIES") == 8
     assert assigned_value(tree, "MODEL_SELECTION_TRAJECTORIES") == 8
     assert assigned_value(tree, "CALIBRATION_TRAJECTORIES") == 8
@@ -266,10 +272,10 @@ def validate():
     model_selection_pool = assigned_value(tree, "MODEL_SELECTION_TRAJECTORY_POOL")
     calibration_pool = assigned_value(tree, "CALIBRATION_TRAJECTORY_POOL")
     evaluation_pool = assigned_value(tree, "EVALUATION_TRAJECTORY_POOL")
-    assert construction_pool == list(range(6000, 6200))
-    assert model_selection_pool == list(range(6200, 6400))
-    assert calibration_pool == list(range(6400, 6600))
-    assert evaluation_pool == list(range(6600, 7000))
+    assert construction_pool == list(range(6000, 6800))
+    assert model_selection_pool == list(range(6800, 7600))
+    assert calibration_pool == list(range(7600, 8400))
+    assert evaluation_pool == list(range(8400, 10000))
     pools = [construction_pool, model_selection_pool, calibration_pool, evaluation_pool]
     assert all(
         not set(pools[left]) & set(pools[right])
@@ -291,6 +297,8 @@ def validate():
             "calibration_operators_and_map_only", "locked_evaluation",
             "model_native_internal_interchange", "planning_transport",
             "shared_dinov2_target_is_a_declared_confound",
+            "model_free_v1_coverage_amendment",
+            "stable_trajectory_id_geometry",
         ],
         "configuration contract",
     )
@@ -353,6 +361,26 @@ def validate():
             "EVALUATION_INTERCHANGE_PAIRS", "EVALUATION_WORD_SPECS",
         ],
         "construction/model-selection/calibration/evaluation separation",
+    )
+    geometry_source = function_source(code_cells, "initial_trajectory_record")
+    require_all(
+        geometry_source,
+        [
+            "TRAJECTORY_PHASE_INCREMENT",
+            "trajectory_geometry_version",
+            "37 * trajectory_id + DESIGN_SEED",
+        ],
+        "stable trajectory-id geometry",
+    )
+    assert "pool.index" not in geometry_source
+    selector_source = function_source(code_cells, "select_complete_trajectories")
+    assert selector_source.index("selected.extend(snapshots)") < selector_source.index(
+        'write_json(OUT / f"physical_screen_{split}_progress.json"'
+    )
+    assert selector_source.index(
+        'write_csv(EVIDENCE_DIR / f"physical_screen_{split}_rows.csv"'
+    ) < selector_source.index(
+        'f"{split} produced fewer than {target} complete four-mode trajectories"'
     )
     require_all(
         joined,
