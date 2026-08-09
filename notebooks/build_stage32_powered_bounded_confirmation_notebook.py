@@ -251,6 +251,22 @@ analysis_helpers = STAGE31.analysis_helpers + "\n\n\n" + function_sources(
     ],
 )
 
+# The simulator consumes float32 actions, but the equal-impulse/energy checks are
+# mathematical invariants of an identical pulse multiset.  Accumulating those
+# diagnostics in float32 makes their result depend on schedule order and caused
+# a false failure at a 5.96e-7 discrepancy.  Preserve the actions exactly while
+# evaluating the invariants with order-stable float64 accumulation.
+_float32_invariant_check = """        impulses = np.sum(group, axis=1)
+        energies = np.sum(group**2, axis=(1, 2))"""
+_float64_invariant_check = """        diagnostic_group = group.astype(np.float64)
+        impulses = np.sum(diagnostic_group, axis=1)
+        energies = np.sum(diagnostic_group**2, axis=(1, 2))"""
+if analysis_helpers.count(_float32_invariant_check) != 1:
+    raise RuntimeError("could not locate the inherited action-invariant check")
+analysis_helpers = analysis_helpers.replace(
+    _float32_invariant_check, _float64_invariant_check
+)
+
 
 model_helpers = STAGE31.model_helpers
 model_helpers = model_helpers.replace("stage31-jepa-wms", "stage32-jepa-wms")

@@ -72,6 +72,39 @@ def validate_numerics():
     assert np.isclose(placebo[0]["primary_minus_median_placebo_improvement"], 0.2)
 
 
+def validate_action_invariant_regression(code_cells):
+    """Reproduce the exact direction that tripped the original float32 check."""
+
+    schedules = [
+        "uuuuuvvvvv", "uuvuuvvuvv", "uvuvuvuvuv",
+        "vuvuvuvuvu", "vvuvvuuvuu", "vvvvvuuuuu",
+    ]
+    namespace = {
+        "np": np,
+        "SCHEDULE_STRINGS": schedules,
+        "SCHEDULE_INVERSION_COUNTS": [0, 5, 10, 15, 20, 25],
+    }
+    for name in [
+        "rotate_vector", "schedule_inversion_count", "signed_control_area",
+        "area_action_bank",
+    ]:
+        exec(function_source(code_cells, name), namespace)
+    toward_block = np.asarray(
+        [261.3268442566929 - 294.18573920899604,
+         213.3312206611797 - 318.3088040898027],
+        dtype=np.float64,
+    )
+    actions = namespace["area_action_bank"](
+        toward_block,
+        [0.10, 0.14, 0.18, 0.22],
+        steps=15,
+        angle_pair_degrees=(-20.0, 20.0),
+        schedules=schedules,
+    )
+    assert actions.shape == (24, 15, 2)
+    assert actions.dtype == np.float32
+
+
 def validate():
     before = NOTEBOOK.read_bytes()
     subprocess.run(
@@ -156,6 +189,11 @@ def validate():
     closure_source = function_source(code_cells, "bounded_swap_closure_rows")
     assert "diagnostic schedules must be closed under reversal" in closure_source
     assert "minimum_target_energy=minimum_target_energy" in closure_source
+    action_bank_source = function_source(code_cells, "area_action_bank")
+    assert "diagnostic_group = group.astype(np.float64)" in action_bank_source
+    assert "impulses = np.sum(diagnostic_group, axis=1)" in action_bank_source
+    assert "energies = np.sum(diagnostic_group**2, axis=(1, 2))" in action_bank_source
+    assert "impulses = np.sum(group, axis=1)" not in action_bank_source
 
     upstream = code_cells[5]
     for required in [
@@ -190,6 +228,7 @@ def validate():
     ).hexdigest()
     assert observed_digest == expected_digest
     validate_numerics()
+    validate_action_invariant_regression(code_cells)
     print("Stage 32 notebook validation passed")
 
 
