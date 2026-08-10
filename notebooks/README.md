@@ -1,5 +1,20 @@
 # Colab instructions
 
+## Stage 34 predictive-fiber causal abstraction
+
+Notebook: `34_predictive_fiber_causal_abstraction.ipynb`
+
+Stage 34 does not retry the direct JEPA-to-DINO map rejected by Stage 33. The
+simulator alone defines a finite no-op-corrected action-response chart; the two
+official checkpoints are then tested separately for unseen-action specificity,
+predictive sufficiency, on-manifold causal use, and commutativity with one
+frozen high-level physical transition. The gates are sequential and planning
+is deferred.
+
+Follow `../STAGE34_RUN_GUIDE.md`. Prefer a G4 Blackwell runtime; L4 is supported.
+The run is source-bound and hash-resumable, requires no Stage 34 secret, and
+returns `stage34_pfca_result_bundle_<signature>.zip`.
+
 ## Stage 33 bounded interventional predictive causal abstraction
 
 Notebook: `33_bounded_interventional_predictive_causal_abstraction.ipynb`
