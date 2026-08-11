@@ -1,5 +1,19 @@
 # Colab instructions
 
+## Stage 34.1 leakage-free action-specificity repair
+
+Notebook: `34_1_action_specificity_repair.ipynb`
+
+Stage 34.1 preserves the original Stage 34 result and re-scores its exact
+frozen calibration/evaluation shards after reshaping the action response into
+one 11-dimensional row per word prefix. The state-only comparator is
+executable-proofed to make identical predictions for different words at the
+same state, length, and prefix step, eliminating the action-indexed target
+column leak. No model inference or GPU is required.
+
+Follow `../STAGE34_1_RUN_GUIDE.md`. The full Stage 34 Drive run is required;
+the compact downloaded bundle does not contain the raw shards.
+
 ## Stage 34 predictive-fiber causal abstraction
 
 Notebook: `34_predictive_fiber_causal_abstraction.ipynb`

@@ -93,6 +93,9 @@ downloaded Colab result bundles.
   discovery and sealed finite transport of a contact-frame causal response
   fiber, with world-axis, location, local-random, reverse, and full-swap
   controls.
+- `docs/STAGE34_1_ACTION_SPECIFICITY_REPAIR_PROTOCOL.md` — post-outcome,
+  hash-bound repair of Stage 34's action-indexed static-state comparator using
+  one leakage-free action-prefix row per 11-dimensional physical response.
 - `STAGE27_RUN_GUIDE.md` — no-secret Colab handoff for the source-bound finite
   action-commutator experiment.
 - `STAGE29_RUN_GUIDE.md` — no-secret native target-latent closure test that
@@ -189,6 +192,14 @@ downloaded Colab result bundles.
   the official checkpoints' feature-conditioned proprio-field contract by
   spatially pooling its 256 patch features before the frozen readout, without
   changing scientific targets or gates.
+- `notebooks/34_predictive_fiber_causal_abstraction.ipynb` — defines a
+  simulator-only finite action-response chart and tests both frozen models
+  separately through sequential specificity, sufficiency, causal-use, and
+  commutativity gates.
+- `notebooks/34_1_action_specificity_repair.ipynb` — reuses the exact audited
+  Stage 34 shards, proves the replacement state comparator is action blind,
+  and reports only a bounded continuation decision with confirmation
+  eligibility explicitly disabled.
 - `docs/STAGE14_32_EVIDENCE_AUDIT.md` — frozen-result ledger separating
   common decodability and model-self mediation from grounded causal evidence.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.
