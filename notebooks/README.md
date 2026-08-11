@@ -1,5 +1,18 @@
 # Colab instructions
 
+## Stage 34.2 split-path predictive and causal continuation
+
+Notebook: `34_2_split_path_continuation.ipynb`
+
+Stage 34.2 keeps the Stage 34.1 model asymmetry explicit. DINO receives a
+calibration-only diagonal scale/bias diagnosis, while JEPA alone advances to
+the previously unopened predictive-sufficiency gate and, conditionally, the
+native block-4 causal-use gate. GPU inference is skipped unless sufficiency
+passes, and every causal pair is independently resumable.
+
+Follow `../STAGE34_2_RUN_GUIDE.md`. The complete Stage 34 and Stage 34.1 Drive
+directories are required.
+
 ## Stage 34.1 leakage-free action-specificity repair
 
 Notebook: `34_1_action_specificity_repair.ipynb`
