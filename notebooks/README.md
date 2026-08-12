@@ -1,5 +1,18 @@
 # Colab instructions
 
+## Stage 34.3 regime-aware JEPA innovation diagnostic
+
+Notebook: `34_3_regime_innovation_diagnostic.ipynb`
+
+Stage 34.3 is a CPU-only response to the valid Stage 34.2 JEPA insufficiency
+result. It freezes rank four/five, universal/physical-mode dynamics, zero to
+three carrier innovations, and ridge selection before reading evaluation. The
+locked candidate must survive full-carrier, coordinate-deletion, and
+permuted-mode controls. It cannot emit a causal or confirmatory claim.
+
+Follow `../STAGE34_3_RUN_GUIDE.md`. The complete Stage 34 and Stage 34.2 Drive
+directories are required.
+
 ## Stage 34.2 split-path predictive and causal continuation
 
 Notebook: `34_2_split_path_continuation.ipynb`

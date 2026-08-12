@@ -99,6 +99,9 @@ downloaded Colab result bundles.
 - `docs/STAGE34_2_SPLIT_PATH_CONTINUATION_PROTOCOL.md` — separates DINO's
   low-capacity calibration diagnosis from JEPA's unopened predictive-
   sufficiency and conditional native causal-use gates.
+- `docs/STAGE34_3_REGIME_INNOVATION_PROTOCOL.md` — CPU-only falsification of a
+  bounded JEPA repair family spanning rank, explicit physical regimes, and at
+  most three supervised carrier-innovation coordinates.
 - `STAGE27_RUN_GUIDE.md` — no-secret Colab handoff for the source-bound finite
   action-commutator experiment.
 - `STAGE29_RUN_GUIDE.md` — no-secret native target-latent closure test that
@@ -206,6 +209,10 @@ downloaded Colab result bundles.
 - `notebooks/34_2_split_path_continuation.ipynb` — runs a calibration-only DINO
   error decomposition and advances only JEPA through sequential sufficiency
   and resumable matched block-4 causal interventions.
+- `notebooks/34_3_regime_innovation_diagnostic.ipynb` — selects a small JEPA
+  regime/innovation state without evaluation leakage, then tests transfer,
+  remaining carrier information, every-coordinate necessity, and permuted-mode
+  controls without loading either checkpoint.
 - `docs/STAGE14_32_EVIDENCE_AUDIT.md` — frozen-result ledger separating
   common decodability and model-self mediation from grounded causal evidence.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.
