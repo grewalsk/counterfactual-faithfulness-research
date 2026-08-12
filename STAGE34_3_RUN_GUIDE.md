@@ -31,6 +31,11 @@ trajectory-grouped folds, then performs one locked evaluation and 5,000-draw
 cluster bootstraps. Expected wall time is approximately 10–30 minutes on a
 standard Colab CPU, depending on the assigned BLAS runtime and Drive speed.
 
+The setup cell probes Drive after mounting and retries transient FUSE errors
+with bounded backoff. If it reports that Drive remained unavailable after all
+eight attempts, restart the runtime and select **Run all**; no scientific work
+has begun at that point.
+
 ## Read the result
 
 Read `stage34_3_decision.json` first, then

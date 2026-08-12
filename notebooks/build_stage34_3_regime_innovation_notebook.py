@@ -155,10 +155,38 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
+
+def retry_drive_io(label, operation, attempts=8):
+    delay = 1.0
+    for attempt in range(1, int(attempts) + 1):
+        try:
+            return operation()
+        except OSError as error:
+            if attempt == int(attempts):
+                raise RuntimeError(
+                    f"Google Drive remained unavailable during {label} after {attempts} attempts"
+                ) from error
+            print(
+                f"Transient Drive error during {label} "
+                f"(attempt {attempt}/{attempts}): {error}; retrying in {delay:.0f}s"
+            )
+            time.sleep(delay)
+            delay = min(2.0 * delay, 15.0)
+
+
 if MOUNT_DRIVE:
     from google.colab import drive
     if not Path("/content/drive/MyDrive").is_dir():
         drive.mount("/content/drive", timeout_ms=600_000)
+    drive_output_root = Path(DRIVE_OUTPUT_ROOT)
+
+    def probe_drive():
+        drive_output_root.mkdir(parents=True, exist_ok=True)
+        probe = drive_output_root / ".stage343_drive_ready"
+        probe.write_text("ready\n")
+        probe.unlink()
+
+    retry_drive_io("post-mount readiness probe", probe_drive)
 
 SOURCE_REPOSITORY = Path("/content/counterfactual-faithfulness-stage343")
 REMOTE = f"https://github.com/{EXPERIMENT_REPOSITORY}.git"
@@ -198,11 +226,16 @@ within_group_permuted_labels = stage343_module.within_group_permuted_labels
 
 
 def sha256_file(path):
-    digest = hashlib.sha256()
-    with Path(path).open("rb") as handle:
-        for block in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
+    path = Path(path)
+
+    def calculate():
+        digest = hashlib.sha256()
+        with path.open("rb") as handle:
+            for block in iter(lambda: handle.read(1024 * 1024), b""):
+                digest.update(block)
+        return digest.hexdigest()
+
+    return retry_drive_io(f"hash {path.name}", calculate)
 
 
 def jsonable(value):
@@ -219,24 +252,33 @@ def jsonable(value):
 
 def write_json(path, payload):
     path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_text(json.dumps(jsonable(payload), indent=2, sort_keys=True) + "\n")
-    os.replace(temporary, path)
+    serialized = json.dumps(jsonable(payload), indent=2, sort_keys=True) + "\n"
+
+    def commit_json():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        temporary.write_text(serialized)
+        os.replace(temporary, path)
+
+    retry_drive_io(f"write {path.name}", commit_json)
 
 
 def write_csv(path, rows):
     path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
     rows = [jsonable(row) for row in rows]
     if not rows:
         raise ValueError(f"cannot write empty CSV {path}")
     temporary = path.with_suffix(path.suffix + ".tmp")
-    with temporary.open("w", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
-        writer.writeheader()
-        writer.writerows(rows)
-    os.replace(temporary, path)
+
+    def commit_csv():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with temporary.open("w", newline="") as handle:
+            writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+            writer.writeheader()
+            writer.writerows(rows)
+        os.replace(temporary, path)
+
+    retry_drive_io(f"write {path.name}", commit_csv)
 
 
 CONFIG_NAMES = [
@@ -260,9 +302,15 @@ OUT = Path(DRIVE_OUTPUT_ROOT) / f"{RUN_MODE}_{RUN_SIGNATURE[:12]}"
 EVIDENCE_DIR = OUT / "evaluation_evidence"
 PLOT_DIR = OUT / "plots"
 for directory in [OUT, EVIDENCE_DIR, PLOT_DIR]:
-    directory.mkdir(parents=True, exist_ok=True)
+    retry_drive_io(
+        f"create {directory}",
+        lambda directory=directory: directory.mkdir(parents=True, exist_ok=True),
+    )
 RUN_STARTED_AT = time.time()
-(OUT / "FAILURE_TRACE.txt").write_text("PENDING\n")
+retry_drive_io(
+    "initialize failure trace",
+    lambda: (OUT / "FAILURE_TRACE.txt").write_text("PENDING\n"),
+)
 write_json(OUT / "config.json", {
     **CONFIG, "run_signature": RUN_SIGNATURE, "source_commit": SOURCE_COMMIT,
 })
@@ -565,8 +613,11 @@ SELECTION_MANIFEST = {
 }
 write_csv(EVIDENCE_DIR / "candidate_selection_rows.csv", CANDIDATE_ROWS)
 write_json(OUT / "frozen_candidate_selection.json", SELECTION_MANIFEST)
-(OUT / "frozen_candidate_selection.json.sha256").write_text(
-    sha256_file(OUT / "frozen_candidate_selection.json") + "\n"
+retry_drive_io(
+    "write candidate-selection digest",
+    lambda: (OUT / "frozen_candidate_selection.json.sha256").write_text(
+        sha256_file(OUT / "frozen_candidate_selection.json") + "\n"
+    ),
 )
 print(json.dumps(SELECTION_MANIFEST, indent=2))
 '''
@@ -890,7 +941,12 @@ axes[1, 1].axhline(MIN_COORDINATE_NECESSITY, color="black", linestyle="--")
 axes[1, 1].set_title("Leave-one-coordinate-out necessity")
 figure.suptitle(f"Stage 34.3: {DECISION['status']}")
 figure.tight_layout()
-figure.savefig(PLOT_DIR / "stage34_3_regime_innovation_summary.png", dpi=180)
+retry_drive_io(
+    "write diagnostic plot",
+    lambda: figure.savefig(
+        PLOT_DIR / "stage34_3_regime_innovation_summary.png", dpi=180
+    ),
+)
 plt.show()
 
 interpretations = {
@@ -916,13 +972,20 @@ interpretations = {
 interpretation = interpretations.get(
     DECISION["status"], "The diagnostic was inconclusive before the scientific gates."
 )
-(OUT / "AUTOMATIC_INTERPRETATION.md").write_text(
+automatic_interpretation = (
     f"# Automatic Stage 34.3 interpretation\n\n"
     f"Status: **{DECISION['status'].upper()}**\n\n{interpretation}\n\n"
     "This reused-panel CPU diagnostic is neither causal nor confirmatory. A positive result "
     "requires fresh trajectories before native intervention. DINO remains paused.\n"
 )
-(OUT / "FAILURE_TRACE.txt").write_text("NONE\n")
+retry_drive_io(
+    "write automatic interpretation",
+    lambda: (OUT / "AUTOMATIC_INTERPRETATION.md").write_text(automatic_interpretation),
+)
+retry_drive_io(
+    "finalize failure trace",
+    lambda: (OUT / "FAILURE_TRACE.txt").write_text("NONE\n"),
+)
 print(json.dumps({"status": DECISION["status"], "passed": DECISION["passed"]}, indent=2))
 '''
 
@@ -969,13 +1032,19 @@ def manifest_rows(root, excluded=()):
 
 archive_path = OUT / f"stage34_3_regime_innovation_result_bundle_{RUN_SIGNATURE[:12]}.zip"
 manifest_path = OUT / "result_zip_manifest.json"
-archive_path.unlink(missing_ok=True)
 rows = manifest_rows(OUT, excluded=[archive_path, manifest_path])
 write_json(manifest_path, rows)
-with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
-    for path in sorted(OUT.rglob("*")):
-        if path.is_file() and path != archive_path:
-            archive.write(path, arcname=str(path.relative_to(OUT)))
+
+
+def build_archive():
+    archive_path.unlink(missing_ok=True)
+    with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        for path in sorted(OUT.rglob("*")):
+            if path.is_file() and path != archive_path:
+                archive.write(path, arcname=str(path.relative_to(OUT)))
+
+
+retry_drive_io("package result archive", build_archive)
 print(json.dumps({
     "bundle": str(archive_path), "bytes": archive_path.stat().st_size,
     "files": len(rows) + 1, "status": DECISION["status"],

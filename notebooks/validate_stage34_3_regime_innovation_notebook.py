@@ -100,6 +100,26 @@ def validate():
             assert cell.get("execution_count") is None
             ast.parse(source(cell))
 
+    setup_tree = ast.parse(code_cells[1])
+    retry_node = next(
+        node for node in setup_tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "retry_drive_io"
+    )
+    retry_namespace = {
+        "time": type("NoWaitClock", (), {"sleep": staticmethod(lambda _delay: None)})()
+    }
+    exec(compile(ast.Module(body=[retry_node], type_ignores=[]), "<retry-test>", "exec"), retry_namespace)
+    calls = {"count": 0}
+
+    def transient_operation():
+        calls["count"] += 1
+        if calls["count"] < 3:
+            raise ConnectionAbortedError(103, "synthetic Drive disconnect")
+        return "ready"
+
+    assert retry_namespace["retry_drive_io"]("synthetic probe", transient_operation) == "ready"
+    assert calls["count"] == 3
+
     tree = ast.parse(code_cells[0])
     expected = {
         "RUN_MODE": "pilot",
@@ -140,6 +160,8 @@ def validate():
 
     all_code = "\n".join(code_cells)
     required = [
+        'retry_drive_io("post-mount readiness probe", probe_drive)',
+        'retry_drive_io(\n        f"create {directory}"',
         'stage342_decision.get("status") != "jepa_response_state_insufficient"',
         "grouped_candidate_oof(",
         "select_simplest_candidate(",
