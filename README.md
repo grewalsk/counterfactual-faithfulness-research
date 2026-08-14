@@ -102,6 +102,9 @@ downloaded Colab result bundles.
 - `docs/STAGE34_3_REGIME_INNOVATION_PROTOCOL.md` — CPU-only falsification of a
   bounded JEPA repair family spanning rank, explicit physical regimes, and at
   most three supervised carrier-innovation coordinates.
+- `docs/STAGE35_HYBRID_COMPOSITION_PROTOCOL.md` — fresh JEPA-only test of
+  prefix-level distributed carrier closure under predicted contact guards,
+  oracle guard/reset upper bounds, and matched false-guard controls.
 - `STAGE27_RUN_GUIDE.md` — no-secret Colab handoff for the source-bound finite
   action-commutator experiment.
 - `STAGE29_RUN_GUIDE.md` — no-secret native target-latent closure test that
@@ -110,6 +113,8 @@ downloaded Colab result bundles.
 - `STAGE30_RUN_GUIDE.md` — fresh-state, decoder-free test of whether grounded
   causal closure adds held-out information about native planning regret and
   the physical decision value of the frozen carrier.
+- `STAGE35_RUN_GUIDE.md` — source-bound, resumable fresh-trajectory run guide
+  for distributed hybrid recursive closure on unseen long action words.
 - `audits/stage15/reader_failure_audit/` — complete local audit of the stopped
   Stage 15 reader gate, including dimension-matched random controls,
   coordinate-aware readers, renderer/token geometry, raw-file hashes, and a
@@ -213,6 +218,9 @@ downloaded Colab result bundles.
   regime/innovation state without evaluation leakage, then tests transfer,
   remaining carrier information, every-coordinate necessity, and permuted-mode
   controls without loading either checkpoint.
+- `notebooks/35_hybrid_predictive_composition_closure.ipynb` — records the
+  official JEPA carrier at every prefix, learns only local short-word updates,
+  and tests label-free guard/reset composition on fresh length-5--8 words.
 - `docs/STAGE14_32_EVIDENCE_AUDIT.md` — frozen-result ledger separating
   common decodability and model-self mediation from grounded causal evidence.
 - `cpu_smoke_outputs/cpu_smoke_results.json` — generated local evidence.

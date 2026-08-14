@@ -1,5 +1,19 @@
 # Colab instructions
 
+## Stage 35 JEPA hybrid predictive composition and closure
+
+Notebook: `35_hybrid_predictive_composition_closure.ipynb`
+
+Stage 35 uses completely fresh trajectory families and saves the official
+JEPA block-four carrier at every action prefix. It selects local guard-aware
+operators on short compositions, freezes calibration models and matched
+permuted/time-shifted controls, then recursively evaluates unseen words of
+lengths five through eight. A simulator recursion is a mandatory positive
+control, and the primary evaluation predicts its guard without simulator mode
+labels. A pass is observational distributed-closure evidence only.
+
+Follow `../STAGE35_RUN_GUIDE.md`. No prior result directory is required.
+
 ## Stage 34.3 regime-aware JEPA innovation diagnostic
 
 Notebook: `34_3_regime_innovation_diagnostic.ipynb`
