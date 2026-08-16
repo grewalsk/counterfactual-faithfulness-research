@@ -8,6 +8,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -198,6 +199,11 @@ def validate():
         '"minimal_state_claimed": False',
         '"dino_branch_paused": True',
         "retry_drive_io(",
+        "def action_contrast_signature(",
+        "def pool_spatial_proprio_features(",
+        "def select_stable_rank(",
+        "def fit_grouped_ridge(",
+        "def fit_response_chart(",
     ]
     for fragment in required:
         assert fragment in all_code, f"missing Stage 35 fragment: {fragment}"
@@ -210,6 +216,75 @@ def validate():
     ]
     for fragment in forbidden:
         assert fragment not in all_code, f"forbidden Stage 35 fragment: {fragment}"
+
+    # The simulator-only response chart runs before model loading and depends on
+    # this Stage 34 contrast helper.  Execute the generated numerical-helper
+    # cell directly so an omitted cross-cell dependency fails local validation
+    # instead of a Colab run.
+    analysis_namespace = {"np": np}
+    exec(compile(code_cells[3], "<stage35-analysis-helpers>", "exec"), analysis_namespace)
+    contrast = analysis_namespace["action_contrast_signature"](
+        np.asarray([[[2.0]], [[0.5]]]),
+        ["A", "zero1"],
+        [1, 1],
+        ["A"],
+        {1: "zero1"},
+    )
+    np.testing.assert_allclose(contrast, [1.5])
+    pooled = analysis_namespace["pool_spatial_proprio_features"](
+        np.ones((256, 4), dtype=np.float64)
+    )
+    np.testing.assert_allclose(pooled, np.ones(4))
+    rank = analysis_namespace["select_stable_rank"](
+        np.asarray([[0.0], [1.0], [2.0], [3.0]]),
+        np.arange(4),
+        max_rank=1,
+        n_bootstrap=2,
+        n_permutations=2,
+        stability_floor=0.0,
+        seed=35,
+    )
+    assert rank["selected_rank"] in {0, 1}
+    ridge = analysis_namespace["fit_grouped_ridge"](
+        np.asarray([[0.0], [1.0], [2.0], [3.0]]),
+        np.asarray([[0.0], [1.0], [2.0], [3.0]]),
+        np.arange(4),
+        penalties=[1e-3],
+        folds=2,
+        seed=35,
+    )
+    assert np.all(np.isfinite(ridge["weight"]))
+    chart = analysis_namespace["fit_response_chart"](
+        np.asarray([[0.0, 1.0], [1.0, 0.0], [2.0, 2.0]]), rank=1
+    )
+    assert chart["basis"].shape == (2, 1)
+
+    physical_tree = ast.parse(code_cells[6])
+    response_node = next(
+        node for node in physical_tree.body
+        if isinstance(node, ast.FunctionDef)
+        and node.name == "response_signature_from_truth_path"
+    )
+    response_namespace = {
+        **analysis_namespace,
+        "ZERO_WORD_NAMES": {1: "zero1"},
+    }
+    exec(
+        compile(ast.Module(body=[response_node], type_ignores=[]), "<response-path-test>", "exec"),
+        response_namespace,
+    )
+    with tempfile.TemporaryDirectory(prefix="stage35-response-") as directory:
+        path = Path(directory) / "truth.npz"
+        np.savez(
+            path,
+            path_observables=np.asarray([[[2.0]], [[0.5]]]),
+            word_names=np.asarray(["A", "zero1"]),
+            word_lengths=np.asarray([1, 1]),
+        )
+        signature = response_namespace["response_signature_from_truth_path"](
+            path, ["A"], []
+        )
+    np.testing.assert_allclose(signature, [1.5])
 
     selection_cell = code_cells[8]
     calibration_cell = code_cells[9]

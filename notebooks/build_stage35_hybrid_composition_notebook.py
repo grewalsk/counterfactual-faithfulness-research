@@ -9,6 +9,12 @@ ROOT = Path(__file__).resolve().parent
 REPOSITORY = ROOT.parent
 TARGET = ROOT / "35_hybrid_predictive_composition_closure.ipynb"
 NUMERICAL = REPOSITORY / "src/cf_faithfulness/stage35_hybrid_composition.py"
+STAGE33_NUMERICAL = (
+    REPOSITORY / "src/cf_faithfulness/stage33_interventional_abstraction.py"
+)
+STAGE34_NUMERICAL = (
+    REPOSITORY / "src/cf_faithfulness/stage34_predictive_fiber_abstraction.py"
+)
 
 spec = importlib.util.spec_from_file_location(
     "stage34_builder", ROOT / "build_stage34_predictive_fiber_abstraction_notebook.py"
@@ -435,7 +441,23 @@ from numpy.typing import ArrayLike, NDArray
 
 FloatArray = NDArray[np.float64]
 
-''' + function_sources(NUMERICAL.read_text(), numerical_names)
+''' + function_sources(
+    STAGE33_NUMERICAL.read_text(),
+    [
+        "pool_spatial_proprio_features",
+        "effective_rank",
+        "select_stable_rank",
+        "fit_grouped_ridge",
+    ],
+) + "\n\n" + function_sources(
+    STAGE34_NUMERICAL.read_text(),
+    [
+        "_finite_array",
+        "_word_lookup",
+        "action_contrast_signature",
+        "fit_response_chart",
+    ],
+) + "\n\n" + function_sources(NUMERICAL.read_text(), numerical_names)
 analysis_helpers = analysis_helpers.replace(
     "class Stage35Gates:\n", "@dataclass(frozen=True)\nclass Stage35Gates:\n"
 )
