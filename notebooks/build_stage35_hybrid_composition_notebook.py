@@ -212,12 +212,18 @@ configuration = replace_block(
 configuration = replace_assignment(
     configuration, "ZERO_WORD_NAMES", '{length: f"zero{length}" for length in range(1, 9)}'
 )
+configuration = replace_assignment(
+    configuration,
+    "CORE_ORDER_PAIRS",
+    '[("AB", "BA"), ("ABBA", "BAAB")]',
+)
 
 configuration += r'''
 
 CONSTRUCTION_WORD_NAMES = [row["name"] for row in CORE_WORD_SPECS]
 MODEL_SELECTION_WORD_NAMES = ["A", "B", "AB", "BA", "AAB", "BBA", "ABBA", "BAAB"]
 CALIBRATION_WORD_NAMES = ["A", "B", "AA", "BB", "ABA", "BAB", "AAAB", "BBBA", "AABB", "BBAA"]
+CANONICAL_RESPONSE_WORD_NAMES = ["A", "B", "AB", "BA", "AAB", "BBA", "ABBA", "BAAB"]
 PATH_CARRIER_SKETCH_DIM = 256
 GUARD_RFF_WIDTHS = [128, 256] if RUN_MODE == "pilot" else [32]
 GUARD_RIDGES = [1e-3, 1e-2, 1e-1] if RUN_MODE == "pilot" else [1e-2]
@@ -242,6 +248,10 @@ if RUN_MODE == "smoke":
 
 assert set(MODEL_SELECTION_WORD_NAMES).issubset(set(CONSTRUCTION_WORD_NAMES))
 assert set(CALIBRATION_WORD_NAMES).issubset(set(CONSTRUCTION_WORD_NAMES))
+assert CANONICAL_RESPONSE_WORD_NAMES == MODEL_SELECTION_WORD_NAMES
+assert {
+    name for pair in CORE_ORDER_PAIRS for name in pair
+}.issubset(set(CANONICAL_RESPONSE_WORD_NAMES))
 assert set(MODEL_SELECTION_WORD_NAMES) != set(CALIBRATION_WORD_NAMES)
 assert {len(name) for name in MODEL_SELECTION_WORD_NAMES} == {1, 2, 3, 4}
 assert {len(name) for name in CALIBRATION_WORD_NAMES} == {1, 2, 3, 4}
@@ -487,14 +497,31 @@ physical_truth = physical_truth.replace(
     "        result = rollout_word(record, word, retain_visual=False)",
 )
 physical_truth = physical_truth.replace(
-    "    words = ALL_WORD_SPECS",
-    '''    split_names = {
+    "def generate_truth_record(record):",
+    r'''def stage35_truth_word_names(split):
+    split_names = {
         "construction": CONSTRUCTION_WORD_NAMES,
         "model_selection": MODEL_SELECTION_WORD_NAMES,
         "calibration": CALIBRATION_WORD_NAMES,
         "evaluation": EVALUATION_WORD_NAMES,
     }
-    names = split_names[str(record["split"])]
+    if str(split) not in split_names:
+        raise ValueError(f"unknown Stage 35 truth split {split!r}")
+    names = list(split_names[str(split)])
+    controls = {
+        ZERO_WORD_NAMES[int(WORD_BY_NAME[name]["length"])] for name in names
+    }
+    return sorted(
+        set(names) | controls,
+        key=lambda name: (int(WORD_BY_NAME[name]["length"]), name),
+    )
+
+
+def generate_truth_record(record):''',
+)
+physical_truth = physical_truth.replace(
+    "    words = ALL_WORD_SPECS",
+    '''    names = stage35_truth_word_names(record["split"])
     words = [WORD_BY_NAME[name] for name in names]''',
 )
 physical_truth = re.sub(
@@ -505,6 +532,10 @@ physical_truth = re.sub(
     flags=re.S,
 )
 physical_truth = physical_truth.replace("        path_visuals=np.stack(path_visuals),\n", "")
+physical_truth = physical_truth.replace(
+    "    response_words = CORE_WORD_NAMES if response_words is None else list(response_words)",
+    "    response_words = CANONICAL_RESPONSE_WORD_NAMES if response_words is None else list(response_words)",
+)
 
 
 construction_prefix = STAGE34.construction_and_models.split(

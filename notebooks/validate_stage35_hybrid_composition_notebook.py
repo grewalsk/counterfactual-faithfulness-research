@@ -40,6 +40,17 @@ def static_value(node):
         return ast.literal_eval(node)
     except (TypeError, ValueError):
         pass
+    if isinstance(node, ast.List):
+        return [static_value(value) for value in node.elts]
+    if isinstance(node, ast.Tuple):
+        return tuple(static_value(value) for value in node.elts)
+    if isinstance(node, ast.Dict):
+        return {
+            static_value(key): static_value(value)
+            for key, value in zip(node.keys, node.values)
+        }
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Mult):
+        return static_value(node.left) * static_value(node.right)
     if (
         isinstance(node, ast.Call)
         and isinstance(node.func, ast.Name)
@@ -125,7 +136,9 @@ def validate():
         "EVIDENCE_STATUS": "FRESH_PROSPECTIVE_JEPA_ONLY_OBSERVATIONAL_CLOSURE_TEST",
         "MODEL_NAMES": ["jepa_wm_pusht"],
         "MODEL_SELECTION_WORD_NAMES": ["A", "B", "AB", "BA", "AAB", "BBA", "ABBA", "BAAB"],
+        "CANONICAL_RESPONSE_WORD_NAMES": ["A", "B", "AB", "BA", "AAB", "BBA", "ABBA", "BAAB"],
         "CALIBRATION_WORD_NAMES": ["A", "B", "AA", "BB", "ABA", "BAB", "AAAB", "BBBA", "AABB", "BBAA"],
+        "CORE_ORDER_PAIRS": [("AB", "BA"), ("ABBA", "BAAB")],
         "PATH_CARRIER_SKETCH_DIM": 256,
         "MIN_CROSSING_GUARD_GAIN": 0.10,
         "MIN_GUARD_CONTROL_ADVANTAGE": 0.05,
@@ -204,6 +217,8 @@ def validate():
         "def select_stable_rank(",
         "def fit_grouped_ridge(",
         "def fit_response_chart(",
+        "def stage35_truth_word_names(",
+        "response_words = CANONICAL_RESPONSE_WORD_NAMES if response_words is None",
     ]
     for fragment in required:
         assert fragment in all_code, f"missing Stage 35 fragment: {fragment}"
@@ -260,31 +275,96 @@ def validate():
     assert chart["basis"].shape == (2, 1)
 
     physical_tree = ast.parse(code_cells[6])
+    truth_names_node = next(
+        node for node in physical_tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "stage35_truth_word_names"
+    )
     response_node = next(
         node for node in physical_tree.body
         if isinstance(node, ast.FunctionDef)
         and node.name == "response_signature_from_truth_path"
     )
+    core_specs = assigned_value(configuration_tree, "CORE_WORD_SPECS")
+    evaluation_specs = assigned_value(configuration_tree, "EVALUATION_WORD_SPECS")
+    zero_words = {length: f"zero{length}" for length in range(1, 9)}
+    word_by_name = {
+        row["name"]: {**row, "length": len(row["angles"])}
+        for row in core_specs + evaluation_specs
+    }
+    for length, name in zero_words.items():
+        word_by_name[name] = {"name": name, "length": length}
+    split_word_names = {
+        "CONSTRUCTION_WORD_NAMES": [row["name"] for row in core_specs],
+        "MODEL_SELECTION_WORD_NAMES": assigned_value(
+            configuration_tree, "MODEL_SELECTION_WORD_NAMES"
+        ),
+        "CALIBRATION_WORD_NAMES": assigned_value(
+            configuration_tree, "CALIBRATION_WORD_NAMES"
+        ),
+        "EVALUATION_WORD_NAMES": [row["name"] for row in evaluation_specs],
+    }
     response_namespace = {
         **analysis_namespace,
-        "ZERO_WORD_NAMES": {1: "zero1"},
+        **split_word_names,
+        "ZERO_WORD_NAMES": zero_words,
+        "WORD_BY_NAME": word_by_name,
     }
     exec(
-        compile(ast.Module(body=[response_node], type_ignores=[]), "<response-path-test>", "exec"),
+        compile(
+            ast.Module(body=[truth_names_node, response_node], type_ignores=[]),
+            "<response-path-test>",
+            "exec",
+        ),
         response_namespace,
     )
+    truth_word_names = response_namespace["stage35_truth_word_names"]
+    canonical_names = assigned_value(
+        configuration_tree, "CANONICAL_RESPONSE_WORD_NAMES"
+    )
+    order_pairs = assigned_value(configuration_tree, "CORE_ORDER_PAIRS")
+    required_response_names = set(canonical_names) | {
+        name for pair in order_pairs for name in pair
+    }
+    required_response_names |= {
+        zero_words[word_by_name[name]["length"]] for name in canonical_names
+    }
+    materialized_names = {
+        split: truth_word_names(split)
+        for split in ["construction", "model_selection", "calibration", "evaluation"]
+    }
+    assert required_response_names.issubset(set(materialized_names["construction"]))
+    assert required_response_names.issubset(set(materialized_names["model_selection"]))
+    for split, base_key in [
+        ("construction", "CONSTRUCTION_WORD_NAMES"),
+        ("model_selection", "MODEL_SELECTION_WORD_NAMES"),
+        ("calibration", "CALIBRATION_WORD_NAMES"),
+        ("evaluation", "EVALUATION_WORD_NAMES"),
+    ]:
+        expected_controls = {
+            zero_words[word_by_name[name]["length"]]
+            for name in split_word_names[base_key]
+        }
+        assert expected_controls.issubset(set(materialized_names[split]))
     with tempfile.TemporaryDirectory(prefix="stage35-response-") as directory:
-        path = Path(directory) / "truth.npz"
-        np.savez(
-            path,
-            path_observables=np.asarray([[[2.0]], [[0.5]]]),
-            word_names=np.asarray(["A", "zero1"]),
-            word_lengths=np.asarray([1, 1]),
-        )
-        signature = response_namespace["response_signature_from_truth_path"](
-            path, ["A"], []
-        )
-    np.testing.assert_allclose(signature, [1.5])
+        for split in ["construction", "model_selection"]:
+            names = materialized_names[split]
+            lengths = np.asarray(
+                [word_by_name[name]["length"] for name in names], dtype=np.int64
+            )
+            observables = np.zeros((len(names), int(np.max(lengths)), 2), dtype=np.float64)
+            for index, length in enumerate(lengths):
+                observables[index, :length] = float(index + 1)
+            path = Path(directory) / f"{split}.npz"
+            np.savez(
+                path,
+                path_observables=observables,
+                word_names=np.asarray(names),
+                word_lengths=lengths,
+            )
+            signature = response_namespace["response_signature_from_truth_path"](
+                path, canonical_names, order_pairs
+            )
+            assert signature.size > 0 and np.all(np.isfinite(signature))
 
     selection_cell = code_cells[8]
     calibration_cell = code_cells[9]
@@ -310,15 +390,31 @@ def validate():
     assert "source_modes=" not in predicted_call and "target_modes=" not in predicted_call
 
     construction_tree = ast.parse(construction_cell)
+    path_names_node = next(
+        node for node in construction_tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "stage35_names_for_split"
+    )
     mode_node = next(
         node for node in construction_tree.body
         if isinstance(node, ast.FunctionDef) and node.name == "stage35_mode_paths"
     )
-    mode_namespace = {"np": np, "FRAMESKIP": 5}
+    mode_namespace = {
+        "np": np,
+        "FRAMESKIP": 5,
+        **split_word_names,
+        "WORD_BY_NAME": word_by_name,
+    }
     exec(
-        compile(ast.Module(body=[mode_node], type_ignores=[]), "<mode-path-test>", "exec"),
+        compile(
+            ast.Module(body=[path_names_node, mode_node], type_ignores=[]),
+            "<mode-path-test>",
+            "exec",
+        ),
         mode_namespace,
     )
+    path_names = mode_namespace["stage35_names_for_split"]
+    for split in ["construction", "model_selection", "calibration", "evaluation"]:
+        assert set(path_names(split)).issubset(set(materialized_names[split]))
     mode_paths = mode_namespace["stage35_mode_paths"]
     free_source, free_target = mode_paths(
         {"mode": "free"}, np.zeros(10, dtype=int), 2
