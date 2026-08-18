@@ -1,5 +1,19 @@
 # Colab instructions
 
+## Stage 36 predictive-state closure distillation
+
+Notebook: `36_predictive_state_closure_distillation.ipynb`
+
+Stage 36 keeps JEPA-WM frozen and replaces the failed Stage 35 semantic-guard
+recursion with a learned finite-history predictive state. It selects carrier
+width, history, latent width, and a label-free transition family on unseen
+words of lengths five through eight, freezes one final adapter and matched
+controls, then evaluates fresh words of lengths nine through twelve. A pass is
+adapter-distillation evidence only; it is not evidence that the original JEPA
+carrier was already closed.
+
+Follow `../STAGE36_RUN_GUIDE.md`. No prior result directory is required.
+
 ## Stage 35 JEPA hybrid predictive composition and closure
 
 Notebook: `35_hybrid_predictive_composition_closure.ipynb`

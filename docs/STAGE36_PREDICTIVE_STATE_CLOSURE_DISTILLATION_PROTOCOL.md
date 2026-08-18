@@ -1,0 +1,102 @@
+# Stage 36 protocol: predictive-state closure distillation
+
+## Motivation
+
+Stage 35 passed source binding, simulator control, native JEPA physical
+fidelity, and apparent guard transfer, but failed guard specificity and
+recursive closure. The predicted recursive physical error was 2.66 times the
+native error. Permuted contact labels outperformed true contact labels, shifted
+labels were indistinguishable, and support escape was zero. The evidence favors
+an incomplete state or transition representation rather than an out-of-support
+rollout or an incorrectly tuned semantic contact guard.
+
+Stage 36 therefore changes the state definition while freezing JEPA-WM.
+
+## Estimand
+
+For native projected carrier `c`, finite native history `h`, action `a`, and a
+learned state `z`, PSCD fits
+
+```text
+z_t = E(c_{t-h+1:t})
+z_{t+1} = T(z_t, a_t)
+(c_hat_{t+1}, y_hat_{t+1}) = D(z_{t+1})
+```
+
+The primary estimand is the ratio between recursively decoded physical error
+and frozen native JEPA physical error on trajectory-disjoint, unseen action
+words of lengths 9--12. Secondary estimands are direct-versus-composed latent
+discrepancy, carrier recovery, support escape, and gains over capacity-matched
+controls.
+
+## Frozen model-selection space
+
+- Carrier projection: 256 or 1,024 nested deterministic coordinates.
+- Native history: 1, 2, or 4 prefix carriers.
+- Latent state: 64 or 128 coordinates.
+- Transition: one residual operator or a label-free three-expert mixture.
+- Candidate training: 80 epochs on construction trajectories.
+- Final training: 240 epochs on construction plus calibration trajectories.
+
+Construction includes words of lengths 1--8. Candidate selection uses disjoint
+trajectories and distinct unseen words of lengths 5--8. Evaluation remains unopened
+until the selected state definition, final adapter, controls, scales, support
+reference, and certificate are frozen.
+
+## Objective
+
+The adapter loss combines:
+
+1. next native-carrier reconstruction;
+2. next native grounded-output reconstruction;
+3. one-step transition agreement with the next directly encoded history;
+4. free-running multi-step carrier and grounded-output prediction; and
+5. free-running agreement with directly encoded future history states.
+
+The official JEPA encoder, predictor, action encoder, and checkpoint parameters
+remain frozen. Simulator physical truth is not a training target for the
+primary adapter; it is used for the positive control and locked grounding
+evaluation.
+
+## Controls
+
+- Direct physical-state recursion verifies that the operator class can close a
+  known Markov state.
+- The Stage-35-style nonlinear Markov carrier recursion tests whether the new
+  state definition adds value beyond capacity.
+- A capacity-matched one-step-only adapter removes free-running training.
+- When history exceeds one carrier, a capacity-matched false-history adapter
+  permutes past slots within trajectory groups while preserving the current
+  carrier.
+- Native JEPA direct prediction and physical/carrier persistence remain fixed
+  references.
+
+No physical-mode or contact label gates the primary adapter. Simulator modes
+are used only for the positive control and prespecified family diagnostics.
+
+## Gates
+
+The gates are evaluated sequentially:
+
+1. exact source, checkpoint, split, and evaluation-opening integrity;
+2. simulator-control gain at least 50%, positive clustered interval, and NMSE
+   at most 0.25;
+3. native JEPA physical-fidelity gain at least 10% with positive interval;
+4. recursive carrier-recovery gain at least 10% over persistence;
+5. at least 5% improvement over Markov and one-step-only controls, plus the
+   false-history control when applicable, each with positive interval;
+6. recursive/native physical ratio at most 1.25, interval upper endpoint at
+   most 1.50, composition discrepancy at most 0.25, and support escape at most
+   10%;
+7. mean direct-versus-composed latent NMSE at most 0.25; and
+8. recursive/native ratio at most 1.50 in each length family and at most 2.00
+   in each starting-mode family.
+
+## Claim boundary
+
+A pass supports only this statement: a low-capacity finite-history adapter can
+distill bounded recursive closure from the frozen JEPA checkpoint over the
+registered PushT action bank. It does not imply that the original carrier was a
+closed Markov state, that the learned state is minimal, that the result
+generalizes beyond this checkpoint/environment, or that JEPA causally uses the
+adapter state.

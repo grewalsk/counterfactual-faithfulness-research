@@ -1,0 +1,234 @@
+"""Static and numerical validation for the Stage 36 Colab notebook."""
+
+from __future__ import annotations
+
+import ast
+import hashlib
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+import numpy as np
+
+
+ROOT = Path(__file__).resolve().parent
+REPOSITORY = ROOT.parent
+NOTEBOOK = ROOT / "36_predictive_state_closure_distillation.ipynb"
+BUILDER = ROOT / "build_stage36_predictive_state_closure_notebook.py"
+NUMERICAL = REPOSITORY / "src/cf_faithfulness/stage36_predictive_state_closure.py"
+TESTS = REPOSITORY / "tests/test_stage36_predictive_state_closure.py"
+
+
+def source(cell):
+    return "".join(cell.get("source", []))
+
+
+def assigned_node(tree, name):
+    for node in tree.body:
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id == name:
+                    return node.value
+    raise AssertionError(f"missing assignment {name}")
+
+
+def static_value(node):
+    try:
+        return ast.literal_eval(node)
+    except (TypeError, ValueError):
+        pass
+    if isinstance(node, ast.List):
+        return [static_value(value) for value in node.elts]
+    if isinstance(node, ast.Tuple):
+        return tuple(static_value(value) for value in node.elts)
+    if isinstance(node, ast.Dict):
+        return {
+            static_value(key): static_value(value)
+            for key, value in zip(node.keys, node.values)
+        }
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Mult):
+        return static_value(node.left) * static_value(node.right)
+    if (
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "list"
+        and len(node.args) == 1
+        and isinstance(node.args[0], ast.Call)
+        and isinstance(node.args[0].func, ast.Name)
+        and node.args[0].func.id == "range"
+    ):
+        arguments = [ast.literal_eval(value) for value in node.args[0].args]
+        return list(range(*arguments))
+    raise AssertionError(f"unsupported static expression: {ast.dump(node)}")
+
+
+def assigned_value(tree, name):
+    return static_value(assigned_node(tree, name))
+
+
+def validate_protocol_digest(notebook, observed):
+    sources = [source(cell).strip() for cell in notebook["cells"]]
+    replaced = False
+    for index, text in enumerate(sources):
+        if observed in text and "NOTEBOOK_PROTOCOL_SHA256" in text:
+            sources[index] = text.replace(observed, "__PROTOCOL_DIGEST__", 1)
+            replaced = True
+            break
+    assert replaced, "could not reconstruct Stage 36 protocol digest"
+    expected = hashlib.sha256(
+        json.dumps(sources, ensure_ascii=False, separators=(",", ":")).encode()
+    ).hexdigest()
+    assert expected == observed, "Stage 36 protocol digest is stale"
+
+
+def validate():
+    for path in [NOTEBOOK, BUILDER, NUMERICAL, TESTS]:
+        assert path.is_file(), f"missing Stage 36 artifact: {path}"
+    before = NOTEBOOK.read_bytes()
+    subprocess.run(
+        [sys.executable, str(BUILDER)], check=True, capture_output=True,
+        cwd=REPOSITORY, env=dict(os.environ),
+    )
+    after = NOTEBOOK.read_bytes()
+    assert before == after, "Stage 36 builder is not deterministic"
+
+    notebook = json.loads(after)
+    assert notebook["nbformat"] == 4 and notebook["nbformat_minor"] == 5
+    assert notebook["metadata"]["accelerator"] == "GPU"
+    assert notebook["metadata"]["colab"]["gpuType"] == "L4"
+    assert len(notebook["cells"]) == 13
+    assert source(notebook["cells"][0]).startswith(
+        "# Stage 36: predictive-state closure distillation\n"
+    )
+    assert [cell["id"] for cell in notebook["cells"]] == [
+        f"stage36-{index:02d}" for index in range(13)
+    ]
+    code_cells = [source(cell) for cell in notebook["cells"] if cell["cell_type"] == "code"]
+    expected_headers = [
+        "# SINGLE CONFIGURATION BLOCK — no Stage 36 secrets required.",
+        "import subprocess",
+        "import csv",
+        "# Tested predictive-state adapter, controls, metrics, and decision gates.",
+        "def to_model_observation(visual, proprio):",
+        "# Freeze trajectory families and action compositions before simulator or model access.",
+        "# Select complete physical trajectories and materialize exact multi-step truth without model access.",
+        "# Fit the construction-only grounded JEPA readout and save every native prefix carrier.",
+        "# Load split-bound teacher sequences without opening evaluation statistics.",
+        "# Freeze the final PSCD adapter and capacity-matched controls before evaluation.",
+        "# Open fresh evaluation once and derive every registered Stage 36 gate.",
+        "# Package compact audit evidence while retaining the complete resumable Drive directory.",
+    ]
+    assert [cell.splitlines()[0] for cell in code_cells] == expected_headers
+    for cell in notebook["cells"]:
+        assert not cell.get("outputs")
+        if cell["cell_type"] == "code":
+            assert cell.get("execution_count") is None
+            ast.parse(source(cell))
+
+    configuration_tree = ast.parse(code_cells[0])
+    expected = {
+        "RUN_MODE": "pilot",
+        "PROTOCOL_ID": "stage36-predictive-state-closure-distillation-v1",
+        "EVIDENCE_STATUS": "FRESH_PROSPECTIVE_JEPA_ONLY_ADAPTER_CLOSURE_TEST",
+        "MODEL_NAMES": ["jepa_wm_pusht"],
+        "MAX_WORD_LENGTH": 12,
+        "MAX_CARRIER_PROJECTION_DIM": 1024,
+        "CANDIDATE_EPOCHS": 80,
+        "FINAL_EPOCHS": 240,
+        "MIN_CLOSURE_CONTROL_GAIN": 0.05,
+        "MAX_RECURSIVE_TO_NATIVE_PHYSICAL_RATIO": 1.25,
+        "MAX_SEMIGROUP_NMSE": 0.25,
+        "CONSTRUCTION_TRAJECTORIES": 16,
+        "MODEL_SELECTION_TRAJECTORIES": 16,
+        "CALIBRATION_TRAJECTORIES": 16,
+        "EVALUATION_TRAJECTORIES": 32,
+        "MODEL_SELECTION_WORD_NAMES": [
+            "ABABA", "BABAB", "AABBAB", "BBAABA", "AAABBAB", "BBABAAB",
+            "AABBABAB", "BBAABAAB",
+        ],
+    }
+    for name, value in expected.items():
+        assert assigned_value(configuration_tree, name) == value, f"unexpected {name}"
+    pools = [
+        assigned_value(configuration_tree, name)
+        for name in [
+            "CONSTRUCTION_TRAJECTORY_POOL", "MODEL_SELECTION_TRAJECTORY_POOL",
+            "CALIBRATION_TRAJECTORY_POOL", "EVALUATION_TRAJECTORY_POOL",
+        ]
+    ]
+    assert min(pools[0]) == 24000 and max(pools[-1]) == 31999
+    assert all(
+        not set(pools[left]) & set(pools[right])
+        for left in range(len(pools)) for right in range(left + 1, len(pools))
+    )
+    digest = assigned_value(configuration_tree, "NOTEBOOK_PROTOCOL_SHA256")
+    assert len(digest) == 64
+    validate_protocol_digest(notebook, digest)
+
+    configuration_namespace = {}
+    exec(compile(code_cells[0], "<stage36-config>", "exec"), configuration_namespace)
+    assert [len(row["name"]) for row in configuration_namespace["EVALUATION_WORD_SPECS"]] == [
+        9, 9, 10, 10, 11, 11, 12, 12,
+    ]
+    assert configuration_namespace["CARRIER_PROJECTION_DIMS"] == [256, 1024]
+    assert configuration_namespace["HISTORY_LENGTHS"] == [1, 2, 4]
+    assert configuration_namespace["DYNAMICS_FAMILIES"] == ["single", "mixture"]
+
+    all_code = "\n".join(code_cells)
+    required = [
+        'load_world_model("jepa_wm_pusht")',
+        'for split in ["construction", "model_selection", "calibration"]',
+        "MAX_CARRIER_PROJECTION_DIM",
+        "fit_predictive_state_closure(",
+        "rollout_predictive_state_closure(",
+        "free_weight=0.0",
+        "permute_past_history(",
+        "fit_family_from_sequences(",
+        'strategy="global"',
+        'load_stage36_sequences("evaluation")',
+        '"evaluation_word_lengths": [9, 10, 11, 12]',
+        '"jepa_parameters_updated": False',
+        '"original_jepa_carrier_claimed_closed": False',
+        '"minimal_state_claimed": False',
+        '"causal_mechanism_claimed": False',
+        "MAX_SEMIGROUP_NMSE",
+        "retry_drive_io(",
+    ]
+    for fragment in required:
+        assert fragment in all_code, f"missing Stage 36 fragment: {fragment}"
+    forbidden = [
+        'load_world_model("dino_wm_pusht")',
+        '"jepa_parameters_updated": True',
+        '"original_jepa_carrier_claimed_closed": True',
+        '"causal_evidence": True',
+        "USE_SYNTHETIC_FALLBACK = True",
+    ]
+    for fragment in forbidden:
+        assert fragment not in all_code, f"forbidden Stage 36 fragment: {fragment}"
+
+    analysis_namespace = {"np": np}
+    exec(compile(code_cells[3], "<stage36-analysis>", "exec"), analysis_namespace)
+    initial = np.asarray([[1.0], [2.0]])
+    target = np.asarray([[[1.5], [2.0]], [[2.5], [3.0]]])
+    mask = np.ones((2, 2), dtype=bool)
+    history = analysis_namespace["history_tensor"](initial, target, mask, 2)
+    assert history.shape == (2, 2, 2, 1)
+    evaluation_mask = analysis_namespace["rollout_evaluation_mask"](mask, 2)
+    assert not np.any(evaluation_mask[:, 0]) and np.all(evaluation_mask[:, 1])
+
+    subprocess.run(
+        [sys.executable, "-m", "pytest", "-q", str(TESTS)],
+        check=True, cwd=REPOSITORY,
+        env={
+            **os.environ,
+            "PYTHONPATH": str(REPOSITORY / "src"),
+            "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+        },
+    )
+
+
+if __name__ == "__main__":
+    validate()
+    print("Stage 36 notebook validation passed")

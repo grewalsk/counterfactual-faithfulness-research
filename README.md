@@ -105,6 +105,9 @@ downloaded Colab result bundles.
 - `docs/STAGE35_HYBRID_COMPOSITION_PROTOCOL.md` — fresh JEPA-only test of
   prefix-level distributed carrier closure under predicted contact guards,
   oracle guard/reset upper bounds, and matched false-guard controls.
+- `docs/STAGE36_PREDICTIVE_STATE_CLOSURE_DISTILLATION_PROTOCOL.md` — frozen-JEPA
+  distillation of a finite-history recurrent predictive state with explicit
+  free-running, semigroup, Markov, one-step, and false-history controls.
 - `STAGE27_RUN_GUIDE.md` — no-secret Colab handoff for the source-bound finite
   action-commutator experiment.
 - `STAGE29_RUN_GUIDE.md` — no-secret native target-latent closure test that
@@ -115,6 +118,8 @@ downloaded Colab result bundles.
   the physical decision value of the frozen carrier.
 - `STAGE35_RUN_GUIDE.md` — source-bound, resumable fresh-trajectory run guide
   for distributed hybrid recursive closure on unseen long action words.
+- `STAGE36_RUN_GUIDE.md` — source-bound Colab handoff for predictive-state
+  closure distillation on unseen action words of lengths nine through twelve.
 - `audits/stage15/reader_failure_audit/` — complete local audit of the stopped
   Stage 15 reader gate, including dimension-matched random controls,
   coordinate-aware readers, renderer/token geometry, raw-file hashes, and a
