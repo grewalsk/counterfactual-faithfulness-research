@@ -10,6 +10,8 @@ REPOSITORY = ROOT.parent
 TARGET = ROOT / "36_predictive_state_closure_distillation.ipynb"
 NUMERICAL = REPOSITORY / "src/cf_faithfulness/stage36_predictive_state_closure.py"
 STAGE35_NUMERICAL = REPOSITORY / "src/cf_faithfulness/stage35_hybrid_composition.py"
+STAGE34_NUMERICAL = REPOSITORY / "src/cf_faithfulness/stage34_predictive_fiber_abstraction.py"
+STAGE33_NUMERICAL = REPOSITORY / "src/cf_faithfulness/stage33_interventional_abstraction.py"
 
 spec = importlib.util.spec_from_file_location(
     "stage35_builder", ROOT / "build_stage35_hybrid_composition_notebook.py"
@@ -26,6 +28,19 @@ replace_block = STAGE35.replace_block
 
 
 introduction = r'''# Stage 36: predictive-state closure distillation
+
+## V2 model-free helper-dependency repair
+
+The source-bound v1 pilot generated and checkpointed every physical-truth
+record, then stopped in the simulator-only canonical-response-chart step before
+loading JEPA-WM.  The rendered helper cell omitted the inherited Stage 33/34
+pooling, grouped-ridge, stable-rank, action-contrast, and response-chart
+functions used by later cells.  V2 restores that complete dependency chain and
+adds an executable validator for each inherited helper and the truth-path
+response signature.  No checkpoint output, carrier, adapter, model-selection
+score, evaluation metric, gate, or scientific outcome was observed in v1.  V2
+therefore leaves all trajectory pools, seeds, words, candidate models, losses,
+thresholds, controls, and claim boundaries unchanged.
 
 ## Frozen decision before computation
 
@@ -118,7 +133,7 @@ for old, new in [
 
 for name, value in {
     "EXPERIMENT_SOURCE_REF": '"codex/stage34-predictive-fiber-abstraction"',
-    "PROTOCOL_ID": '"stage36-predictive-state-closure-distillation-v1"',
+    "PROTOCOL_ID": '"stage36-predictive-state-closure-distillation-v2"',
     "NOTEBOOK_PROTOCOL_SHA256": '"__PROTOCOL_DIGEST__"',
     "EVIDENCE_STATUS": '"FRESH_PROSPECTIVE_JEPA_ONLY_ADAPTER_CLOSURE_TEST"',
     "MAX_ESTIMATED_TOTAL_MINUTES": "360.0",
@@ -299,6 +314,7 @@ configuration = re.sub(
     "adapter_closure_not_original_carrier_closure", "not_minimal_state",
     "observational_not_causal", "dino_branch_paused", "no_synthetic_fallback",
     "hash_validated_resume", "transient_drive_io_retries", "no_required_colab_secret",
+    "v2_complete_inherited_helper_dependency_chain_no_scientific_change",
 ]
 
 assert INTERVENTION_BLOCK''',
@@ -331,7 +347,7 @@ stage35_helpers = [
     "clustered_ratio_interval", "fit_support_reference", "support_exceedance_rate",
 ]
 stage36_helpers = [
-    "stable_seed", "sequence_source_states", "history_tensor", "next_history_tensor",
+    "sequence_source_states", "history_tensor", "next_history_tensor",
     "rollout_evaluation_mask", "permute_past_history", "_mean_scale",
     "PredictiveStateClosureModel", "_artifact_model", "fit_predictive_state_closure",
     "rollout_predictive_state_closure", "scaled_path_mse", "relative_gain",
@@ -347,7 +363,20 @@ from torch import nn
 
 FloatArray = NDArray[np.float64]
 
-''' + function_sources(STAGE35_NUMERICAL.read_text(), stage35_helpers) + "\n\n" + function_sources(
+''' + function_sources(
+    STAGE33_NUMERICAL.read_text(),
+    [
+        "pool_spatial_proprio_features",
+        "effective_rank",
+        "select_stable_rank",
+        "fit_grouped_ridge",
+    ],
+) + "\n\n" + function_sources(
+    STAGE34_NUMERICAL.read_text(),
+    ["_finite_array", "_word_lookup", "action_contrast_signature", "fit_response_chart"],
+) + "\n\n" + function_sources(
+    STAGE35_NUMERICAL.read_text(), stage35_helpers
+) + "\n\n" + function_sources(
     NUMERICAL.read_text(), stage36_helpers
 )
 analysis_helpers = analysis_helpers.replace(

@@ -1,5 +1,15 @@
 # Stage 36 protocol: predictive-state closure distillation
 
+## V2 implementation amendment
+
+The source-bound v1 run completed physical-truth generation and stopped in the
+simulator-only response-chart step because inherited Stage 33/34 numerical
+helpers were not embedded in the rendered notebook. No world model was loaded
+and no carrier, adapter, model-selection statistic, evaluation metric, or gate
+was observed. V2 restores the complete helper dependency chain and adds an
+executable truth-path response-signature validation. The scientific protocol
+below is unchanged.
+
 ## Motivation
 
 Stage 35 passed source binding, simulator control, native JEPA physical

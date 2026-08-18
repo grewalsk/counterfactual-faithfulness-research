@@ -8,6 +8,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -130,7 +131,7 @@ def validate():
     configuration_tree = ast.parse(code_cells[0])
     expected = {
         "RUN_MODE": "pilot",
-        "PROTOCOL_ID": "stage36-predictive-state-closure-distillation-v1",
+        "PROTOCOL_ID": "stage36-predictive-state-closure-distillation-v2",
         "EVIDENCE_STATUS": "FRESH_PROSPECTIVE_JEPA_ONLY_ADAPTER_CLOSURE_TEST",
         "MODEL_NAMES": ["jepa_wm_pusht"],
         "MAX_WORD_LENGTH": 12,
@@ -195,6 +196,11 @@ def validate():
         '"causal_mechanism_claimed": False',
         "MAX_SEMIGROUP_NMSE",
         "retry_drive_io(",
+        "def action_contrast_signature(",
+        "def fit_response_chart(",
+        "def pool_spatial_proprio_features(",
+        "def select_stable_rank(",
+        "def fit_grouped_ridge(",
     ]
     for fragment in required:
         assert fragment in all_code, f"missing Stage 36 fragment: {fragment}"
@@ -210,6 +216,31 @@ def validate():
 
     analysis_namespace = {"np": np}
     exec(compile(code_cells[3], "<stage36-analysis>", "exec"), analysis_namespace)
+    contrast = analysis_namespace["action_contrast_signature"](
+        np.asarray([[[2.0]], [[0.5]]]),
+        ["A", "zero1"], [1, 1], ["A"], {1: "zero1"},
+    )
+    np.testing.assert_allclose(contrast, [1.5])
+    chart = analysis_namespace["fit_response_chart"](
+        np.asarray([[0.0, 1.0], [1.0, 0.0], [2.0, 2.0]]), rank=1,
+    )
+    assert chart["basis"].shape == (2, 1)
+    pooled = analysis_namespace["pool_spatial_proprio_features"](
+        np.ones((256, 4), dtype=np.float64)
+    )
+    np.testing.assert_allclose(pooled, np.ones(4))
+    rank = analysis_namespace["select_stable_rank"](
+        np.asarray([[0.0], [1.0], [2.0], [3.0]]), np.arange(4),
+        max_rank=1, n_bootstrap=2, n_permutations=2,
+        stability_floor=0.0, seed=36,
+    )
+    assert rank["selected_rank"] in {0, 1}
+    ridge = analysis_namespace["fit_grouped_ridge"](
+        np.asarray([[0.0], [1.0], [2.0], [3.0]]),
+        np.asarray([[0.0], [1.0], [2.0], [3.0]]),
+        np.arange(4), penalties=[1e-3], folds=2, seed=36,
+    )
+    assert np.all(np.isfinite(ridge["weight"]))
     initial = np.asarray([[1.0], [2.0]])
     target = np.asarray([[[1.5], [2.0]], [[2.5], [3.0]]])
     mask = np.ones((2, 2), dtype=bool)
@@ -217,6 +248,46 @@ def validate():
     assert history.shape == (2, 2, 2, 1)
     evaluation_mask = analysis_namespace["rollout_evaluation_mask"](mask, 2)
     assert not np.any(evaluation_mask[:, 0]) and np.all(evaluation_mask[:, 1])
+
+    # Exercise the exact cross-cell call that stopped v1.  This makes a
+    # missing response helper fail validation before a Colab GPU is allocated.
+    physical_tree = ast.parse(code_cells[6])
+    response_node = next(
+        node for node in physical_tree.body
+        if isinstance(node, ast.FunctionDef)
+        and node.name == "response_signature_from_truth_path"
+    )
+    response_namespace = {
+        **analysis_namespace,
+        "ZERO_WORD_NAMES": configuration_namespace["ZERO_WORD_NAMES"],
+    }
+    exec(
+        compile(
+            ast.Module(body=[response_node], type_ignores=[]),
+            "<stage36-response-path-test>", "exec",
+        ),
+        response_namespace,
+    )
+    names = [
+        "A", "B", "zero1", "AB", "BA", "zero2", "AAB", "BBA",
+        "zero3", "ABBA", "BAAB", "zero4",
+    ]
+    lengths = np.asarray([len(name) if not name.startswith("zero") else int(name[4:]) for name in names])
+    paths = np.zeros((len(names), 4, 2), dtype=np.float64)
+    for index, length in enumerate(lengths):
+        paths[index, :length] = float(index + 1)
+    with tempfile.TemporaryDirectory(prefix="stage36-response-") as directory:
+        path = Path(directory) / "truth.npz"
+        np.savez(
+            path, path_observables=paths, word_names=np.asarray(names),
+            word_lengths=lengths,
+        )
+        signature = response_namespace["response_signature_from_truth_path"](
+            path,
+            configuration_namespace["CANONICAL_RESPONSE_WORD_NAMES"],
+            configuration_namespace["CORE_ORDER_PAIRS"],
+        )
+        assert signature.ndim == 1 and np.all(np.isfinite(signature))
 
     subprocess.run(
         [sys.executable, "-m", "pytest", "-q", str(TESTS)],

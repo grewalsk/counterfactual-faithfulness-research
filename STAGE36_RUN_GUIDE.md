@@ -1,5 +1,9 @@
 # Stage 36 predictive-state closure distillation Colab run guide
 
+Version 2 repairs the model-free v1 helper-dependency failure. The v1 run
+stopped before loading JEPA-WM or observing any scientific statistic. No
+scientific design, seed, candidate, control, threshold, or claim changed.
+
 Notebook: `notebooks/36_predictive_state_closure_distillation.ipynb`
 
 ## Requirements
