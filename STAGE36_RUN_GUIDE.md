@@ -1,5 +1,12 @@
 # Stage 36 predictive-state closure distillation Colab run guide
 
+Version 3 repairs the model-free v2 truth-coverage failure. The v2 run
+completed all physical-truth records but stopped before loading JEPA-WM because
+model-selection truth shards omitted the canonical response words required by
+the simulator-only rank chart. V3 adds those readout-only words and matching
+zero controls without changing the held-out model-selection task bank or any
+scientific decision.
+
 Version 2 repairs the model-free v1 helper-dependency failure. The v1 run
 stopped before loading JEPA-WM or observing any scientific statistic. No
 scientific design, seed, candidate, control, threshold, or claim changed.

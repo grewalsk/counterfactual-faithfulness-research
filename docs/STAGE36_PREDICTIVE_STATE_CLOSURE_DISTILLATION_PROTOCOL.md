@@ -1,5 +1,17 @@
 # Stage 36 protocol: predictive-state closure distillation
 
+## V3 implementation amendment
+
+The source-bound v2 run completed 320 physical-truth records and stopped before
+JEPA-WM loading while rank-selecting the simulator-only canonical response
+chart. Model-selection truth shards contained only the registered unseen
+length-5--8 task words, while that consumer also required canonical
+length-1--4 response words and their zero controls. V3 adds the canonical bank
+to model-selection truth coverage, validates the exact shard word contract on
+cache hits, and tests the real per-split schemas. The model-selection task bank
+remains disjoint from construction, and no seed, trajectory split, candidate,
+control, threshold, gate, or claim changes.
+
 ## V2 implementation amendment
 
 The source-bound v1 run completed physical-truth generation and stopped in the

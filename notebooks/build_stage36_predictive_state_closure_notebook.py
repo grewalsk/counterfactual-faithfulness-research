@@ -29,6 +29,20 @@ replace_block = STAGE35.replace_block
 
 introduction = r'''# Stage 36: predictive-state closure distillation
 
+## V3 model-free truth-coverage repair
+
+The source-bound v2 pilot completed all 320 physical-truth records and then
+stopped, still before loading JEPA-WM, while building the simulator-only
+canonical response chart.  Construction shards contained the registered
+canonical response words, but model-selection shards contained only the unseen
+length-5--8 task words even though the rank-selection consumer also required
+the canonical length-1--4 words and their zero controls.  V3 makes that
+readout-only truth dependency explicit, validates the exact per-split word
+contract on cache hits, and exercises the real construction and model-selection
+schemas before publication.  The held-out model-selection task bank remains
+disjoint from construction; no trajectory split, seed, candidate, control,
+threshold, gate, or scientific claim changes.
+
 ## V2 model-free helper-dependency repair
 
 The source-bound v1 pilot generated and checkpointed every physical-truth
@@ -133,7 +147,7 @@ for old, new in [
 
 for name, value in {
     "EXPERIMENT_SOURCE_REF": '"codex/stage34-predictive-fiber-abstraction"',
-    "PROTOCOL_ID": '"stage36-predictive-state-closure-distillation-v2"',
+    "PROTOCOL_ID": '"stage36-predictive-state-closure-distillation-v3"',
     "NOTEBOOK_PROTOCOL_SHA256": '"__PROTOCOL_DIGEST__"',
     "EVIDENCE_STATUS": '"FRESH_PROSPECTIVE_JEPA_ONLY_ADAPTER_CLOSURE_TEST"',
     "MAX_ESTIMATED_TOTAL_MINUTES": "360.0",
@@ -292,6 +306,10 @@ assert set(CONSTRUCTION_WORD_NAMES).issubset(set(STAGE36_CORE_WORD_NAMES))
 assert set(MODEL_SELECTION_WORD_NAMES).issubset(set(STAGE36_CORE_WORD_NAMES))
 assert set(CALIBRATION_WORD_NAMES).issubset(set(STAGE36_CORE_WORD_NAMES))
 assert set(MODEL_SELECTION_WORD_NAMES).isdisjoint(set(CONSTRUCTION_WORD_NAMES))
+assert set(CANONICAL_RESPONSE_WORD_NAMES).issubset(set(CONSTRUCTION_WORD_NAMES))
+assert {
+    name for pair in CORE_ORDER_PAIRS for name in pair
+}.issubset(set(CANONICAL_RESPONSE_WORD_NAMES))
 assert {len(name) for name in MODEL_SELECTION_WORD_NAMES} == {5, 6, 7, 8}
 assert {len(row["name"]) for row in EVALUATION_WORD_SPECS} == {9, 10, 11, 12}
 assert max(HISTORY_LENGTHS) < min(len(row["name"]) for row in EVALUATION_WORD_SPECS)
@@ -315,6 +333,7 @@ configuration = re.sub(
     "observational_not_causal", "dino_branch_paused", "no_synthetic_fallback",
     "hash_validated_resume", "transient_drive_io_retries", "no_required_colab_secret",
     "v2_complete_inherited_helper_dependency_chain_no_scientific_change",
+    "v3_complete_truth_consumer_coverage_no_scientific_change",
 ]
 
 assert INTERVENTION_BLOCK''',
@@ -393,11 +412,80 @@ design_and_runtime_helpers = STAGE35.design_and_runtime_helpers
 for old, new in [("stage35", "stage36"), ("Stage 35", "Stage 36")]:
     design_and_runtime_helpers = design_and_runtime_helpers.replace(old, new)
 design_and_runtime_helpers = design_and_runtime_helpers.replace("3500000", "3600000")
+design_and_runtime_helpers = design_and_runtime_helpers.replace(
+    '    "v2_scientific_outcomes_observed_before_amendment": False,\n',
+    '    "v2_scientific_outcomes_observed_before_amendment": False,\n'
+    '    "v3_truth_consumer_coverage_amendment": True,\n'
+    '    "v3_scientific_outcomes_observed_before_amendment": False,\n',
+)
 
 
 physical_truth = STAGE35.physical_truth
 for old, new in [("stage35", "stage36"), ("Stage 35", "Stage 36")]:
     physical_truth = physical_truth.replace(old, new)
+physical_truth = replace_block(
+    physical_truth,
+    "def stage36_truth_word_names(split):",
+    "def generate_truth_record(record):",
+    r'''def stage36_truth_word_names(split):
+    split_names = {
+        "construction": CONSTRUCTION_WORD_NAMES,
+        "model_selection": MODEL_SELECTION_WORD_NAMES,
+        "calibration": CALIBRATION_WORD_NAMES,
+        "evaluation": EVALUATION_WORD_NAMES,
+    }
+    split = str(split)
+    if split not in split_names:
+        raise ValueError(f"unknown Stage 36 truth split {split!r}")
+    names = list(split_names[split])
+    if split in {"construction", "model_selection"}:
+        # The canonical response chart is fit on construction trajectories and
+        # rank-selected on independent model-selection trajectories.  These
+        # readout-only simulator words do not alter the held-out task bank.
+        names.extend(CANONICAL_RESPONSE_WORD_NAMES)
+        names.extend(name for pair in CORE_ORDER_PAIRS for name in pair)
+    controls = {
+        ZERO_WORD_NAMES[int(WORD_BY_NAME[name]["length"])] for name in names
+    }
+    result = sorted(
+        set(names) | controls,
+        key=lambda name: (int(WORD_BY_NAME[name]["length"]), name),
+    )
+    if split in {"construction", "model_selection"}:
+        required = set(CANONICAL_RESPONSE_WORD_NAMES)
+        required.update(name for pair in CORE_ORDER_PAIRS for name in pair)
+        required.update({
+            ZERO_WORD_NAMES[int(WORD_BY_NAME[name]["length"])]
+            for name in tuple(required)
+        })
+        missing = sorted(required - set(result))
+        if missing:
+            raise RuntimeError(
+                f"Stage 36 {split} truth misses canonical response words: {missing}"
+            )
+    return result
+
+
+''',
+)
+physical_truth = physical_truth.replace(
+    '''    if validate_npz_shard(path, required, identity):
+        PROVENANCE_COUNTS["validated_cache_hits"] += 1
+        return path
+    names = stage36_truth_word_names(record["split"])
+''',
+    '''    names = stage36_truth_word_names(record["split"])
+    if validate_npz_shard(path, required, identity):
+        with np.load(path, allow_pickle=False) as cached:
+            cached_names = [str(value) for value in cached["word_names"]]
+        if cached_names == names:
+            PROVENANCE_COUNTS["validated_cache_hits"] += 1
+            return path
+        print(
+            f"Regenerating truth shard {path.name}: cached word contract changed"
+        )
+''',
+)
 
 
 construction_and_paths = STAGE35.construction_and_paths

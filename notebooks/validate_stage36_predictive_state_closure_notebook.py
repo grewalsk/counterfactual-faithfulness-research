@@ -131,7 +131,7 @@ def validate():
     configuration_tree = ast.parse(code_cells[0])
     expected = {
         "RUN_MODE": "pilot",
-        "PROTOCOL_ID": "stage36-predictive-state-closure-distillation-v2",
+        "PROTOCOL_ID": "stage36-predictive-state-closure-distillation-v3",
         "EVIDENCE_STATUS": "FRESH_PROSPECTIVE_JEPA_ONLY_ADAPTER_CLOSURE_TEST",
         "MODEL_NAMES": ["jepa_wm_pusht"],
         "MAX_WORD_LENGTH": 12,
@@ -201,6 +201,9 @@ def validate():
         "def pool_spatial_proprio_features(",
         "def select_stable_rank(",
         "def fit_grouped_ridge(",
+        "v3_complete_truth_consumer_coverage_no_scientific_change",
+        '"v3_truth_consumer_coverage_amendment": True',
+        "cached word contract changed",
     ]
     for fragment in required:
         assert fragment in all_code, f"missing Stage 36 fragment: {fragment}"
@@ -249,45 +252,110 @@ def validate():
     evaluation_mask = analysis_namespace["rollout_evaluation_mask"](mask, 2)
     assert not np.any(evaluation_mask[:, 0]) and np.all(evaluation_mask[:, 1])
 
-    # Exercise the exact cross-cell call that stopped v1.  This makes a
-    # missing response helper fail validation before a Colab GPU is allocated.
+    # Execute the real split-specific truth coverage contract.  This checks
+    # every active truth consumer and reproduces the v2 failure schema before a
+    # Colab GPU is allocated.
     physical_tree = ast.parse(code_cells[6])
-    response_node = next(
-        node for node in physical_tree.body
+    physical_functions = {
+        node.name: node for node in physical_tree.body
         if isinstance(node, ast.FunctionDef)
-        and node.name == "response_signature_from_truth_path"
+    }
+    path_tree = ast.parse(code_cells[7])
+    path_functions = {
+        node.name: node for node in path_tree.body
+        if isinstance(node, ast.FunctionDef)
+    }
+    all_word_names = (
+        set(configuration_namespace["STAGE36_CORE_WORD_NAMES"])
+        | {row["name"] for row in configuration_namespace["EVALUATION_WORD_SPECS"]}
+        | set(configuration_namespace["ZERO_WORD_NAMES"].values())
     )
+    word_by_name = {
+        name: {
+            "length": int(name[4:]) if name.startswith("zero") else len(name)
+        }
+        for name in all_word_names
+    }
     response_namespace = {
         **analysis_namespace,
-        "ZERO_WORD_NAMES": configuration_namespace["ZERO_WORD_NAMES"],
+        **{
+            name: configuration_namespace[name]
+            for name in [
+                "CONSTRUCTION_WORD_NAMES", "MODEL_SELECTION_WORD_NAMES",
+                "CALIBRATION_WORD_NAMES", "CANONICAL_RESPONSE_WORD_NAMES",
+                "CORE_ORDER_PAIRS", "ZERO_WORD_NAMES",
+            ]
+        },
+        "EVALUATION_WORD_NAMES": [
+            row["name"] for row in configuration_namespace["EVALUATION_WORD_SPECS"]
+        ],
+        "WORD_BY_NAME": word_by_name,
     }
     exec(
         compile(
-            ast.Module(body=[response_node], type_ignores=[]),
+            ast.Module(
+                body=[
+                    physical_functions["stage36_truth_word_names"],
+                    physical_functions["response_signature_from_truth_path"],
+                    path_functions["stage36_names_for_split"],
+                ],
+                type_ignores=[],
+            ),
             "<stage36-response-path-test>", "exec",
         ),
         response_namespace,
     )
-    names = [
-        "A", "B", "zero1", "AB", "BA", "zero2", "AAB", "BBA",
-        "zero3", "ABBA", "BAAB", "zero4",
-    ]
-    lengths = np.asarray([len(name) if not name.startswith("zero") else int(name[4:]) for name in names])
-    paths = np.zeros((len(names), 4, 2), dtype=np.float64)
-    for index, length in enumerate(lengths):
-        paths[index, :length] = float(index + 1)
+    truth_names = {
+        split: response_namespace["stage36_truth_word_names"](split)
+        for split in ["construction", "model_selection", "calibration", "evaluation"]
+    }
+    task_names = {
+        split: set(response_namespace["stage36_names_for_split"](split))
+        for split in truth_names
+    }
+    canonical_required = set(configuration_namespace["CANONICAL_RESPONSE_WORD_NAMES"])
+    canonical_required.update(
+        name for pair in configuration_namespace["CORE_ORDER_PAIRS"] for name in pair
+    )
+    canonical_required.update({
+        configuration_namespace["ZERO_WORD_NAMES"][word_by_name[name]["length"]]
+        for name in tuple(canonical_required)
+    })
+    for split in truth_names:
+        expected_truth_names = set(task_names[split])
+        if split in {"construction", "model_selection"}:
+            expected_truth_names.update(canonical_required)
+        expected_truth_names.update({
+            configuration_namespace["ZERO_WORD_NAMES"][word_by_name[name]["length"]]
+            for name in tuple(expected_truth_names)
+        })
+        assert set(truth_names[split]) == expected_truth_names
+    for split in ["construction", "model_selection"]:
+        assert canonical_required.issubset(set(truth_names[split]))
+    assert set(configuration_namespace["MODEL_SELECTION_WORD_NAMES"]).isdisjoint(
+        set(configuration_namespace["CONSTRUCTION_WORD_NAMES"])
+    )
+
     with tempfile.TemporaryDirectory(prefix="stage36-response-") as directory:
-        path = Path(directory) / "truth.npz"
-        np.savez(
-            path, path_observables=paths, word_names=np.asarray(names),
-            word_lengths=lengths,
-        )
-        signature = response_namespace["response_signature_from_truth_path"](
-            path,
-            configuration_namespace["CANONICAL_RESPONSE_WORD_NAMES"],
-            configuration_namespace["CORE_ORDER_PAIRS"],
-        )
-        assert signature.ndim == 1 and np.all(np.isfinite(signature))
+        for split in ["construction", "model_selection"]:
+            names = truth_names[split]
+            lengths = np.asarray(
+                [word_by_name[name]["length"] for name in names], dtype=np.int64
+            )
+            paths = np.zeros((len(names), int(np.max(lengths)), 2), dtype=np.float64)
+            for index, length in enumerate(lengths):
+                paths[index, :length] = float(index + 1)
+            path = Path(directory) / f"{split}_truth.npz"
+            np.savez(
+                path, path_observables=paths, word_names=np.asarray(names),
+                word_lengths=lengths,
+            )
+            signature = response_namespace["response_signature_from_truth_path"](
+                path,
+                configuration_namespace["CANONICAL_RESPONSE_WORD_NAMES"],
+                configuration_namespace["CORE_ORDER_PAIRS"],
+            )
+            assert signature.ndim == 1 and np.all(np.isfinite(signature))
 
     subprocess.run(
         [sys.executable, "-m", "pytest", "-q", str(TESTS)],
