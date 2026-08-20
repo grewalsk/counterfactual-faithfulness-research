@@ -1,5 +1,17 @@
 # Stage 36 protocol: predictive-state closure distillation
 
+## V5 implementation amendment
+
+The source-bound v4 run completed physical truth, selected simulator response
+rank five, verified the official checkpoint, and loaded JEPA-WM. It stopped
+before the first model forward because an inherited output preflight requested
+legacy action word `L`, outside Stage 36's registered binary alphabet. V5 binds
+the preflight to the first registered construction response word, removes
+legacy executable `L/R/S/a/b` tokens, and validates the preflight and transition
+word generators against the real manifest. No model output or locked evaluation
+was observed, and no candidate, threshold, control, split, gate, or claim
+changes.
+
 ## V4 implementation amendment
 
 The v3 notebook stopped during setup when GitHub returned HTTP 504, before

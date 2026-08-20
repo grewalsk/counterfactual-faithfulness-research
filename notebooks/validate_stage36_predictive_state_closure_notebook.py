@@ -133,7 +133,7 @@ def validate():
     configuration_tree = ast.parse(code_cells[0])
     expected = {
         "RUN_MODE": "pilot",
-        "PROTOCOL_ID": "stage36-predictive-state-closure-distillation-v4",
+        "PROTOCOL_ID": "stage36-predictive-state-closure-distillation-v5",
         "EVIDENCE_STATUS": "FRESH_PROSPECTIVE_JEPA_ONLY_ADAPTER_CLOSURE_TEST",
         "MODEL_NAMES": ["jepa_wm_pusht"],
         "MAX_WORD_LENGTH": 12,
@@ -209,6 +209,10 @@ def validate():
         "def fetch_url_bytes(",
         "v4_retryable_exact_source_binding_no_scientific_change",
         '"v4_source_binding_retry_amendment": True',
+        "v5_registered_action_vocabulary_no_model_outcome_change",
+        '"v5_action_vocabulary_amendment": True',
+        "Stage 36 preflight word is outside the registered construction bank",
+        "unregistered Stage 36 transition words",
     ]
     for fragment in required:
         assert fragment in all_code, f"missing Stage 36 fragment: {fragment}"
@@ -218,6 +222,10 @@ def validate():
         '"original_jepa_carrier_claimed_closed": True',
         '"causal_evidence": True',
         "USE_SYNTHETIC_FALLBACK = True",
+        'name = "L"',
+        'names = ["L", "R", "S"]',
+        '"L": (-30.0, 0.14)',
+        '"a": (-20.0, 0.10)',
     ]
     for fragment in forbidden:
         assert fragment not in all_code, f"forbidden Stage 36 fragment: {fragment}"
@@ -283,6 +291,142 @@ def validate():
     )
     assert fetched == b"committed-source-bytes"
     assert len(attempts) == 2 and sleeps == [1.0]
+
+    # Execute the exact first-model preflight with the real Stage 36 manifest
+    # and mocked shape-correct outputs.  This would have caught the legacy `L`
+    # word before the v4 Colab run.
+    construction_tree = ast.parse(code_cells[7])
+    construction_functions = {
+        node.name: node for node in construction_tree.body
+        if isinstance(node, ast.FunctionDef)
+    }
+    preflight_calls = []
+    visual_tokens = configuration_namespace["EXPECTED_VISUAL_TOKENS"]
+    visual_width = configuration_namespace["EXPECTED_VISUAL_WIDTH"]
+    proprio_tokens = configuration_namespace["EXPECTED_PROPRIO_TOKENS"]
+    proprio_width = configuration_namespace["EXPECTED_PROPRIO_FEATURE_WIDTHS"][
+        "jepa_wm_pusht"
+    ]
+    carrier_width = configuration_namespace["EXPECTED_CARRIER_WIDTHS"][
+        "jepa_wm_pusht"
+    ]
+
+    def fake_grouped_model_words(bundle, record, names):
+        preflight_calls.append((bundle["name"], record["record_id"], list(names)))
+        assert names == ["A"]
+        return (
+            {
+                "A": (
+                    np.zeros((1, visual_tokens, visual_width), dtype=np.float32),
+                    np.zeros((1, proprio_tokens, proprio_width), dtype=np.float32),
+                )
+            },
+            {"A": np.zeros((1, visual_tokens, carrier_width), dtype=np.float32)},
+        )
+
+    def fake_feature_tensor(outputs, names):
+        assert names == ["A"] and set(outputs) == {"A"}
+        return (
+            np.zeros(
+                (
+                    1,
+                    configuration_namespace["MAX_WORD_LENGTH"],
+                    configuration_namespace["VISUAL_SKETCH_DIM"]
+                    + configuration_namespace["PROPRIO_PAD_DIM"],
+                ),
+                dtype=np.float32,
+            ),
+            proprio_width,
+        )
+
+    preflight_namespace = {
+        "np": np,
+        "CANONICAL_RESPONSE_WORD_NAMES": configuration_namespace[
+            "CANONICAL_RESPONSE_WORD_NAMES"
+        ],
+        "CONSTRUCTION_WORD_NAMES": configuration_namespace["CONSTRUCTION_WORD_NAMES"],
+        "WORD_BY_NAME": {"A": {"length": 1}},
+        "SELECTED_RECORDS": {"construction": [{"record_id": 3600001}]},
+        "grouped_model_words": fake_grouped_model_words,
+        "feature_tensor_from_outputs": fake_feature_tensor,
+        "EXPECTED_PROPRIO_FEATURE_WIDTHS": configuration_namespace[
+            "EXPECTED_PROPRIO_FEATURE_WIDTHS"
+        ],
+        "EXPECTED_VISUAL_TOKENS": visual_tokens,
+        "EXPECTED_VISUAL_WIDTH": visual_width,
+        "EXPECTED_PROPRIO_TOKENS": proprio_tokens,
+        "PROPRIO_FEATURE_POOLING": configuration_namespace["PROPRIO_FEATURE_POOLING"],
+        "PROPRIO_PAD_DIM": configuration_namespace["PROPRIO_PAD_DIM"],
+        "VISUAL_SKETCH_DIM": configuration_namespace["VISUAL_SKETCH_DIM"],
+        "MAX_WORD_LENGTH": configuration_namespace["MAX_WORD_LENGTH"],
+        "OUT": Path("/tmp/stage36-preflight-validator"),
+        "write_json": lambda *_: None,
+        "PROVENANCE_COUNTS": {"model_output_contract_preflights": {"jepa": 0}},
+    }
+    exec(
+        compile(
+            ast.Module(
+                body=[construction_functions["preflight_model_output_contract"]],
+                type_ignores=[],
+            ),
+            "<stage36-model-preflight-test>", "exec",
+        ),
+        preflight_namespace,
+    )
+    contract = preflight_namespace["preflight_model_output_contract"]({
+        "name": "jepa_wm_pusht", "short": "jepa", "pred_type": "AdaLN",
+        "carrier_width": carrier_width,
+    })
+    assert contract["word"] == "A" and preflight_calls == [
+        ("jepa_wm_pusht", 3600001, ["A"])
+    ]
+
+    transition_namespace = {
+        "CALIBRATION_INTERCHANGE_PAIRS": configuration_namespace[
+            "CALIBRATION_INTERCHANGE_PAIRS"
+        ],
+        "EVALUATION_INTERCHANGE_PAIRS": configuration_namespace[
+            "EVALUATION_INTERCHANGE_PAIRS"
+        ],
+        "EVALUATION_WORD_NAMES": [
+            row["name"] for row in configuration_namespace["EVALUATION_WORD_SPECS"]
+        ],
+    }
+    exec(
+        compile(
+            ast.Module(
+                body=[construction_functions["transition_prefixes"]], type_ignores=[]
+            ),
+            "<stage36-transition-vocabulary-test>", "exec",
+        ),
+        transition_namespace,
+    )
+    for split in ["model_selection", "calibration", "evaluation"]:
+        names, prefixes = transition_namespace["transition_prefixes"](split)
+        assert names and prefixes
+        assert all(set(value).issubset({"A", "B"}) for value in names + prefixes)
+
+    runtime_tree = ast.parse(code_cells[5])
+    token_node = next(
+        node for node in runtime_tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "token_definition"
+    )
+    token_namespace = {}
+    exec(
+        compile(
+            ast.Module(body=[token_node], type_ignores=[]),
+            "<stage36-token-vocabulary-test>", "exec",
+        ),
+        token_namespace,
+    )
+    assert token_namespace["token_definition"]("A") == (-40.0, 0.18)
+    assert token_namespace["token_definition"]("B") == (40.0, 0.18)
+    try:
+        token_namespace["token_definition"]("L")
+    except KeyError:
+        pass
+    else:
+        raise AssertionError("legacy Stage 35 token L remains executable")
 
     analysis_namespace = {"np": np}
     exec(compile(code_cells[3], "<stage36-analysis>", "exec"), analysis_namespace)

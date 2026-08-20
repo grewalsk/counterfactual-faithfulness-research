@@ -1,5 +1,11 @@
 # Stage 36 predictive-state closure distillation Colab run guide
 
+Version 5 repairs the v4 first-model-preflight vocabulary failure. The v4 run
+passed the simulator rank gate at five and loaded the verified JEPA checkpoint,
+then stopped before its first forward because inherited code requested legacy
+word `L`. V5 binds preflight and transition helpers to Stage 36's registered
+`A/B` alphabet and rejects every legacy executable token.
+
 Version 4 repairs the pre-experiment v3 HTTP 504 failure. Exact GitHub commit
 resolution and committed-file fetching now retry transient `429/5xx`, timeout,
 and connection failures with bounded backoff. Hash and executed-cell checks are

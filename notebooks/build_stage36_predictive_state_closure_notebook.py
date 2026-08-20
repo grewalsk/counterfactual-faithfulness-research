@@ -29,6 +29,18 @@ replace_block = STAGE35.replace_block
 
 introduction = r'''# Stage 36: predictive-state closure distillation
 
+## V5 registered action-vocabulary repair
+
+The source-bound v4 pilot completed physical truth, passed the simulator-only
+rank gate at five, verified the official checkpoint, and loaded JEPA-WM.  It
+then stopped before the first model forward because an inherited Stage 35
+output preflight requested legacy word `L`, while Stage 36 registers only the
+binary `A/B` alphabet.  V5 binds the preflight to the first registered
+construction response word, removes legacy executable `L/R/S/a/b` tokens, and
+executes the preflight and transition-prefix vocabulary contracts locally.
+The observed simulator rank does not change any candidate, threshold, control,
+split, gate, or claim.
+
 ## V4 retryable exact-source binding
 
 The v3 notebook stopped during setup, before source identity was written or any
@@ -156,7 +168,7 @@ for old, new in [
 
 for name, value in {
     "EXPERIMENT_SOURCE_REF": '"codex/stage34-predictive-fiber-abstraction"',
-    "PROTOCOL_ID": '"stage36-predictive-state-closure-distillation-v4"',
+    "PROTOCOL_ID": '"stage36-predictive-state-closure-distillation-v5"',
     "NOTEBOOK_PROTOCOL_SHA256": '"__PROTOCOL_DIGEST__"',
     "EVIDENCE_STATUS": '"FRESH_PROSPECTIVE_JEPA_ONLY_ADAPTER_CLOSURE_TEST"',
     "MAX_ESTIMATED_TOTAL_MINUTES": "360.0",
@@ -344,6 +356,7 @@ configuration = re.sub(
     "v2_complete_inherited_helper_dependency_chain_no_scientific_change",
     "v3_complete_truth_consumer_coverage_no_scientific_change",
     "v4_retryable_exact_source_binding_no_scientific_change",
+    "v5_registered_action_vocabulary_no_model_outcome_change",
 ]
 
 assert INTERVENTION_BLOCK''',
@@ -534,6 +547,25 @@ design_and_runtime_helpers = STAGE35.design_and_runtime_helpers
 for old, new in [("stage35", "stage36"), ("Stage 35", "Stage 36")]:
     design_and_runtime_helpers = design_and_runtime_helpers.replace(old, new)
 design_and_runtime_helpers = design_and_runtime_helpers.replace("3500000", "3600000")
+design_and_runtime_helpers = replace_block(
+    design_and_runtime_helpers,
+    "def token_definition(symbol):",
+    "def spec_from_name(name):",
+    r'''def token_definition(symbol):
+    # Stage 36 has one registered binary alphabet.  Keeping legacy Stage 35
+    # tokens executable would allow silent word-manifest drift.
+    table = {
+        "A": (-40.0, 0.18),
+        "B": (40.0, 0.18),
+        "0": (0.0, 0.0),
+    }
+    if symbol not in table:
+        raise KeyError(f"unknown Stage 36 action token {symbol!r}")
+    return table[symbol]
+
+
+''',
+)
 design_and_runtime_helpers = design_and_runtime_helpers.replace(
     '    "v2_scientific_outcomes_observed_before_amendment": False,\n',
     '    "v2_scientific_outcomes_observed_before_amendment": False,\n'
@@ -545,6 +577,13 @@ design_and_runtime_helpers = design_and_runtime_helpers.replace(
     '    "v3_scientific_outcomes_observed_before_amendment": False,\n'
     '    "v4_source_binding_retry_amendment": True,\n'
     '    "v4_scientific_outcomes_observed_before_amendment": False,\n',
+)
+design_and_runtime_helpers = design_and_runtime_helpers.replace(
+    '    "v4_scientific_outcomes_observed_before_amendment": False,\n',
+    '    "v4_scientific_outcomes_observed_before_amendment": False,\n'
+    '    "v5_action_vocabulary_amendment": True,\n'
+    '    "v5_model_outputs_observed_before_amendment": False,\n'
+    '    "v5_locked_evaluation_observed_before_amendment": False,\n',
 )
 
 
@@ -621,6 +660,48 @@ for old, new in [("stage35", "stage36"), ("Stage 35", "Stage 36")]:
     construction_and_paths = construction_and_paths.replace(old, new)
 construction_and_paths = construction_and_paths.replace(
     "PATH_CARRIER_SKETCH_DIM", "MAX_CARRIER_PROJECTION_DIM"
+)
+construction_and_paths = construction_and_paths.replace(
+    '    name = "L"\n',
+    '''    name = str(CANONICAL_RESPONSE_WORD_NAMES[0])
+    if name not in WORD_BY_NAME or name not in CONSTRUCTION_WORD_NAMES:
+        raise RuntimeError(
+            f"Stage 36 preflight word is outside the registered construction bank: {name!r}"
+        )
+''',
+)
+construction_and_paths = replace_block(
+    construction_and_paths,
+    "def transition_prefixes(split):",
+    "def source_mode_sequence(record, word, rollout):",
+    r'''def transition_prefixes(split):
+    if split == "model_selection":
+        names = ["A", "B"]
+    elif split == "calibration":
+        names = ["A", "B"]
+        for base, donor, step in CALIBRATION_INTERCHANGE_PAIRS:
+            names.extend([base, donor, donor[: step + 1] + base[step + 1 :]])
+    elif split == "evaluation":
+        names = list(EVALUATION_WORD_NAMES)
+        for base, donor, step in EVALUATION_INTERCHANGE_PAIRS:
+            names.extend([base, donor, donor[: step + 1] + base[step + 1 :]])
+    else:
+        raise ValueError(f"unknown Stage 36 transition split {split!r}")
+    names = sorted(set(names), key=lambda value: (len(value), value))
+    prefixes = sorted(
+        {name[:step] for name in names for step in range(1, len(name) + 1)},
+        key=lambda value: (len(value), value),
+    )
+    invalid = sorted(
+        value for value in set(names) | set(prefixes)
+        if not value or not set(value).issubset({"A", "B"})
+    )
+    if invalid:
+        raise RuntimeError(f"unregistered Stage 36 transition words: {invalid}")
+    return names, prefixes
+
+
+''',
 )
 construction_and_paths = replace_block(
     construction_and_paths,
