@@ -1,5 +1,12 @@
 # Stage 36 predictive-state closure distillation Colab run guide
 
+Version 6 repairs the v5 model-selection provenance-header failure. The v5 run
+successfully completed the registered `A` preflight, construction decoder, and
+all 192 pre-evaluation JEPA prefix paths, then stopped before fitting the first
+PSCD candidate because an internal comment was passed where the verifier
+requires a cell's first-line header. V6 binds and locally executes all five
+remaining provenance checkpoints against their exact committed cells.
+
 Version 5 repairs the v4 first-model-preflight vocabulary failure. The v4 run
 passed the simulator rank gate at five and loaded the verified JEPA checkpoint,
 then stopped before its first forward because inherited code requested legacy

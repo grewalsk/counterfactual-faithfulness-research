@@ -130,10 +130,34 @@ def validate():
             assert cell.get("execution_count") is None
             ast.parse(source(cell))
 
+    # Every execution-provenance checkpoint must identify the committed code
+    # cell by its first line.  V5 passed an internal comment from the
+    # model-selection cell and therefore raised StopIteration before the first
+    # PSCD candidate was fit.
+    provenance_calls = []
+    for cell_index, cell_source in enumerate(code_cells):
+        for node in ast.walk(ast.parse(cell_source)):
+            if not (
+                isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Name)
+                and node.func.id == "verify_executed_notebook_through"
+            ):
+                continue
+            assert len(node.args) == 1 and isinstance(node.args[0], ast.Constant)
+            provenance_calls.append((cell_index, node.args[0].value))
+    expected_provenance_calls = [
+        (6, expected_headers[6]),
+        (7, expected_headers[7]),
+        (8, expected_headers[8]),
+        (9, expected_headers[9]),
+        (10, expected_headers[10]),
+    ]
+    assert provenance_calls == expected_provenance_calls
+
     configuration_tree = ast.parse(code_cells[0])
     expected = {
         "RUN_MODE": "pilot",
-        "PROTOCOL_ID": "stage36-predictive-state-closure-distillation-v5",
+        "PROTOCOL_ID": "stage36-predictive-state-closure-distillation-v6",
         "EVIDENCE_STATUS": "FRESH_PROSPECTIVE_JEPA_ONLY_ADAPTER_CLOSURE_TEST",
         "MODEL_NAMES": ["jepa_wm_pusht"],
         "MAX_WORD_LENGTH": 12,
@@ -213,6 +237,8 @@ def validate():
         '"v5_action_vocabulary_amendment": True',
         "Stage 36 preflight word is outside the registered construction bank",
         "unregistered Stage 36 transition words",
+        "v6_executed_cell_provenance_header_no_scientific_change",
+        '"v6_execution_provenance_header_amendment": True',
     ]
     for fragment in required:
         assert fragment in all_code, f"missing Stage 36 fragment: {fragment}"
@@ -236,6 +262,17 @@ def validate():
     fetch_node = next(
         node for node in setup_tree.body
         if isinstance(node, ast.FunctionDef) and node.name == "fetch_url_bytes"
+    )
+    canonical_source_node = next(
+        node for node in setup_tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "canonical_cell_source"
+    )
+    provenance_node = next(
+        node for node in setup_tree.body
+        if (
+            isinstance(node, ast.FunctionDef)
+            and node.name == "verify_executed_notebook_through"
+        )
     )
     attempts = []
     sleeps = []
@@ -291,6 +328,45 @@ def validate():
     )
     assert fetched == b"committed-source-bytes"
     assert len(attempts) == 2 and sleeps == [1.0]
+
+    # Execute all five registered provenance boundaries in sequence against
+    # the exact generated code cells. This exercises the `next(...)` lookup
+    # that failed in the v5 Colab run as well as the history-prefix comparison.
+    class FakeShell:
+        user_ns = {"_ih": []}
+
+    fake_shell = FakeShell()
+    provenance_namespace = {
+        "SOURCE_IDENTITY": {"status": "SOURCE_BOUND_EXECUTION_UNVERIFIED"},
+        "REMOTE_NOTEBOOK_CODE_CELLS": [],
+        "get_ipython": lambda: fake_shell,
+        "hashlib": hashlib,
+        "json": json,
+        "OUT": Path("/tmp/stage36-provenance-validator"),
+        "write_json": lambda *_: None,
+    }
+    exec(
+        compile(
+            ast.Module(
+                body=[canonical_source_node, provenance_node], type_ignores=[]
+            ),
+            "<stage36-execution-provenance-test>", "exec",
+        ),
+        provenance_namespace,
+    )
+    canonical_code_cells = [
+        provenance_namespace["canonical_cell_source"](value)
+        for value in code_cells
+    ]
+    provenance_namespace["REMOTE_NOTEBOOK_CODE_CELLS"] = canonical_code_cells
+    for cell_index, cell_header in provenance_calls:
+        fake_shell.user_ns["_ih"] = [None, *code_cells[: cell_index + 1]]
+        assert provenance_namespace["verify_executed_notebook_through"](cell_header)
+        identity = provenance_namespace["SOURCE_IDENTITY"]
+        assert identity["execution_verified"] is True
+        assert identity["executed_through_code_cell"] == cell_index
+        assert identity["executed_through_header"] == cell_header
+        assert identity["confirmation_eligible"] is True
 
     # Execute the exact first-model preflight with the real Stage 36 manifest
     # and mocked shape-correct outputs.  This would have caught the legacy `L`

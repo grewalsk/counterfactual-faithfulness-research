@@ -29,6 +29,21 @@ replace_block = STAGE35.replace_block
 
 introduction = r'''# Stage 36: predictive-state closure distillation
 
+## V6 executed-cell provenance-header repair
+
+The source-bound v5 pilot completed all 320 physical-truth records, selected
+simulator response rank five, verified and loaded the official JEPA-WM
+checkpoint, executed the registered `A` model-output preflight, fit the
+construction-only grounded decoder, and checkpointed all 192 construction,
+model-selection, and calibration prefix paths.  It then stopped before fitting
+the first PSCD candidate because the model-selection cell passed an internal
+comment to the executed-cell verifier, whose contract requires the committed
+cell's first-line header.  V6 binds every provenance checkpoint to its actual
+cell header and executes the full five-checkpoint verifier sequence locally.
+No PSCD candidate, selected adapter, locked evaluation path, evaluation metric,
+gate, or scientific decision was observed, so no candidate, threshold,
+control, split, gate, or claim changes.
+
 ## V5 registered action-vocabulary repair
 
 The source-bound v4 pilot completed physical truth, passed the simulator-only
@@ -168,7 +183,7 @@ for old, new in [
 
 for name, value in {
     "EXPERIMENT_SOURCE_REF": '"codex/stage34-predictive-fiber-abstraction"',
-    "PROTOCOL_ID": '"stage36-predictive-state-closure-distillation-v5"',
+    "PROTOCOL_ID": '"stage36-predictive-state-closure-distillation-v6"',
     "NOTEBOOK_PROTOCOL_SHA256": '"__PROTOCOL_DIGEST__"',
     "EVIDENCE_STATUS": '"FRESH_PROSPECTIVE_JEPA_ONLY_ADAPTER_CLOSURE_TEST"',
     "MAX_ESTIMATED_TOTAL_MINUTES": "360.0",
@@ -357,6 +372,7 @@ configuration = re.sub(
     "v3_complete_truth_consumer_coverage_no_scientific_change",
     "v4_retryable_exact_source_binding_no_scientific_change",
     "v5_registered_action_vocabulary_no_model_outcome_change",
+    "v6_executed_cell_provenance_header_no_scientific_change",
 ]
 
 assert INTERVENTION_BLOCK''',
@@ -585,6 +601,13 @@ design_and_runtime_helpers = design_and_runtime_helpers.replace(
     '    "v5_model_outputs_observed_before_amendment": False,\n'
     '    "v5_locked_evaluation_observed_before_amendment": False,\n',
 )
+design_and_runtime_helpers = design_and_runtime_helpers.replace(
+    '    "v5_locked_evaluation_observed_before_amendment": False,\n',
+    '    "v5_locked_evaluation_observed_before_amendment": False,\n'
+    '    "v6_execution_provenance_header_amendment": True,\n'
+    '    "v6_pscd_selection_observed_before_amendment": False,\n'
+    '    "v6_locked_evaluation_observed_before_amendment": False,\n',
+)
 
 
 physical_truth = STAGE35.physical_truth
@@ -801,7 +824,7 @@ SELECTION_ROWS = []
 if not PIPELINE_FAILED:
     try:
         verify_executed_notebook_through(
-            "# Select the state definition on construction-trained models and disjoint unseen words."
+            "# Load split-bound teacher sequences without opening evaluation statistics."
         )
         construction = load_stage36_sequences("construction")
         selection = load_stage36_sequences("model_selection")

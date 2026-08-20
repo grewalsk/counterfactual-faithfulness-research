@@ -1,5 +1,18 @@
 # Stage 36 protocol: predictive-state closure distillation
 
+## V6 implementation amendment
+
+The source-bound v5 run completed physical truth, selected simulator response
+rank five, passed the registered `A` model-output contract, fit the grounded
+decoder, and checkpointed all 192 construction, model-selection, and
+calibration JEPA prefix paths. It stopped before fitting the first PSCD
+candidate because the model-selection cell passed an internal comment to a
+provenance verifier that requires the committed cell's first-line header. V6
+binds all five executed-cell checkpoints to actual cell headers and validates
+their complete sequential execution locally. No PSCD selection, locked
+evaluation data, evaluation statistic, gate, or decision was observed, and no
+candidate, threshold, control, split, gate, or claim changes.
+
 ## V5 implementation amendment
 
 The source-bound v4 run completed physical truth, selected simulator response
