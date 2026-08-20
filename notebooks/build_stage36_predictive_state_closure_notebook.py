@@ -29,6 +29,15 @@ replace_block = STAGE35.replace_block
 
 introduction = r'''# Stage 36: predictive-state closure distillation
 
+## V4 retryable exact-source binding
+
+The v3 notebook stopped during setup, before source identity was written or any
+simulator/model work began, when GitHub returned HTTP 504 while resolving or
+fetching the committed source.  V4 adds bounded exponential-backoff retries for
+retryable GitHub/API failures while retaining exact commit resolution, byte
+hashing, and executed-cell verification.  It never falls back to unbound or
+unverified code.  No scientific configuration or decision changes.
+
 ## V3 model-free truth-coverage repair
 
 The source-bound v2 pilot completed all 320 physical-truth records and then
@@ -147,7 +156,7 @@ for old, new in [
 
 for name, value in {
     "EXPERIMENT_SOURCE_REF": '"codex/stage34-predictive-fiber-abstraction"',
-    "PROTOCOL_ID": '"stage36-predictive-state-closure-distillation-v3"',
+    "PROTOCOL_ID": '"stage36-predictive-state-closure-distillation-v4"',
     "NOTEBOOK_PROTOCOL_SHA256": '"__PROTOCOL_DIGEST__"',
     "EVIDENCE_STATUS": '"FRESH_PROSPECTIVE_JEPA_ONLY_ADAPTER_CLOSURE_TEST"',
     "MAX_ESTIMATED_TOTAL_MINUTES": "360.0",
@@ -334,6 +343,7 @@ configuration = re.sub(
     "hash_validated_resume", "transient_drive_io_retries", "no_required_colab_secret",
     "v2_complete_inherited_helper_dependency_chain_no_scientific_change",
     "v3_complete_truth_consumer_coverage_no_scientific_change",
+    "v4_retryable_exact_source_binding_no_scientific_change",
 ]
 
 assert INTERVENTION_BLOCK''',
@@ -355,6 +365,118 @@ for old, new in [
     ("stage35", "stage36"), ("hpcc", "pscd"),
 ]:
     setup = setup.replace(old, new)
+setup = setup.replace(
+    "import urllib.parse\nimport urllib.request",
+    "import urllib.error\nimport urllib.parse\nimport urllib.request",
+)
+setup = setup.replace(
+    "def download_asset(name):",
+    r'''RETRYABLE_HTTP_STATUS = {408, 425, 429, 500, 502, 503, 504}
+
+
+def fetch_url_bytes(target, label, attempts=6, timeout_seconds=45.0):
+    """Fetch exact bytes with bounded retries for transient network failures."""
+    attempts = int(attempts)
+    delay = 1.0
+    for attempt in range(1, attempts + 1):
+        request = target if isinstance(target, urllib.request.Request) else (
+            urllib.request.Request(
+                str(target), headers={"User-Agent": "stage36-source-binder"}
+            )
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=float(timeout_seconds)) as response:
+                return response.read()
+        except urllib.error.HTTPError as error:
+            retryable = int(error.code) in RETRYABLE_HTTP_STATUS
+            if not retryable or attempt == attempts:
+                raise RuntimeError(
+                    f"{label} failed with HTTP {error.code} after {attempt} attempt(s)"
+                ) from error
+            detail = f"HTTP {error.code}"
+        except (urllib.error.URLError, TimeoutError, ConnectionError, OSError) as error:
+            if attempt == attempts:
+                raise RuntimeError(
+                    f"{label} remained unavailable after {attempts} attempts"
+                ) from error
+            detail = f"{type(error).__name__}: {error}"
+        print(
+            f"Transient network error during {label} "
+            f"(attempt {attempt}/{attempts}): {detail}; retrying in {delay:.0f}s"
+        )
+        time.sleep(delay)
+        delay = min(2.0 * delay, 16.0)
+    raise AssertionError("unreachable HTTP retry state")
+
+
+def download_asset(name):''',
+)
+setup = replace_block(
+    setup,
+    "def source_identity():",
+    "def verify_executed_notebook_through",
+    r'''def source_identity():
+    global REMOTE_NOTEBOOK_CODE_CELLS
+    payload = {
+        "protocol_id": PROTOCOL_ID,
+        "notebook_protocol_sha256": NOTEBOOK_PROTOCOL_SHA256,
+        "repository": EXPERIMENT_REPOSITORY,
+        "source_ref": EXPERIMENT_SOURCE_REF,
+        "execution_verified": False,
+    }
+    if not EXPERIMENT_SOURCE_REF:
+        raise RuntimeError("Stage 36 requires its committed GitHub branch")
+    source_ref = str(EXPERIMENT_SOURCE_REF).strip()
+    if len(source_ref) == 40 and all(
+        value in "0123456789abcdef" for value in source_ref.lower()
+    ):
+        resolved = source_ref.lower()
+    else:
+        encoded_ref = urllib.parse.quote(source_ref, safe="")
+        request = urllib.request.Request(
+            f"https://api.github.com/repos/{EXPERIMENT_REPOSITORY}/commits/{encoded_ref}",
+            headers={
+                "Accept": "application/vnd.github+json",
+                "User-Agent": "stage36-source-binder",
+            },
+        )
+        content = fetch_url_bytes(request, f"resolve source ref {source_ref!r}")
+        resolved = str(json.loads(content.decode())["sha"]).lower()
+    if len(resolved) != 40 or any(
+        value not in "0123456789abcdef" for value in resolved
+    ):
+        raise RuntimeError(
+            f"GitHub returned an invalid commit for {source_ref!r}: {resolved!r}"
+        )
+    payload["resolved_commit"] = resolved
+    base = f"https://raw.githubusercontent.com/{EXPERIMENT_REPOSITORY}/{resolved}/"
+    payload["files"] = {}
+    for label, relative in [
+        ("notebook", EXPERIMENT_NOTEBOOK_PATH),
+        ("builder", EXPERIMENT_BUILDER_PATH),
+        ("numerical", EXPERIMENT_NUMERICAL_PATH),
+    ]:
+        content = fetch_url_bytes(base + relative, f"fetch committed {label}")
+        payload["files"][label] = {
+            "path": relative,
+            "sha256": hashlib.sha256(content).hexdigest(),
+            "size_bytes": len(content),
+        }
+        if label == "notebook":
+            remote_notebook = json.loads(content.decode())
+            REMOTE_NOTEBOOK_CODE_CELLS = [
+                canonical_cell_source("".join(cell.get("source", [])))
+                for cell in remote_notebook["cells"]
+                if cell.get("cell_type") == "code"
+            ]
+            payload["remote_code_cells"] = len(REMOTE_NOTEBOOK_CODE_CELLS)
+    payload["status"] = "SOURCE_BOUND_EXECUTION_UNVERIFIED"
+    payload["confirmation_eligible"] = False
+    return payload
+
+
+''',
+)
 
 
 stage35_helpers = [
@@ -417,6 +539,12 @@ design_and_runtime_helpers = design_and_runtime_helpers.replace(
     '    "v2_scientific_outcomes_observed_before_amendment": False,\n'
     '    "v3_truth_consumer_coverage_amendment": True,\n'
     '    "v3_scientific_outcomes_observed_before_amendment": False,\n',
+)
+design_and_runtime_helpers = design_and_runtime_helpers.replace(
+    '    "v3_scientific_outcomes_observed_before_amendment": False,\n',
+    '    "v3_scientific_outcomes_observed_before_amendment": False,\n'
+    '    "v4_source_binding_retry_amendment": True,\n'
+    '    "v4_scientific_outcomes_observed_before_amendment": False,\n',
 )
 
 

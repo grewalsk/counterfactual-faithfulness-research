@@ -9,6 +9,8 @@ import os
 import subprocess
 import sys
 import tempfile
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 import numpy as np
@@ -131,7 +133,7 @@ def validate():
     configuration_tree = ast.parse(code_cells[0])
     expected = {
         "RUN_MODE": "pilot",
-        "PROTOCOL_ID": "stage36-predictive-state-closure-distillation-v3",
+        "PROTOCOL_ID": "stage36-predictive-state-closure-distillation-v4",
         "EVIDENCE_STATUS": "FRESH_PROSPECTIVE_JEPA_ONLY_ADAPTER_CLOSURE_TEST",
         "MODEL_NAMES": ["jepa_wm_pusht"],
         "MAX_WORD_LENGTH": 12,
@@ -204,6 +206,9 @@ def validate():
         "v3_complete_truth_consumer_coverage_no_scientific_change",
         '"v3_truth_consumer_coverage_amendment": True',
         "cached word contract changed",
+        "def fetch_url_bytes(",
+        "v4_retryable_exact_source_binding_no_scientific_change",
+        '"v4_source_binding_retry_amendment": True',
     ]
     for fragment in required:
         assert fragment in all_code, f"missing Stage 36 fragment: {fragment}"
@@ -216,6 +221,68 @@ def validate():
     ]
     for fragment in forbidden:
         assert fragment not in all_code, f"forbidden Stage 36 fragment: {fragment}"
+
+    # Reproduce the transient HTTP 504 that stopped v3 and prove the exact-byte
+    # fetch succeeds on retry without any unverified fallback.
+    setup_tree = ast.parse(code_cells[2])
+    fetch_node = next(
+        node for node in setup_tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "fetch_url_bytes"
+    )
+    attempts = []
+    sleeps = []
+
+    class FakeResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_):
+            return False
+
+        def read(self):
+            return b"committed-source-bytes"
+
+    def flaky_urlopen(request, timeout):
+        attempts.append((request.full_url, timeout))
+        if len(attempts) == 1:
+            raise urllib.error.HTTPError(
+                request.full_url, 504, "Gateway Timeout", {}, None
+            )
+        return FakeResponse()
+
+    class FakeRequestModule:
+        Request = urllib.request.Request
+        urlopen = staticmethod(flaky_urlopen)
+
+    class FakeErrorModule:
+        HTTPError = urllib.error.HTTPError
+        URLError = urllib.error.URLError
+
+    class FakeUrllib:
+        request = FakeRequestModule
+        error = FakeErrorModule
+
+    class FakeTime:
+        sleep = staticmethod(sleeps.append)
+
+    fetch_namespace = {
+        "urllib": FakeUrllib,
+        "time": FakeTime,
+        "RETRYABLE_HTTP_STATUS": {408, 425, 429, 500, 502, 503, 504},
+    }
+    exec(
+        compile(
+            ast.Module(body=[fetch_node], type_ignores=[]),
+            "<stage36-http-retry-test>", "exec",
+        ),
+        fetch_namespace,
+    )
+    fetched = fetch_namespace["fetch_url_bytes"](
+        "https://example.invalid/committed", "test committed source",
+        attempts=2, timeout_seconds=3.0,
+    )
+    assert fetched == b"committed-source-bytes"
+    assert len(attempts) == 2 and sleeps == [1.0]
 
     analysis_namespace = {"np": np}
     exec(compile(code_cells[3], "<stage36-analysis>", "exec"), analysis_namespace)

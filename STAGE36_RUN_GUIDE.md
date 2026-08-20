@@ -1,5 +1,10 @@
 # Stage 36 predictive-state closure distillation Colab run guide
 
+Version 4 repairs the pre-experiment v3 HTTP 504 failure. Exact GitHub commit
+resolution and committed-file fetching now retry transient `429/5xx`, timeout,
+and connection failures with bounded backoff. Hash and executed-cell checks are
+unchanged, and there is no unverified fallback.
+
 Version 3 repairs the model-free v2 truth-coverage failure. The v2 run
 completed all physical-truth records but stopped before loading JEPA-WM because
 model-selection truth shards omitted the canonical response words required by

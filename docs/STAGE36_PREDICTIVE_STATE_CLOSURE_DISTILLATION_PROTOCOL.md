@@ -1,5 +1,14 @@
 # Stage 36 protocol: predictive-state closure distillation
 
+## V4 implementation amendment
+
+The v3 notebook stopped during setup when GitHub returned HTTP 504, before
+source identity was written and before any simulator or model computation. V4
+adds bounded exponential-backoff retries for retryable GitHub API and committed
+raw-file failures. Exact commit resolution, file hashing, and executed-cell
+verification remain mandatory; the notebook never falls back to unbound or
+unverified source. No scientific configuration or decision changes.
+
 ## V3 implementation amendment
 
 The source-bound v2 run completed 320 physical-truth records and stopped before
