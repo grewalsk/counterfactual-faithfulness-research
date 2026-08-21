@@ -1,5 +1,19 @@
 # Colab instructions
 
+## Stage 37 semigroup-regularized PSCD and planning value
+
+Notebook: `37_semigroup_pscd_planning_value.ipynb`
+
+Stage 37 freezes the selected Stage 36 adapter architecture, adds explicit
+direct-versus-composed training from every eligible history anchor, and tests
+it against an initialization- and capacity-matched zero-semigroup control. A
+capacity-escalated neural simulator control must pass before JEPA is loaded.
+Locked evaluation uses fresh closure words and a leakage-free twelve-candidate
+open-loop planning bank. A pass remains a post-hoc one-environment repair
+result, not native JEPA closure or closed-loop planning evidence.
+
+Follow `../STAGE37_RUN_GUIDE.md`. No prior result directory is required.
+
 ## Stage 36 predictive-state closure distillation
 
 Notebook: `36_predictive_state_closure_distillation.ipynb`
