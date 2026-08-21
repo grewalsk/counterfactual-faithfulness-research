@@ -10,6 +10,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import numpy as np
+
 
 ROOT = Path(__file__).resolve().parent
 REPOSITORY = ROOT.parent
@@ -113,7 +115,11 @@ def validate():
     namespace = {}
     exec(compile(code_cells[0], "<stage37-config>", "exec"), namespace)
     assert namespace["RUN_MODE"] == "pilot"
-    assert namespace["PROTOCOL_ID"] == "stage37-semigroup-pscd-planning-v1"
+    assert namespace["PROTOCOL_ID"] == "stage37-semigroup-pscd-planning-v2"
+    assert namespace["V2_PREFLIGHT_HELPER_ORDER_AMENDMENT"] is True
+    assert namespace["V2_V1_SCIENTIFIC_OUTCOMES_OBSERVED"] is False
+    assert namespace["V2_V1_JEPA_LOADED"] is False
+    assert namespace["V2_V1_LOCKED_EVALUATION_OPENED"] is False
     assert namespace["FIXED_CARRIER_DIM"] == 256
     assert namespace["FIXED_HISTORY_LENGTH"] == 4
     assert namespace["FIXED_LATENT_DIM"] == 128
@@ -152,6 +158,51 @@ def validate():
     assert len(digest) == 64
     validate_protocol_digest(notebook, digest)
 
+    # Execute the generated analysis cell in the same preceding namespace and
+    # evaluate the exact seed call used by the next simulator-preflight cell.
+    # V1's numerical tests passed while this ordered namespace was incomplete.
+    analysis_namespace = {"np": np, "hashlib": hashlib}
+    exec(compile(code_cells[3], "<stage37-analysis>", "exec"), analysis_namespace)
+    assert "stable_seed" in analysis_namespace
+    preflight_tree = ast.parse(code_cells[7])
+    seed_call = next(
+        node for node in ast.walk(preflight_tree)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "stable_seed"
+        and len(node.args) == 4
+        and isinstance(node.args[1], ast.Constant)
+        and node.args[1].value == "simulator"
+    )
+    ordered_namespace = {
+        **analysis_namespace,
+        "CONTROL_SEED": namespace["CONTROL_SEED"],
+        "latent_dim": namespace["SIMULATOR_LATENT_DIMS"][0],
+        "dynamics": namespace["SIMULATOR_DYNAMICS"][0],
+    }
+    observed_seed = eval(
+        compile(ast.Expression(seed_call), "<stage37-preflight-seed>", "eval"),
+        ordered_namespace,
+    )
+    expected_seed = int.from_bytes(
+        hashlib.sha256(
+            f'{namespace["CONTROL_SEED"]}:simulator:'
+            f'{namespace["SIMULATOR_LATENT_DIMS"][0]}:'
+            f'{namespace["SIMULATOR_DYNAMICS"][0]}'.encode()
+        ).digest()[:4],
+        "little",
+    )
+    assert observed_seed == expected_seed
+    stable_definition_cells = [
+        index for index, text in enumerate(code_cells)
+        if any(
+            isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and node.name == "stable_seed"
+            for node in ast.walk(ast.parse(text))
+        )
+    ]
+    assert stable_definition_cells and min(stable_definition_cells) < 7
+
     all_code = "\n".join(code_cells)
     required = [
         'load_world_model("jepa_wm_pusht")',
@@ -176,6 +227,7 @@ def validate():
         "retry_drive_io(",
         "fetch_url_bytes(",
         "stage37_spscd_result_bundle_",
+        "V2_PREFLIGHT_HELPER_ORDER_AMENDMENT = True",
     ]
     for fragment in required:
         assert fragment in all_code, f"missing Stage 37 fragment: {fragment}"

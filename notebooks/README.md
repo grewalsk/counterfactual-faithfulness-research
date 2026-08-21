@@ -12,6 +12,10 @@ Locked evaluation uses fresh closure words and a leakage-free twelve-candidate
 open-loop planning bank. A pass remains a post-hoc one-environment repair
 result, not native JEPA closure or closed-loop planning evidence.
 
+Protocol v2 moves the unchanged deterministic seed helper before the simulator
+preflight after v1 stopped before its first control fit. No v1 model outcome or
+locked statistic was observed.
+
 Follow `../STAGE37_RUN_GUIDE.md`. No prior result directory is required.
 
 ## Stage 36 predictive-state closure distillation

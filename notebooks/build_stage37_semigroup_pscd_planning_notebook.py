@@ -45,6 +45,18 @@ def rename(value: str) -> str:
 
 introduction = r'''# Stage 37: semigroup-regularized PSCD and open-loop planning value
 
+## V2 simulator-preflight helper-order repair
+
+The source-bound v1 run completed all 288 registered simulator-truth records
+and selected every 16/16/16/24 physical trajectory family, then stopped before
+the first simulator-control fit because `stable_seed` was defined in the next
+JEPA-construction cell rather than in the preceding analysis-helper cell. JEPA
+was never loaded, GPU allocation remained zero, no adapter was fit, and locked
+evaluation was never opened. V2 moves the unchanged deterministic seed helper
+before its first use and adds an ordered-namespace validator. It changes no
+trajectory, action word, seed value, architecture, loss, threshold, control,
+gate, or claim.
+
 ## Frozen decision before computation
 
 Stage 36 was the first complete finite-history predictive-state result.  Its
@@ -93,7 +105,7 @@ Those remain later confirmatory experiments.
 configuration = rename(STAGE36.configuration)
 for name, value in {
     "EXPERIMENT_SOURCE_REF": '"codex/stage34-predictive-fiber-abstraction"',
-    "PROTOCOL_ID": '"stage37-semigroup-pscd-planning-v1"',
+    "PROTOCOL_ID": '"stage37-semigroup-pscd-planning-v2"',
     "NOTEBOOK_PROTOCOL_SHA256": '"__PROTOCOL_DIGEST__"',
     "EVIDENCE_STATUS": '"FRESH_PROSPECTIVE_SEMIGROUP_REPAIR_AND_PLANNING_TEST"',
     "EXPERIMENT_NOTEBOOK_PATH": '"notebooks/37_semigroup_pscd_planning_value.ipynb"',
@@ -232,6 +244,10 @@ _legacy_end = configuration.index(_legacy_end_marker, _legacy_start) + len(
 configuration = configuration[:_legacy_start] + configuration[_legacy_end:]
 configuration += r'''
 
+V2_PREFLIGHT_HELPER_ORDER_AMENDMENT = True
+V2_V1_SCIENTIFIC_OUTCOMES_OBSERVED = False
+V2_V1_JEPA_LOADED = False
+V2_V1_LOCKED_EVALUATION_OPENED = False
 MAX_CARRIER_PROJECTION_DIM = 256
 FIXED_CARRIER_DIM = 256
 FIXED_HISTORY_LENGTH = 4
@@ -296,6 +312,7 @@ configuration = re.sub(
     "not_native_jepa_closure", "not_minimal_state", "observational_not_causal",
     "hash_validated_resume", "transient_drive_and_http_retries",
     "no_synthetic_fallback", "no_required_colab_secret",
+    "v2_preflight_helper_order_only_no_scientific_change",
 ]
 
 assert INTERVENTION_BLOCK''',
@@ -322,8 +339,12 @@ stage37_helpers = [
     "terminal_values", "goal_cost",
     "grouped_planner_metrics", "Stage37Gates", "derive_stage37_decision",
 ]
-analysis_helpers = STAGE36.analysis_helpers + "\n\n" + function_sources(
-    NUMERICAL.read_text(), stage37_helpers
+analysis_helpers = (
+    STAGE36.analysis_helpers
+    + "\n\n"
+    + function_sources(STAGE36.NUMERICAL.read_text(), ["stable_seed"])
+    + "\n\n"
+    + function_sources(NUMERICAL.read_text(), stage37_helpers)
 )
 analysis_helpers = analysis_helpers.replace(
     "class Stage37Gates:\n", "@dataclass(frozen=True)\nclass Stage37Gates:\n"

@@ -2,6 +2,13 @@
 
 Notebook: `notebooks/37_semigroup_pscd_planning_value.ipynb`
 
+Version 2 repairs the v1 simulator-preflight helper-order failure. V1 completed
+all simulator truth and physical trajectory selection, then stopped before the
+first control fit because `stable_seed` was defined one cell after its first
+use. JEPA was never loaded and no scientific statistic was observed. V2 moves
+that unchanged helper before the preflight and adds ordered-namespace testing;
+the scientific protocol is unchanged.
+
 Stage 37 is a fresh follow-up to the complete Stage 36 result. It freezes the
 selected Stage 36 JEPA carrier width, history length, latent width, and mixture
 dynamics, then screens only the strength of a new multi-anchor semigroup loss.
