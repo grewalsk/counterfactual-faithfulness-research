@@ -157,7 +157,7 @@ def validate():
     configuration_tree = ast.parse(code_cells[0])
     expected = {
         "RUN_MODE": "pilot",
-        "PROTOCOL_ID": "stage36-predictive-state-closure-distillation-v6",
+        "PROTOCOL_ID": "stage36-predictive-state-closure-distillation-v7",
         "EVIDENCE_STATUS": "FRESH_PROSPECTIVE_JEPA_ONLY_ADAPTER_CLOSURE_TEST",
         "MODEL_NAMES": ["jepa_wm_pusht"],
         "MAX_WORD_LENGTH": 12,
@@ -202,6 +202,12 @@ def validate():
     assert configuration_namespace["CARRIER_PROJECTION_DIMS"] == [256, 1024]
     assert configuration_namespace["HISTORY_LENGTHS"] == [1, 2, 4]
     assert configuration_namespace["DYNAMICS_FAMILIES"] == ["single", "mixture"]
+    assert min(map(len, configuration_namespace["MODEL_SELECTION_WORD_NAMES"])) > max(
+        configuration_namespace["HISTORY_LENGTHS"]
+    )
+    assert min(map(len, configuration_namespace["CALIBRATION_WORD_NAMES"])) < max(
+        configuration_namespace["HISTORY_LENGTHS"]
+    )
 
     all_code = "\n".join(code_cells)
     required = [
@@ -239,6 +245,12 @@ def validate():
         "unregistered Stage 36 transition words",
         "v6_executed_cell_provenance_header_no_scientific_change",
         '"v6_execution_provenance_header_amendment": True',
+        "v7_mixed_length_warmup_and_idempotent_packaging_no_gate_change",
+        '"v7_mixed_length_warmup_mask_amendment": True',
+        '"v7_idempotent_packaging_amendment": True',
+        "at least one sequence must extend beyond the history warmup",
+        'if path.name == "result_zip_manifest.json":',
+        "remove stale packaging manifest",
     ]
     for fragment in required:
         assert fragment in all_code, f"missing Stage 36 fragment: {fragment}"
@@ -538,6 +550,92 @@ def validate():
     assert history.shape == (2, 2, 2, 1)
     evaluation_mask = analysis_namespace["rollout_evaluation_mask"](mask, 2)
     assert not np.any(evaluation_mask[:, 0]) and np.all(evaluation_mask[:, 1])
+    mixed_lengths = np.asarray([1, 2, 3, 4, 5, 8])
+    mixed_mask = np.arange(8)[None, :] < mixed_lengths[:, None]
+    mixed_evaluation = analysis_namespace["rollout_evaluation_mask"](mixed_mask, 4)
+    np.testing.assert_array_equal(
+        np.sum(mixed_evaluation, axis=1), np.asarray([0, 0, 0, 1, 2, 5])
+    )
+    try:
+        analysis_namespace["rollout_evaluation_mask"](mixed_mask[:3], 4)
+    except ValueError as error:
+        assert "at least one sequence" in str(error)
+    else:
+        raise AssertionError("an entirely ineligible warmup panel was accepted")
+
+    # Execute the exact idempotent packaging cell with stale manifests and a
+    # stale staging directory. The rebuilt file list must never hash itself.
+    packaging_source = code_cells[11]
+    assert packaging_source.count('staging = OUT / "_result_staging"') == 1
+    assert packaging_source.index("remove stale packaging manifest") < (
+        packaging_source.index("RAW_MANIFEST = manifest_rows")
+    )
+
+    def local_write_json(path, payload):
+        path.write_text(json.dumps(payload, indent=2) + "\n")
+
+    def local_sha256(path):
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+
+    def local_manifest_rows(root, excluded_roots=()):
+        rows = []
+        for path in sorted(root.rglob("*")):
+            if not path.is_file():
+                continue
+            if any(base == path or base in path.parents for base in excluded_roots):
+                continue
+            rows.append({
+                "path": str(path.relative_to(root)),
+                "bytes": path.stat().st_size,
+                "sha256": local_sha256(path),
+            })
+        return rows
+
+    with tempfile.TemporaryDirectory(prefix="stage36-packaging-") as directory:
+        packaging_out = Path(directory)
+        truth_dir = packaging_out / "truth"
+        path_dir = packaging_out / "model_paths"
+        asset_dir = packaging_out / "assets"
+        for folder in [truth_dir, path_dir, asset_dir]:
+            folder.mkdir()
+        (packaging_out / "FAILURE_TRACE.txt").write_text("test failure\n")
+        (packaging_out / "raw_manifest.json").write_text("stale raw\n")
+        (packaging_out / "result_zip_manifest.json").write_text("stale result\n")
+        stale_staging = packaging_out / "_result_staging"
+        stale_staging.mkdir()
+        (stale_staging / "stale.txt").write_text("stale\n")
+        packaging_namespace = {
+            "TIMINGS": {},
+            "time": __import__("time"),
+            "RUN_STARTED_AT": __import__("time").time(),
+            "write_json": local_write_json,
+            "memory_report": lambda *_: None,
+            "PIPELINE_FAILED": True,
+            "OUT": packaging_out,
+            "TRUTH_DIR": truth_dir,
+            "PATH_DIR": path_dir,
+            "ASSET_DIR": asset_dir,
+            "retry_drive_io": lambda _label, operation: operation(),
+            "manifest_rows": local_manifest_rows,
+            "sha256_file": local_sha256,
+            "shutil": __import__("shutil"),
+            "Path": Path,
+            "RUN_SIGNATURE": "validator1234567890",
+            "DECISION_PAYLOAD": {"status": "INCONCLUSIVE_PIPELINE_FAILURE"},
+            "PROVENANCE_COUNTS": {},
+            "VERSIONS": {"gpu": "local-validator"},
+            "DOWNLOAD_RESULTS": False,
+            "json": json,
+        }
+        exec(compile(packaging_source, "<stage36-packaging-test>", "exec"), packaging_namespace)
+        rebuilt_manifest = json.loads(
+            (packaging_out / "result_zip_manifest.json").read_text()
+        )
+        packaged_paths = [row["path"] for row in rebuilt_manifest]
+        assert "result_zip_manifest.json" not in packaged_paths
+        assert not any(value.startswith("_result_staging/") for value in packaged_paths)
+        for row in rebuilt_manifest:
+            assert local_sha256(packaging_out / row["path"]) == row["sha256"]
 
     # Execute the real split-specific truth coverage contract.  This checks
     # every active truth consumer and reproduces the v2 failure schema before a

@@ -76,6 +76,15 @@ def next_history_tensor(histories: ArrayLike, targets: ArrayLike) -> FloatArray:
 
 
 def rollout_evaluation_mask(mask: ArrayLike, history_length: int) -> NDArray[np.bool_]:
+    """Mask post-warmup steps while permitting ineligible short sequences.
+
+    A mixed-length panel can legitimately contain short action words that
+    contribute to one-step fitting but have no transition after a selected
+    finite-history warmup.  Those rows remain all-false; pooled calibration
+    statistics use the eligible rows.  A panel with no eligible step at all is
+    still invalid.
+    """
+
     valid = np.asarray(mask, dtype=bool)
     if valid.ndim != 2:
         raise ValueError("mask must be a sequence matrix")
@@ -84,8 +93,8 @@ def rollout_evaluation_mask(mask: ArrayLike, history_length: int) -> NDArray[np.
         raise ValueError("history_length must be positive")
     result = valid.copy()
     result[:, : history - 1] = False
-    if np.any(np.sum(result, axis=1) < 1):
-        raise ValueError("every sequence must extend beyond the history warmup")
+    if not np.any(result):
+        raise ValueError("at least one sequence must extend beyond the history warmup")
     return result
 
 

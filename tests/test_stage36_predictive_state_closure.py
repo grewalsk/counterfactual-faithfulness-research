@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from cf_faithfulness.stage36_predictive_state_closure import (
     Stage36Gates,
@@ -47,6 +48,31 @@ def test_history_construction_and_control_keep_current_slot():
     assert np.any(permuted[:, :, 0] != history[:, :, 0])
     evaluation = rollout_evaluation_mask(mask, 3)
     assert not np.any(evaluation[:, :2]) and np.all(evaluation[:, 2:])
+
+
+def test_four_step_rollout_accepts_mixed_short_calibration_words():
+    initial, action, carrier, physical, mask, _ = synthetic_delayed_system(
+        sequences=8, steps=7
+    )
+    lengths = np.asarray([1, 2, 3, 4, 5, 6, 7, 7])
+    mixed_mask = np.arange(mask.shape[1])[None, :] < lengths[:, None]
+    artifact = fit_predictive_state_closure(
+        initial, action, carrier, physical, mixed_mask,
+        history_length=4, latent_dim=8, dynamics="single", epochs=2,
+        learning_rate=3e-3, seed=3607, device="cpu",
+    )
+    result = rollout_predictive_state_closure(
+        artifact, initial, action, carrier, mixed_mask, device="cpu"
+    )
+    np.testing.assert_array_equal(
+        np.sum(result["evaluation_mask"], axis=1),
+        np.asarray([0, 0, 0, 1, 2, 3, 4, 4]),
+    )
+    assert np.all(np.isfinite(result["carrier"]))
+    with pytest.raises(
+        ValueError, match="at least one sequence must extend beyond the history warmup"
+    ):
+        rollout_evaluation_mask(mixed_mask[:3], 4)
 
 
 def test_small_predictive_state_model_trains_and_rolls_out_on_cpu():

@@ -1,5 +1,22 @@
 # Stage 36 protocol: predictive-state closure distillation
 
+## V7 implementation amendment
+
+The source-bound v6 run completed all 24 registered model-selection fits. On
+the disjoint length-5--8 bank it selected a 256-coordinate, four-step-history,
+128-state mixture adapter with validation score 0.5366863790. It stopped during
+the pre-evaluation calibration freeze because the post-warmup mask required
+every sequence to remain eligible, while the registered mixed-length
+calibration bank intentionally contains length-1--3 words. V7 retains short
+words for teacher-forced one-step fitting, masks them out of pooled recursive
+calibration statistics, and still fails if the entire panel has no eligible
+post-warmup step. Every model-selection word is at least length five, so the v6
+selection scores and ordering are unaffected. V7 also clears stale packaging
+manifests and staging state before recreating them, preventing a resumed run
+from listing an old result manifest as its own hash input. Locked evaluation
+was not opened, and no candidate, threshold, control, split, gate, or claim
+changes.
+
 ## V6 implementation amendment
 
 The source-bound v5 run completed physical truth, selected simulator response

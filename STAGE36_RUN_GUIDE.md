@@ -1,5 +1,14 @@
 # Stage 36 predictive-state closure distillation Colab run guide
 
+Version 7 repairs the v6 mixed-length calibration warmup failure. V6 validly
+selected the 256-coordinate, four-step-history, 128-state mixture candidate on
+the disjoint length-5--8 model-selection bank, then stopped before locked
+evaluation because registered length-1--3 calibration words have no recursive
+step after a four-step warmup. V7 keeps those rows available for one-step
+fitting while excluding them from pooled post-warmup calibration statistics.
+It also rebuilds packaging manifests and staging from a clean state so resumed
+runs cannot include a stale result manifest in its own hash list.
+
 Version 6 repairs the v5 model-selection provenance-header failure. The v5 run
 successfully completed the registered `A` preflight, construction decoder, and
 all 192 pre-evaluation JEPA prefix paths, then stopped before fitting the first

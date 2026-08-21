@@ -29,6 +29,26 @@ replace_block = STAGE35.replace_block
 
 introduction = r'''# Stage 36: predictive-state closure distillation
 
+## V7 mixed-length warmup and resumable-packaging repair
+
+The source-bound v6 pilot completed all pre-evaluation JEPA paths and all 24
+registered PSCD model-selection fits.  On the disjoint length-5--8 selection
+bank it selected the 256-coordinate, four-step-history, 128-state mixture
+candidate with validation score 0.5366863790.  It then stopped during the
+pre-evaluation calibration freeze because the warmup-mask helper incorrectly
+required every sequence to have a post-warmup step.  The registered mixed-
+length calibration bank intentionally includes length-1--3 words, which remain
+useful for one-step fitting but cannot contribute a recursive metric after a
+four-step warmup.  V7 permits those rows to remain masked while requiring at
+least one eligible post-warmup step in the pooled panel.  This does not alter
+v6 selection because every model-selection word has length at least five.
+
+V7 also makes result packaging idempotent by deleting stale packaging
+manifests and staging state before rebuilding them.  The resumed v6 packaging
+attempt otherwise included the previous `result_zip_manifest.json` in its own
+file list, creating an impossible self-hash.  Locked evaluation was never
+opened.  No candidate, threshold, control, split, gate, or claim changes.
+
 ## V6 executed-cell provenance-header repair
 
 The source-bound v5 pilot completed all 320 physical-truth records, selected
@@ -183,7 +203,7 @@ for old, new in [
 
 for name, value in {
     "EXPERIMENT_SOURCE_REF": '"codex/stage34-predictive-fiber-abstraction"',
-    "PROTOCOL_ID": '"stage36-predictive-state-closure-distillation-v6"',
+    "PROTOCOL_ID": '"stage36-predictive-state-closure-distillation-v7"',
     "NOTEBOOK_PROTOCOL_SHA256": '"__PROTOCOL_DIGEST__"',
     "EVIDENCE_STATUS": '"FRESH_PROSPECTIVE_JEPA_ONLY_ADAPTER_CLOSURE_TEST"',
     "MAX_ESTIMATED_TOTAL_MINUTES": "360.0",
@@ -373,6 +393,7 @@ configuration = re.sub(
     "v4_retryable_exact_source_binding_no_scientific_change",
     "v5_registered_action_vocabulary_no_model_outcome_change",
     "v6_executed_cell_provenance_header_no_scientific_change",
+    "v7_mixed_length_warmup_and_idempotent_packaging_no_gate_change",
 ]
 
 assert INTERVENTION_BLOCK''',
@@ -607,6 +628,15 @@ design_and_runtime_helpers = design_and_runtime_helpers.replace(
     '    "v6_execution_provenance_header_amendment": True,\n'
     '    "v6_pscd_selection_observed_before_amendment": False,\n'
     '    "v6_locked_evaluation_observed_before_amendment": False,\n',
+)
+design_and_runtime_helpers = design_and_runtime_helpers.replace(
+    '    "v6_locked_evaluation_observed_before_amendment": False,\n',
+    '    "v6_locked_evaluation_observed_before_amendment": False,\n'
+    '    "v7_mixed_length_warmup_mask_amendment": True,\n'
+    '    "v7_idempotent_packaging_amendment": True,\n'
+    '    "v7_v6_model_selection_observed": True,\n'
+    '    "v7_v6_selected_history_length": 4,\n'
+    '    "v7_locked_evaluation_observed_before_amendment": False,\n',
 )
 
 
@@ -1373,6 +1403,36 @@ for old, new in [
     ("Stage 35", "Stage 36"), ("stage35", "stage36"), ("hpcc", "pscd"),
 ]:
     packaging = packaging.replace(old, new)
+packaging = packaging.replace(
+    "raw_roots = [TRUTH_DIR, PATH_DIR]",
+    '''staging = OUT / "_result_staging"
+if staging.exists():
+    retry_drive_io("remove stale result staging", lambda: shutil.rmtree(staging))
+for stale_manifest in [OUT / "raw_manifest.json", OUT / "result_zip_manifest.json"]:
+    retry_drive_io(
+        f"remove stale packaging manifest {stale_manifest.name}",
+        lambda target=stale_manifest: target.unlink(missing_ok=True),
+    )
+
+raw_roots = [TRUTH_DIR, PATH_DIR]''',
+)
+packaging = packaging.replace(
+    '''    if path.name.startswith("stage36_pscd_result_bundle_"):
+        continue
+    compact_files.append(path)''',
+    '''    if path.name.startswith("stage36_pscd_result_bundle_"):
+        continue
+    if path.name == "result_zip_manifest.json":
+        continue
+    compact_files.append(path)''',
+)
+packaging = packaging.replace(
+    '''staging = OUT / "_result_staging"
+if staging.exists():
+    shutil.rmtree(staging)
+staging.mkdir()''',
+    '''staging.mkdir()''',
+)
 
 
 protocol_sources = [
