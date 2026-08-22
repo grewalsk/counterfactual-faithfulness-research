@@ -1,5 +1,19 @@
 # Colab instructions
 
+## Stage 37.1 horizon-matched true-state operator calibration
+
+Notebook: `37_1_horizon_matched_operator_calibration.ipynb`
+
+Stage 37.1 is a simulator-only calibration prompted by Stage 37's failed
+length-9--12 true-state control. All four splits now use disjoint words of
+lengths 9--12. The selected semigroup/free-running operator is evaluated
+against persistence, a same-initialization zero-semigroup control, and a
+one-step-only control before any new JEPA panel is authorized. It cannot emit a
+JEPA, planning, representation, or causal claim.
+
+Follow `../STAGE37_1_RUN_GUIDE.md`. No prior result directory or checkpoint
+token is required.
+
 ## Stage 37 semigroup-regularized PSCD and planning value
 
 Notebook: `37_semigroup_pscd_planning_value.ipynb`
