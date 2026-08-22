@@ -1,5 +1,18 @@
 # Colab instructions
 
+## Stage 38 cross-model PSCD confirmation
+
+Notebook: `38_cross_model_pscd_confirmation.ipynb`
+
+Stage 38 tests the post-hoc PSCD framework on fresh, horizon-matched PushT
+panels from both frozen JEPA-WM and DINO-WM. Three matched-seed repetitions
+compare one-step, free-running PSCD, latent-only overshooting, and full S-PSCD.
+The planning bank remains sealed unless both representation closure panels
+pass. A positive result is one-environment post-hoc repair evidence, not native
+checkpoint closure or a causal claim.
+
+Follow `../STAGE38_RUN_GUIDE.md`. No prior result directory is consumed.
+
 ## Stage 37.1 horizon-matched true-state operator calibration
 
 Notebook: `37_1_horizon_matched_operator_calibration.ipynb`

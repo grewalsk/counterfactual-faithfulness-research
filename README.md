@@ -108,6 +108,10 @@ downloaded Colab result bundles.
 - `docs/STAGE36_PREDICTIVE_STATE_CLOSURE_DISTILLATION_PROTOCOL.md` — frozen-JEPA
   distillation of a finite-history recurrent predictive state with explicit
   free-running, semigroup, Markov, one-step, and false-history controls.
+- `STAGE37_RUN_GUIDE.md` and `STAGE37_1_RUN_GUIDE.md` — semigroup PSCD follow-up
+  and the horizon-matched exact-state measuring-instrument calibration.
+- `STAGE38_RUN_GUIDE.md` — fresh cross-model confirmation of post-hoc PSCD on
+  frozen JEPA-WM and DINO-WM, with matched-seed controls and gated planning.
 - `STAGE27_RUN_GUIDE.md` — no-secret Colab handoff for the source-bound finite
   action-commutator experiment.
 - `STAGE29_RUN_GUIDE.md` — no-secret native target-latent closure test that
