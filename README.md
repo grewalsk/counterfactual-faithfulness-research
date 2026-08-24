@@ -1,5 +1,11 @@
 # Counterfactual action faithfulness — Stage 0
 
+Stage 38.1 adds a development-only coefficient-matched audit and conditional
+event/reset diagnostic for the Stage 38 cross-model PSCD result. See
+`STAGE38_1_RUN_GUIDE.md` and
+`notebooks/38_1_coefficient_matched_hybrid_audit.ipynb`. It does not open
+Stage 39 or planning and cannot consume Stage 38 locked evaluation artifacts.
+
 This package implements and tests a simulator-only protocol for asking:
 
 > From an identical simulator state, does an action-conditioned world model

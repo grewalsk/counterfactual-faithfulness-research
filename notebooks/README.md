@@ -1,5 +1,21 @@
 # Colab instructions
 
+## Stage 38.1 coefficient-matched and hybrid closure audit
+
+Notebook: `38_1_coefficient_matched_hybrid_audit.ipynb`
+
+Stage 38.1 is a development-only, sequential audit of the Stage 38 failure. It
+first compares full S-PSCD with latent-only overshooting at exactly matched
+latent pressure using construction-only refits and untouched calibration
+scoring. Only a two-model Tier A pass opens an oracle event/reset ceiling,
+label-free hybrid, parameter-matched smooth, and shuffled-supervision controls;
+family-risk training remains additionally gated. The notebook reuses verified
+Stage 38 development carrier shards but cannot read evaluation or planning
+artifacts.
+
+Follow `../STAGE38_1_RUN_GUIDE.md`. The complete Stage 38 Drive run
+`pilot_ceb85af5b4b9` is required; its compact downloaded bundle is insufficient.
+
 ## Stage 38 cross-model PSCD confirmation
 
 Notebook: `38_cross_model_pscd_confirmation.ipynb`
