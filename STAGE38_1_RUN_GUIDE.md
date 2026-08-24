@@ -8,6 +8,12 @@ the exact construction, model-selection, and calibration carrier shards from
 source-bound Stage 38 run `ceb85af5b4b9`. It never reads Stage 38 evaluation
 rows, evaluation carrier shards, decisions, or planning artifacts.
 
+This is protocol v2. Protocol v1 run `0b09871c37cc` completed all 16
+construction-only Tier A screening fits, then stopped at the first calibration
+decision because the generated notebook had lost the `@dataclass` decorator on
+`TierAGates`. V2 restores and execution-tests both gate dataclasses before a
+notebook can be committed.
+
 ## Required Drive source
 
 Keep this complete resumable directory from the successful Stage 38 run:
@@ -22,6 +28,20 @@ Stage 38 protocol, run signature, source commit, development trajectory
 manifests, every reused shard identity, and every reused shard hash before
 training.
 
+Keep this complete v1 Stage 38.1 Drive directory as well:
+
+```text
+MyDrive/counterfactual_faithfulness_stage38_1_cmha/pilot_0b09871c37cc/
+```
+
+V2 may migrate only the 16 completed construction-only screening artifacts
+from that exact run. It verifies the v1 protocol, run signature, source commit,
+failure boundary, checkpoint, objective configuration, array/schema hashes,
+and finite parameters. It refuses migration if any persisted v1 calibration
+decision exists. Every migrated model receives a hash-bound receipt in the v2
+run directory; no calibration outcome is imported. If the directory is absent,
+V2 safely refits those models.
+
 ## Run
 
 1. Open the notebook from the committed repository branch.
@@ -31,7 +51,9 @@ training.
 4. Select **Runtime → Run all** and authorize Google Drive.
 5. Do not edit cells, run cells out of order, or point the notebook at another
    Stage 38 directory.
-6. Return `stage381_cmha_result_bundle_<signature>.zip`.
+6. Keep `pilot_0b09871c37cc` in place so the notebook can reuse the finished
+   screening fits rather than spend another 1–2 GPU-hours retraining them.
+7. Return `stage381_cmha_result_bundle_<signature>.zip`.
 
 The resumable output directory is:
 
@@ -64,6 +86,8 @@ opened only if the no-tail structural hybrid passes.
 ## Expected time
 
 - Tier A screening on G4 Blackwell: approximately 1–2 GPU-hours.
+- Repaired v2 with the verified v1 cache: the 16 screening fits are imported;
+  only calibration scoring and conditionally opened work remain.
 - Conditional third seed: included in the upper end of that estimate.
 - Tier B oracle and controls, if opened: another 2–4 GPU-hours.
 - Full conservative reservation: 4–6 G4 hours or roughly 6–10 L4 hours.

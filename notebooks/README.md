@@ -15,6 +15,9 @@ artifacts.
 
 Follow `../STAGE38_1_RUN_GUIDE.md`. The complete Stage 38 Drive run
 `pilot_ceb85af5b4b9` is required; its compact downloaded bundle is insufficient.
+Protocol v2 also recognizes the exact failed v1 run `pilot_0b09871c37cc` and
+can hash-verify and migrate its 16 completed construction-only Tier A fits.
+It imports no calibration outcomes and otherwise refits normally.
 
 ## Stage 38 cross-model PSCD confirmation
 

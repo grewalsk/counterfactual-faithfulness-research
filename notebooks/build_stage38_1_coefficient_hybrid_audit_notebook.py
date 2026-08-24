@@ -38,6 +38,23 @@ def rename(value: str) -> str:
 
 introduction = r'''# Stage 38.1: coefficient-matched and hybrid closure audit
 
+## V2 rendered-dataclass and cache-migration repair
+
+The source-bound v1 run verified all 512 Stage 38 development shards and
+completed all sixteen registered two-seed Tier A construction fits.  It then
+stopped while constructing the first calibration decision because the notebook
+builder copied the `TierAGates` and `TierBGates` class bodies without their
+`@dataclass(frozen=True)` decorators.  No Tier A decision was emitted, the
+precommitted third seed did not run, and Tier B remained sealed.  V2 restores
+both decorators and makes the validator instantiate the rendered classes.
+
+V2 may migrate only the sixteen v1 construction-only screening artifacts from
+exact run `0b09871c37cc`.  Migration requires their array/schema hashes,
+sidecars, protocol identity, objective coefficients, seeds, epochs, dimensions,
+and finite parameters to match.  It reads no v1 calibration statistic or Stage
+38 evaluation artifact.  A missing cache is refit normally; an invalid cache is
+rejected rather than silently trusted.
+
 ## Decision before computation
 
 Stage 38 established a valid negative/diagnostic result on frozen JEPA-WM and
@@ -83,9 +100,9 @@ configuration = configuration.replace(
     1,
 )
 for name, value in {
-    "PROTOCOL_ID": '"stage38.1-coefficient-matched-hybrid-audit-v1"',
+    "PROTOCOL_ID": '"stage38.1-coefficient-matched-hybrid-audit-v2"',
     "NOTEBOOK_PROTOCOL_SHA256": '"__PROTOCOL_DIGEST__"',
-    "EVIDENCE_STATUS": '"DEVELOPMENT_ONLY_COEFFICIENT_AND_EVENT_DIAGNOSTIC"',
+    "EVIDENCE_STATUS": '"V2_RENDERED_DATACLASS_REPAIR_WITH_HASH_BOUND_TIER_A_MIGRATION"',
     "EXPERIMENT_NOTEBOOK_PATH": '"notebooks/38_1_coefficient_matched_hybrid_audit.ipynb"',
     "EXPERIMENT_BUILDER_PATH": '"notebooks/build_stage38_1_coefficient_hybrid_audit_notebook.py"',
     "EXPERIMENT_NUMERICAL_PATH": '"src/cf_faithfulness/stage38_1_coefficient_hybrid_audit.py"',
@@ -102,6 +119,7 @@ configuration = re.sub(
     r"PINNED = \[.*?\]\n\nassert INTERVENTION_BLOCK",
     '''PINNED = [
     "exact_stage38_ceb85af5b4b9_development_shards_only",
+    "exact_v1_0b09871c37cc_construction_model_migration_only",
     "construction_only_refits_and_calibration_only_scoring",
     "mass_matched_and_coefficient_matched_overshooting_controls",
     "two_seed_screen_and_precommitted_conditional_third_seed",
@@ -130,6 +148,10 @@ SOURCE_STAGE38_RUN_DIR = "/content/drive/MyDrive/counterfactual_faithfulness_sta
 SOURCE_STAGE38_PROTOCOL_ID = "stage38-cross-model-pscd-confirmation-v1"
 SOURCE_STAGE38_RUN_SIGNATURE = "ceb85af5b4b90ad3a3cecb3da5a7fa1d2eea597b13040a01f55ecc713227740a"
 SOURCE_STAGE38_COMMIT = "a7ed07e2e79bc4da77e022f7765239b260bff35c"
+LEGACY_STAGE381_RUN_DIR = "/content/drive/MyDrive/counterfactual_faithfulness_stage38_1_cmha/pilot_0b09871c37cc"
+LEGACY_STAGE381_PROTOCOL_ID = "stage38.1-coefficient-matched-hybrid-audit-v1"
+LEGACY_STAGE381_RUN_SIGNATURE = "0b09871c37ccd3487f58df8ccda13b8c468877af27f32b176894de513c321915"
+LEGACY_STAGE381_SOURCE_COMMIT = "d570ce091cc4c22e7a76cb91fce7a782484ac616"
 DEVELOPMENT_SPLITS = ["construction", "model_selection", "calibration"]
 EVALUATION_ACCESS_PERMITTED = False
 PLANNING_ACCESS_PERMITTED = False
@@ -207,6 +229,16 @@ analysis_helpers = analysis_helpers.replace(
     "# Tested coefficient audit, event/reset controls, metrics, and decisions.",
     1,
 )
+analysis_helpers = analysis_helpers.replace(
+    "class TierAGates:\n", "@dataclass(frozen=True)\nclass TierAGates:\n", 1
+).replace(
+    "class TierBGates:\n", "@dataclass(frozen=True)\nclass TierBGates:\n", 1
+)
+if (
+    analysis_helpers.count("@dataclass(frozen=True)\nclass TierAGates:") != 1
+    or analysis_helpers.count("@dataclass(frozen=True)\nclass TierBGates:") != 1
+):
+    raise RuntimeError("Stage 38.1 rendered gate decorators were not restored exactly once")
 
 
 source_binding = r'''# Bind only the three Stage 38 development shard families.
@@ -447,11 +479,29 @@ ARTIFACT_DIR = OUT / "frozen_models"
 ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
 TIER_A_MODELS = {short: {} for short in ["jepa", "dino"]}
 TIER_A_DIAGNOSTICS = []
+LEGACY_MIGRATION_ROOT = Path(LEGACY_STAGE381_RUN_DIR)
+LEGACY_MIGRATION_AVAILABLE = LEGACY_MIGRATION_ROOT.is_dir()
+LEGACY_MIGRATION_VERIFIED = False
+LEGACY_IMPORT_ROWS = []
 
 
 def stage381_artifact_paths(short, tier, variant, seed):
     stem = ARTIFACT_DIR / f"stage381_{short}_{tier}_{variant}_seed{int(seed)}"
     return Path(str(stem) + ".npz"), Path(str(stem) + "_schema.json")
+
+
+def stage381_migration_receipt_path(short, variant, seed):
+    return ARTIFACT_DIR / f"stage381_{short}_tier_a_{variant}_seed{int(seed)}_migration.json"
+
+
+def record_legacy_import(row):
+    identity = (row["model"], row["variant"], int(row["seed"]))
+    existing = {
+        (item["model"], item["variant"], int(item["seed"]))
+        for item in LEGACY_IMPORT_ROWS
+    }
+    if identity not in existing:
+        LEGACY_IMPORT_ROWS.append(dict(row))
 
 
 def encode_artifact(value, arrays):
@@ -512,7 +562,82 @@ def load_stage381_artifact(short, tier, variant, seed):
         raise RuntimeError(f"Stage 38.1 artifact binding failed: {short}/{tier}/{variant}/{seed}")
     with np.load(array_path, allow_pickle=False) as payload:
         arrays = {key: payload[key] for key in payload.files}
-    return decode_artifact(metadata["schema"], arrays)
+    artifact = decode_artifact(metadata["schema"], arrays)
+    if tier == "tier_a":
+        receipt_path = stage381_migration_receipt_path(short, variant, seed)
+        if receipt_path.is_file() and Path(str(receipt_path) + ".sha256").is_file():
+            validate_digest_sidecar(receipt_path)
+            receipt = json.loads(receipt_path.read_text())
+            if (
+                receipt.get("protocol_id") != PROTOCOL_ID
+                or receipt.get("run_signature") != RUN_SIGNATURE
+                or receipt.get("model") != short
+                or receipt.get("variant") != variant
+                or int(receipt.get("seed", -1)) != int(seed)
+                or receipt.get("current_array_sha256") != sha256_file(array_path)
+                or receipt.get("current_schema_sha256") != sha256_file(schema_path)
+            ):
+                raise RuntimeError(f"migration receipt binding failed: {short}/{variant}/{seed}")
+            record_legacy_import(receipt)
+    return artifact
+
+
+def validate_legacy_migration_root():
+    required = {
+        "config": LEGACY_MIGRATION_ROOT / "config.json",
+        "identity": LEGACY_MIGRATION_ROOT / "source_identity.json",
+        "failure": LEGACY_MIGRATION_ROOT / "FAILURE_TRACE.txt",
+        "decision": LEGACY_MIGRATION_ROOT / "stage381_decision.json",
+        "checkpoint": LEGACY_MIGRATION_ROOT / "checkpoints/stage381_tier_a_screening_models.json",
+    }
+    if not all(path.is_file() for path in required.values()):
+        raise RuntimeError("the v1 Stage 38.1 migration root is incomplete")
+    old_config = json.loads(required["config"].read_text())
+    old_identity = json.loads(required["identity"].read_text())
+    old_decision = json.loads(required["decision"].read_text())
+    old_checkpoint = json.loads(required["checkpoint"].read_text())
+    failure = required["failure"].read_text()
+    if (
+        old_config.get("PROTOCOL_ID") != LEGACY_STAGE381_PROTOCOL_ID
+        or old_config.get("run_signature") != LEGACY_STAGE381_RUN_SIGNATURE
+        or old_identity.get("resolved_commit") != LEGACY_STAGE381_SOURCE_COMMIT
+        or old_identity.get("status") != "SOURCE_BOUND_EXECUTION_VERIFIED"
+        or old_decision.get("status") != "INCONCLUSIVE_PIPELINE_FAILURE"
+        or old_decision.get("evaluation_rows_read") != 0
+        or old_decision.get("planning_rows_read") != 0
+        or old_checkpoint.get("protocol_id") != LEGACY_STAGE381_PROTOCOL_ID
+        or old_checkpoint.get("run_signature") != LEGACY_STAGE381_RUN_SIGNATURE
+    ):
+        raise RuntimeError("the v1 Stage 38.1 migration binding changed")
+    payload = old_checkpoint.get("payload", {})
+    if (
+        payload.get("seeds") != SCREENING_SEEDS
+        or payload.get("models") != 2
+        or payload.get("variants_per_model_seed") != len(TIER_A_VARIANTS)
+        or payload.get("training_split") != "construction"
+        or payload.get("calibration_rows_read_during_fit") != 0
+    ):
+        raise RuntimeError("the v1 Stage 38.1 training-only checkpoint changed")
+    if (
+        "STAGE: stage381_tier_a_decision" not in failure
+        or "TypeError: TierAGates() takes no arguments" not in failure
+    ):
+        raise RuntimeError("the v1 Stage 38.1 failure boundary changed")
+    forbidden_outputs = [
+        LEGACY_MIGRATION_ROOT / "tier_a_decision.json",
+        LEGACY_MIGRATION_ROOT / "evaluation_evidence/tier_a_calibration_rows.csv",
+        LEGACY_MIGRATION_ROOT / "evaluation_evidence/tier_a_final_decisions.json",
+    ]
+    if any(path.exists() for path in forbidden_outputs):
+        raise RuntimeError("v1 calibration outcomes exist; migration is no longer construction-only")
+    return {
+        "legacy_protocol_id": LEGACY_STAGE381_PROTOCOL_ID,
+        "legacy_run_signature": LEGACY_STAGE381_RUN_SIGNATURE,
+        "legacy_source_commit": LEGACY_STAGE381_SOURCE_COMMIT,
+        "failure_boundary": "TierAGates constructor before any persisted calibration decision",
+        "calibration_outcomes_imported": 0,
+        "evaluation_rows_imported": 0,
+    }
 
 
 def tier_a_objective(short, variant):
@@ -538,10 +663,86 @@ def tier_a_objective(short, variant):
     return table[str(variant)]
 
 
+def load_legacy_tier_a_artifact(short, variant, seed):
+    stem = (
+        LEGACY_MIGRATION_ROOT / "frozen_models"
+        / f"stage381_{short}_tier_a_{variant}_seed{int(seed)}"
+    )
+    array_path = Path(str(stem) + ".npz")
+    schema_path = Path(str(stem) + "_schema.json")
+    validate_digest_sidecar(array_path)
+    validate_digest_sidecar(schema_path)
+    metadata = json.loads(schema_path.read_text())
+    observed = (
+        metadata.get("protocol_id"), metadata.get("run_signature"), metadata.get("model"),
+        metadata.get("tier"), metadata.get("variant"), int(metadata.get("seed", -1)),
+    )
+    expected = (
+        LEGACY_STAGE381_PROTOCOL_ID, LEGACY_STAGE381_RUN_SIGNATURE, short,
+        "tier_a", variant, int(seed),
+    )
+    if observed != expected or metadata.get("array_sha256") != sha256_file(array_path):
+        raise RuntimeError(f"legacy artifact binding failed: {short}/{variant}/{seed}")
+    with np.load(array_path, allow_pickle=False) as payload:
+        arrays = {key: payload[key] for key in payload.files}
+    artifact = decode_artifact(metadata["schema"], arrays)
+    objective = tier_a_objective(short, variant)
+    config = artifact.get("config", {})
+    train = DEVELOPMENT_DATA[short]["construction"]
+    if (
+        int(config.get("seed", -1)) != int(seed)
+        or int(config.get("epochs", -1)) != FINAL_EPOCHS
+        or int(config.get("carrier_dim", -1)) != FIXED_CARRIER_DIM
+        or int(config.get("history_length", -1)) != FIXED_HISTORY_LENGTH
+        or int(config.get("latent_dim", -1)) != FIXED_LATENT_DIM
+        or int(config.get("action_dim", -1)) != train["actions"].shape[2]
+        or int(config.get("physical_dim", -1)) != train["native"].shape[2]
+        or str(config.get("dynamics")) != FIXED_DYNAMICS
+        or float(config.get("learning_rate", -1.0)) != PSCD_LEARNING_RATE
+        or float(config.get("free_weight", -1.0)) != float(objective["free_weight"])
+        or float(config.get("semigroup_weight", -1.0)) != float(objective["semigroup_weight"])
+        or list(config.get("semigroup_component_weights", []))
+            != list(objective["semigroup_component_weights"])
+        or list(config.get("semigroup_horizons", [])) != SEMIGROUP_HORIZONS
+    ):
+        raise RuntimeError(f"legacy artifact objective changed: {short}/{variant}/{seed}")
+    state_dict = artifact.get("state_dict", {})
+    if not state_dict or any(
+        not np.all(np.isfinite(np.asarray(value))) for value in state_dict.values()
+    ):
+        raise RuntimeError(f"legacy artifact parameters are invalid: {short}/{variant}/{seed}")
+    scalar_checks = [artifact.get("loss_initial"), artifact.get("loss_final")]
+    if not np.all(np.isfinite(np.asarray(scalar_checks, dtype=np.float64))):
+        raise RuntimeError(f"legacy artifact losses are invalid: {short}/{variant}/{seed}")
+    import_row = {
+        "protocol_id": PROTOCOL_ID, "run_signature": RUN_SIGNATURE,
+        "model": short, "variant": variant, "seed": int(seed),
+        "source_array_sha256": sha256_file(array_path),
+        "source_schema_sha256": sha256_file(schema_path),
+        "source_run_signature": LEGACY_STAGE381_RUN_SIGNATURE,
+        "training_split": "construction", "calibration_outcomes_imported": 0,
+    }
+    save_stage381_artifact(short, "tier_a", variant, seed, artifact)
+    current_array, current_schema = stage381_artifact_paths(
+        short, "tier_a", variant, seed
+    )
+    import_row.update({
+        "current_array_sha256": sha256_file(current_array),
+        "current_schema_sha256": sha256_file(current_schema),
+    })
+    receipt_path = stage381_migration_receipt_path(short, variant, seed)
+    write_json(receipt_path, import_row)
+    write_digest_sidecar(receipt_path)
+    record_legacy_import(import_row)
+    return artifact
+
+
 def fit_or_load_tier_a(short, variant, seed):
     array_path, schema_path = stage381_artifact_paths(short, "tier_a", variant, seed)
     if all(path.is_file() for path in [array_path, schema_path, Path(str(array_path) + ".sha256"), Path(str(schema_path) + ".sha256")]):
         return load_stage381_artifact(short, "tier_a", variant, seed)
+    if LEGACY_MIGRATION_VERIFIED and int(seed) in SCREENING_SEEDS:
+        return load_legacy_tier_a_artifact(short, variant, seed)
     train = DEVELOPMENT_DATA[short]["construction"]
     objective = tier_a_objective(short, variant)
     artifact = fit_weighted_semigroup_predictive_state_closure(
@@ -590,13 +791,27 @@ if not PIPELINE_FAILED and SOURCE_BINDING_VERIFIED:
         verify_executed_notebook_through(
             "# Fit Tier A construction-only matched controls for two screening seeds."
         )
+        if LEGACY_MIGRATION_AVAILABLE:
+            migration_binding = validate_legacy_migration_root()
+            LEGACY_MIGRATION_VERIFIED = True
+        else:
+            migration_binding = {
+                "legacy_run_present": False, "fallback": "refit screening models",
+            }
         for seed in SCREENING_SEEDS:
             freeze_tier_a_seed(seed)
+        write_json(EVIDENCE_DIR / "tier_a_legacy_migration.json", {
+            **migration_binding, "migration_verified": LEGACY_MIGRATION_VERIFIED,
+            "imported_artifacts": LEGACY_IMPORT_ROWS,
+            "imported_count": len(LEGACY_IMPORT_ROWS),
+        })
         write_json(EVIDENCE_DIR / "tier_a_component_diagnostics.json", TIER_A_DIAGNOSTICS)
         atomic_checkpoint("stage381_tier_a_screening_models", {
             "seeds": SCREENING_SEEDS, "models": 2,
             "variants_per_model_seed": len(TIER_A_VARIANTS),
             "training_split": "construction", "calibration_rows_read_during_fit": 0,
+            "legacy_migration_verified": LEGACY_MIGRATION_VERIFIED,
+            "legacy_imported_artifacts": len(LEGACY_IMPORT_ROWS),
         })
     except Exception:
         record_failure("stage381_tier_a_screening_fit")
@@ -1209,6 +1424,10 @@ DECISION_PAYLOAD = {
     "source_stage38_commit": SOURCE_STAGE38_COMMIT,
     "development_only": True, "stage39_opened": False, "planning_opened": False,
     "evaluation_rows_read": 0, "planning_rows_read": 0,
+    "legacy_v1_migration_available": LEGACY_MIGRATION_AVAILABLE,
+    "legacy_v1_migration_verified": LEGACY_MIGRATION_VERIFIED,
+    "legacy_v1_imported_artifacts": len(LEGACY_IMPORT_ROWS),
+    "legacy_v1_calibration_outcomes_imported": 0,
     "tier_a_promoted": TIER_A_PROMOTED,
     "third_seed_executed": THIRD_SEED_EXECUTED,
     "oracle_headroom_passed": ORACLE_HEADROOM_PASSED,
@@ -1235,6 +1454,9 @@ Tier A promoted: **{TIER_A_PROMOTED}**. The precommitted third seed executed:
 **{THIRD_SEED_EXECUTED}**. Oracle event headroom passed:
 **{ORACLE_HEADROOM_PASSED}**. Label-free Tier B promoted:
 **{TIER_B_PROMOTED}**.
+
+V1 construction-only artifacts imported: **{len(LEGACY_IMPORT_ROWS)}**. V1
+calibration outcomes imported: **0**.
 
 This is development evidence only. No Stage 38 locked evaluation row or
 planning artifact was read. Even a full pass authorizes only a separately

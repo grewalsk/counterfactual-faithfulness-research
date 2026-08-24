@@ -5,6 +5,8 @@ event/reset diagnostic for the Stage 38 cross-model PSCD result. See
 `STAGE38_1_RUN_GUIDE.md` and
 `notebooks/38_1_coefficient_matched_hybrid_audit.ipynb`. It does not open
 Stage 39 or planning and cannot consume Stage 38 locked evaluation artifacts.
+Protocol v2 repairs the rendered decision-gate dataclasses and can securely
+resume the 16 construction-only fits from the exact failed v1 run.
 
 This package implements and tests a simulator-only protocol for asking:
 

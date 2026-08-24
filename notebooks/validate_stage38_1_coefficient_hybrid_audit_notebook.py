@@ -10,6 +10,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import numpy as np
+
 
 ROOT = Path(__file__).resolve().parent
 REPOSITORY = ROOT.parent
@@ -115,9 +117,12 @@ def validate():
     namespace = {}
     exec(compile(code_cells[0], "<stage381-config>", "exec"), namespace)
     assert namespace["RUN_MODE"] == "pilot"
-    assert namespace["PROTOCOL_ID"] == "stage38.1-coefficient-matched-hybrid-audit-v1"
+    assert namespace["PROTOCOL_ID"] == "stage38.1-coefficient-matched-hybrid-audit-v2"
     assert namespace["SOURCE_STAGE38_RUN_SIGNATURE"].startswith("ceb85af5b4b9")
     assert namespace["SOURCE_STAGE38_COMMIT"] == "a7ed07e2e79bc4da77e022f7765239b260bff35c"
+    assert namespace["LEGACY_STAGE381_PROTOCOL_ID"] == "stage38.1-coefficient-matched-hybrid-audit-v1"
+    assert namespace["LEGACY_STAGE381_RUN_SIGNATURE"].startswith("0b09871c37cc")
+    assert namespace["LEGACY_STAGE381_SOURCE_COMMIT"] == "d570ce091cc4c22e7a76cb91fce7a782484ac616"
     assert namespace["DEVELOPMENT_SPLITS"] == ["construction", "model_selection", "calibration"]
     assert namespace["EVALUATION_ACCESS_PERMITTED"] is False
     assert namespace["PLANNING_ACCESS_PERMITTED"] is False
@@ -137,6 +142,20 @@ def validate():
     assert len(digest) == 64
     validate_protocol_digest(notebook, digest)
 
+    # Execute the rendered helper cell and instantiate both gate classes.  The
+    # v1 validator only parsed this cell, so stripped decorators went unnoticed.
+    helper_namespace = {"np": np}
+    exec(compile(code_cells[3], "<stage381-rendered-helpers>", "exec"), helper_namespace)
+    tier_a_gate = helper_namespace["TierAGates"](*(True,) * 5)
+    tier_b_gate = helper_namespace["TierBGates"](*(True,) * 8)
+    assert list(tier_a_gate.__dataclass_fields__) == [
+        "coefficient_specificity", "tail_noninferiority",
+        "correct_history_specificity", "absolute_viability", "three_seed_stability",
+    ]
+    assert len(tier_b_gate.__dataclass_fields__) == 8
+    assert "@dataclass(frozen=True)\nclass TierAGates:" in code_cells[3]
+    assert "@dataclass(frozen=True)\nclass TierBGates:" in code_cells[3]
+
     provenance = direct_calls(code_cells, "verify_executed_notebook_through")
     assert [(index, node.args[0].value) for index, node in provenance] == [
         (4, expected_headers[4]), (5, expected_headers[5]),
@@ -153,6 +172,17 @@ def validate():
         'data, scale = DEVELOPMENT_DATA[short]["calibration"], PHYSICAL_SCALES[short]',
         '"coefficient_overshoot"',
         'COEFFICIENT_MATCHED_OUTER_WEIGHTS[short]',
+        'def validate_legacy_migration_root():',
+        '"TypeError: TierAGates() takes no arguments"',
+        'def stage381_migration_receipt_path(short, variant, seed):',
+        'def record_legacy_import(row):',
+        'def load_legacy_tier_a_artifact(short, variant, seed):',
+        '"source_array_sha256": sha256_file(array_path)',
+        '"current_array_sha256": sha256_file(current_array)',
+        'write_digest_sidecar(receipt_path)',
+        'if LEGACY_MIGRATION_VERIFIED and int(seed) in SCREENING_SEEDS:',
+        '"calibration_outcomes_imported": 0',
+        '"legacy_imported_artifacts": len(LEGACY_IMPORT_ROWS)',
         'for seed in SCREENING_SEEDS:',
         'if screen_passed:',
         'freeze_tier_a_seed(PRECOMMITTED_THIRD_SEED)',
@@ -169,7 +199,7 @@ def validate():
         assert fragment in executable, f"missing Stage 38.1 fragment: {fragment}"
     forbidden = [
         "locked_closure_rows.csv", "locked_planning_rows.csv",
-        "evaluation_evidence", "selected_evaluation_trajectories.json",
+        "selected_evaluation_trajectories.json",
         "load_world_model(", "grouped_model_words(",
         'DEVELOPMENT_DATA[short]["evaluation"]',
         'source_stage38_path(short, "evaluation"',
@@ -187,6 +217,8 @@ def validate():
     assert executable.count("artifact = fit_event_factorized_pscd(") == 1
     # One wrapper signature, one forwarding call, and one oracle-only caller.
     assert executable.count("oracle_events=") == 3
+    assert executable.count('"evaluation_evidence/tier_a_calibration_rows.csv"') == 1
+    assert executable.count('"evaluation_evidence/tier_a_final_decisions.json"') == 1
 
     environment = dict(os.environ)
     environment["PYTHONPATH"] = str(REPOSITORY / "src")
