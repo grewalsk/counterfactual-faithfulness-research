@@ -1,5 +1,12 @@
 # Counterfactual action faithfulness — Stage 0
 
+Stage 39 and Stage 39.1 add two prospective locked notebooks: a completely
+fresh three-seed PushT replication of the coefficient-matched result and an
+independent Wall-environment replication with separate decisions and no
+cross-environment pooling. See `STAGE39_RUN_GUIDE.md`,
+`STAGE39_1_RUN_GUIDE.md`, and the corresponding notebooks. Planning remains
+sealed in both experiments.
+
 Stage 38.1 adds a development-only coefficient-matched audit and conditional
 event/reset diagnostic for the Stage 38 cross-model PSCD result. See
 `STAGE38_1_RUN_GUIDE.md` and
@@ -120,6 +127,11 @@ downloaded Colab result bundles.
   and the horizon-matched exact-state measuring-instrument calibration.
 - `STAGE38_RUN_GUIDE.md` — fresh cross-model confirmation of post-hoc PSCD on
   frozen JEPA-WM and DINO-WM, with matched-seed controls and gated planning.
+- `STAGE39_RUN_GUIDE.md` — sealed fresh-trajectory, fresh-action-word,
+  three-seed PushT equivalence replication of the full versus
+  coefficient-matched objective.
+- `STAGE39_1_RUN_GUIDE.md` — independent Wall-environment replication using
+  the official frozen Wall checkpoints and a separately locked decision.
 - `STAGE27_RUN_GUIDE.md` — no-secret Colab handoff for the source-bound finite
   action-commutator experiment.
 - `STAGE29_RUN_GUIDE.md` — no-secret native target-latent closure test that

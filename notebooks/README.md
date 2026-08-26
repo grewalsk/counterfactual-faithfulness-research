@@ -1,5 +1,21 @@
 # Colab instructions
 
+## Stage 39 and 39.1 locked replications
+
+Notebooks:
+
+- `39_fresh_coefficient_matched_replication.ipynb`
+- `39_1_wall_cross_environment_replication.ipynb`
+
+Stage 39 uses entirely fresh PushT trajectories and action words to test the
+Stage 38.1 near-zero result with three matched seeds and a prespecified ±5%
+practical-equivalence band. Stage 39.1 makes the same comparison on the
+official Wall checkpoints and a separate geometric Wall bank. The two
+predictor panels and two environments are never pooled. Planning is sealed.
+
+Follow `../STAGE39_RUN_GUIDE.md` and `../STAGE39_1_RUN_GUIDE.md`. Neither
+notebook requires an earlier Drive result directory.
+
 ## Stage 38.1 coefficient-matched and hybrid closure audit
 
 Notebook: `38_1_coefficient_matched_hybrid_audit.ipynb`

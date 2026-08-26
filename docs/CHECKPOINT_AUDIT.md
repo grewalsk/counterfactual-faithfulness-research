@@ -37,9 +37,11 @@ the listing above, is the record of the exact downloaded bytes.
 
 ## Licensing note
 
-The GitHub source is distributed under the repository's license and the Hugging
-Face model page identifies the model repository as CC-BY-NC-4.0. Verify that the
-intended publication and distribution comply with the weight and encoder
-licenses before redistributing checkpoints. The result ZIP contains hashes and
-metrics, not model weights.
-
+The exact JEPA-WMs source commit used by the notebooks and the pinned Hugging
+Face model revision identify their main distribution as CC BY-NC 4.0. DINOv2
+source is Apache-2.0, while the upstream DINO-WM and PushT implementation
+lineage is MIT. Original repository code is released under the root MIT
+license; third-party materials are expressly excluded. The notebooks download
+external source and weights into runtime caches, and result ZIPs contain only
+hashes, manifests, metrics, and derived figures—not model weights, upstream
+repositories, or raw third-party datasets. See `THIRD_PARTY_NOTICES.md`.
