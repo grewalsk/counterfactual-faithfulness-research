@@ -116,6 +116,27 @@ def main() -> None:
     assert configurations[1]["ENVIRONMENT"] == "Wall"
     assert configurations[0]["MODEL_NAMES"] == ["jepa_wm_pusht", "dino_wm_pusht"]
     assert configurations[1]["MODEL_NAMES"] == ["jepa_wm_wall", "dino_wm_wall"]
+    assert configurations[1]["PROTOCOL_ID"] == (
+        "stage39.1-wall-cross-environment-replication-v2"
+    )
+    assert configurations[1]["SIMULATOR_LATENT_DIM"] == 64
+    assert configurations[1]["SIMULATOR_CARRIER_SCHEMA"] == [
+        "dot_x", "dot_y", "wall_x", "door_y",
+    ]
+    assert configurations[1]["SIMULATOR_PHYSICAL_SCHEMA"] == ["dot_x", "dot_y"]
+    assert configurations[1]["DRIVE_OUTPUT_DIR"].endswith("stage39_1_wall_v2")
+    wall_text = "\n".join(
+        source(cell) for cell in json.loads(NOTEBOOKS[1].read_text())["cells"]
+    )
+    assert 'train["initial_carrier"]' in wall_text
+    assert 'train["carrier_targets"]' in wall_text
+    assert 'train["physical_targets"]' in wall_text
+    assert 'reference["simulator_initial_carrier"]' in wall_text
+    assert 'reference["simulator_carrier"]' in wall_text
+    assert 'SIMULATOR_FINAL, reference["initial_physical"]' not in wall_text
+    assert "FAIL_CLOSED_GATE: stage391_simulator_preflight" in wall_text
+    assert '"world_model_checkpoints_loaded": False' in wall_text
+    assert '"evaluation_rows_used": 0' in wall_text
     assert configurations[1]["EXPECTED_PRETRAINED_ASSET_SHA256"][
         "dino_wm_wall.pth.tar"
     ] == "ff170be5aec9249768be4a220d600b8f00a8589b2a78982ecf9273809f2767df"

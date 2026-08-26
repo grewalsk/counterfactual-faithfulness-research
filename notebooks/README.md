@@ -11,7 +11,9 @@ Stage 39 uses entirely fresh PushT trajectories and action words to test the
 Stage 38.1 near-zero result with three matched seeds and a prespecified ±5%
 practical-equivalence band. Stage 39.1 makes the same comparison on the
 official Wall checkpoints and a separate geometric Wall bank. The two
-predictor panels and two environments are never pooled. Planning is sealed.
+predictor panels and two environments are never pooled. Stage 39.1 protocol v2
+adds wall and doorway coordinates to the simulator carrier but continues to
+score only the dot path. Planning is sealed.
 
 Follow `../STAGE39_RUN_GUIDE.md` and `../STAGE39_1_RUN_GUIDE.md`. Neither
 notebook requires an earlier Drive result directory.

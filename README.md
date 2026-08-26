@@ -5,7 +5,9 @@ fresh three-seed PushT replication of the coefficient-matched result and an
 independent Wall-environment replication with separate decisions and no
 cross-environment pooling. See `STAGE39_RUN_GUIDE.md`,
 `STAGE39_1_RUN_GUIDE.md`, and the corresponding notebooks. Planning remains
-sealed in both experiments.
+sealed in both experiments. Stage 39.1 protocol v2 conditions its simulator
+anchor on the varying wall and doorway coordinates while keeping the locked
+physical outcome two-dimensional.
 
 Stage 38.1 adds a development-only coefficient-matched audit and conditional
 event/reset diagnostic for the Stage 38 cross-model PSCD result. See

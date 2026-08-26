@@ -9,6 +9,14 @@ JEPA-WM and DINO-WM **Wall** checkpoints. Its layouts, states, trajectory IDs,
 action words, adapters, and evaluation rows are independent of PushT. Wall and
 PushT are decided separately and are never pooled.
 
+This is protocol v2. The first v1 bundle stopped at the fail-closed simulator
+preflight before either world-model checkpoint was loaded and before any
+evaluation row was used. V1 omitted varying wall and doorway coordinates from
+the simulator state. V2 fixes that structural error by carrying normalized
+`(dot_x, dot_y, wall_x, door_y)` through the exact-state anchor while still
+scoring only the two-dimensional dot path. Thresholds and primary models are
+unchanged.
+
 The four frozen Wall strata are `free_far`, `pre_wall`, `wall_blocked`, and
 `doorway`. Layout and state selection are geometric and precede model access.
 The simulator's clipped motion supplies a collision diagnostic; normalized
@@ -26,7 +34,7 @@ two-dimensional point-path error is the locked physical score.
 Resumable output:
 
 ```text
-MyDrive/counterfactual_faithfulness_stage39_1_wall/
+MyDrive/counterfactual_faithfulness_stage39_1_wall_v2/
 ```
 
 No prior result directory is required.

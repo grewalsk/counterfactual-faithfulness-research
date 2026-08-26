@@ -100,6 +100,13 @@ free-far, pre-wall, wall-blocked, and doorway states.  Layout, side, state, and
 action words are generated before model access.  Simulator movement clipping
 provides a collision diagnostic, while the locked physical target is the
 normalized two-dimensional point path.  Planning remains permanently sealed.
+
+Protocol v2 repairs a fail-closed v1 simulator preflight that omitted the
+trajectory-specific wall and doorway coordinates from the exact-state carrier.
+The v1 bundle loaded neither world-model checkpoint and used zero evaluation
+rows.  V2 carries normalized `(dot_x, dot_y, wall_x, door_y)` into the simulator
+anchor while continuing to score only the two-dimensional dot path.  No gate,
+primary model, evaluation bank, or coefficient-matched estimand is relaxed.
 '''
 
 
@@ -108,14 +115,14 @@ configuration = replace_assignment(
     configuration, "NOTEBOOK_PROTOCOL_SHA256", '"__PROTOCOL_DIGEST__"'
 )
 for name, value in {
-    "PROTOCOL_ID": '"stage39.1-wall-cross-environment-replication-v1"',
+    "PROTOCOL_ID": '"stage39.1-wall-cross-environment-replication-v2"',
     "EVIDENCE_STATUS": '"FRESH_PROSPECTIVE_CROSS_ENVIRONMENT_REPLICATION"',
     "EXPERIMENT_NOTEBOOK_PATH": '"notebooks/39_1_wall_cross_environment_replication.ipynb"',
     "EXPERIMENT_BUILDER_PATH": '"notebooks/build_stage39_1_wall_replication_notebook.py"',
     "EXPERIMENT_NUMERICAL_PATH": '"src/cf_faithfulness/stage39_replication.py"',
-    "OUTPUT_DIR": '"/content/counterfactual_faithfulness_stage39_1_wall"',
-    "DRIVE_OUTPUT_DIR": '"/content/drive/MyDrive/counterfactual_faithfulness_stage39_1_wall"',
-    "RUN_REQUEST_PATH": '"/content/drive/MyDrive/counterfactual_faithfulness_stage39_1_wall/stage391_run_request.json"',
+    "OUTPUT_DIR": '"/content/counterfactual_faithfulness_stage39_1_wall_v2"',
+    "DRIVE_OUTPUT_DIR": '"/content/drive/MyDrive/counterfactual_faithfulness_stage39_1_wall_v2"',
+    "RUN_REQUEST_PATH": '"/content/drive/MyDrive/counterfactual_faithfulness_stage39_1_wall_v2/stage391_run_request.json"',
     "SEED": "391101",
     "DESIGN_SEED": "391141",
     "DECODER_SEED": "391183",
@@ -215,7 +222,12 @@ configuration += r'''
 WALL_IMAGE_SIZE = 65.0
 WALL_DOOR_HALF_WIDTH = 4.0
 WALL_MODE_NEAR_DISTANCE = 7.0
+SIMULATOR_LATENT_DIM = 64
+SIMULATOR_CARRIER_SCHEMA = ["dot_x", "dot_y", "wall_x", "door_y"]
+SIMULATOR_PHYSICAL_SCHEMA = ["dot_x", "dot_y"]
 assert len(MODE_LABELS) == STATES_PER_TRAJECTORY == 4
+assert SIMULATOR_LATENT_DIM == 64
+assert len(SIMULATOR_CARRIER_SCHEMA) == 4
 '''
 configuration = re.sub(
     r"\n\nPROTOCOL_CONFIG_KEYS = \[[^\n]*\]\n", "\n", configuration
@@ -463,6 +475,140 @@ physical_truth = physical_truth.replace(
 )
 
 simulator_preflight = rename(BASE.simulator_preflight)
+simulator_preflight = replace_function(
+    simulator_preflight,
+    "load_stage391_physical_sequences",
+    r'''
+def load_stage391_physical_sequences(split):
+    split_names = {
+        "construction": CONSTRUCTION_WORD_NAMES,
+        "model_selection": MODEL_SELECTION_WORD_NAMES,
+        "calibration": CALIBRATION_WORD_NAMES,
+        "evaluation": EVALUATION_WORD_NAMES,
+    }
+    names = list(split_names[str(split)])
+    rows = {key: [] for key in [
+        "initial_carrier", "initial_physical", "actions", "carrier_targets",
+        "physical_targets", "mask", "word", "length", "group", "record_id",
+        "initial_mode",
+    ]}
+    for record in SELECTED_RECORDS[str(split)]:
+        layout = np.asarray(
+            [record["wall_x"], record["door_y"]], dtype=np.float64
+        ) / WALL_IMAGE_SIZE
+        initial_physical = grounded_observables(record["state"])
+        initial_carrier = np.concatenate([initial_physical, layout])
+        with np.load(truth_path(record), allow_pickle=False) as payload:
+            lookup = {
+                str(value): index for index, value in enumerate(payload["word_names"])
+            }
+            for name in names:
+                length = int(WORD_BY_NAME[name]["length"])
+                actions, _ = word_actions(record, WORD_BY_NAME[name])
+                chunks = actions.reshape(length, FRAMESKIP, 2).mean(axis=1)
+                padded = np.zeros((MAX_WORD_LENGTH, 3), dtype=np.float64)
+                padded[:length, :2] = chunks
+                padded[:length, 2] = np.linalg.norm(chunks, axis=1)
+                physical = np.zeros((MAX_WORD_LENGTH, len(SIMULATOR_PHYSICAL_SCHEMA)))
+                physical[:length] = payload["path_observables"][lookup[name], :length]
+                carrier = np.zeros((MAX_WORD_LENGTH, len(SIMULATOR_CARRIER_SCHEMA)))
+                carrier[:length, :2] = physical[:length]
+                carrier[:length, 2:] = layout
+                valid = np.zeros(MAX_WORD_LENGTH, dtype=bool)
+                valid[:length] = True
+                rows["initial_carrier"].append(initial_carrier)
+                rows["initial_physical"].append(initial_physical)
+                rows["actions"].append(padded)
+                rows["carrier_targets"].append(carrier)
+                rows["physical_targets"].append(physical)
+                rows["mask"].append(valid)
+                rows["word"].append(name)
+                rows["length"].append(length)
+                rows["group"].append(int(record["trajectory_id"]))
+                rows["record_id"].append(int(record["record_id"]))
+                rows["initial_mode"].append(str(record["mode"]))
+    for key in [
+        "initial_carrier", "initial_physical", "actions", "carrier_targets",
+        "physical_targets",
+    ]:
+        rows[key] = np.asarray(rows[key], dtype=np.float64)
+    rows["mask"] = np.asarray(rows["mask"], dtype=bool)
+    rows["word"] = np.asarray(rows["word"]).astype(str)
+    rows["initial_mode"] = np.asarray(rows["initial_mode"]).astype(str)
+    for key in ["length", "group", "record_id"]:
+        rows[key] = np.asarray(rows[key], dtype=np.int64)
+    if rows["initial_carrier"].shape[1] != len(SIMULATOR_CARRIER_SCHEMA):
+        raise RuntimeError("Wall simulator carrier omitted a causal layout coordinate")
+    return rows
+''',
+)
+simulator_preflight = replace_function(
+    simulator_preflight,
+    "stage391_physical_score",
+    r'''
+def stage391_physical_score(artifact, data):
+    if (
+        int(artifact["config"]["carrier_dim"]) != len(SIMULATOR_CARRIER_SCHEMA)
+        or int(artifact["config"]["physical_dim"]) != len(SIMULATOR_PHYSICAL_SCHEMA)
+        or int(artifact["config"]["latent_dim"]) != SIMULATOR_LATENT_DIM
+    ):
+        raise RuntimeError("Wall simulator artifact has the wrong causal-state schema")
+    result = rollout_predictive_state_closure(
+        artifact, data["initial_carrier"], data["actions"],
+        data["carrier_targets"], data["mask"],
+    )
+    valid = result["evaluation_mask"]
+    error = scaled_path_mse(
+        result["physical"], data["physical_targets"], valid,
+        artifact["normalization"]["physical_scale"], final_only=False,
+    )
+    persistence = np.repeat(
+        data["initial_physical"][:, None, :], MAX_WORD_LENGTH, axis=1
+    )
+    persistence_error = scaled_path_mse(
+        persistence, data["physical_targets"], valid,
+        artifact["normalization"]["physical_scale"], final_only=False,
+    )
+    return {
+        "physical_nmse": float(np.mean(error)),
+        "persistence_nmse": float(np.mean(persistence_error)),
+        "gain": float(np.mean(relative_gain(error, persistence_error))),
+        "carrier_schema": list(SIMULATOR_CARRIER_SCHEMA),
+        "physical_schema": list(SIMULATOR_PHYSICAL_SCHEMA),
+        "layout_conditioned": True,
+    }
+''',
+)
+simulator_preflight = simulator_preflight.replace(
+    'train["initial"], train["actions"], train["targets"], train["targets"],',
+    'train["initial_carrier"], train["actions"], train["carrier_targets"],\n'
+    '            train["physical_targets"],',
+).replace(
+    "latent_dim=FIXED_LATENT_DIM,",
+    "latent_dim=SIMULATOR_LATENT_DIM,",
+)
+simulator_preflight = simulator_preflight.replace(
+    '        print(json.dumps({"simulator_preflight": scores}, indent=2))\n'
+    '    except Exception:',
+    '        print(json.dumps({"simulator_preflight": scores}, indent=2))\n'
+    '        if not SIMULATOR_PREFLIGHT_PASSED:\n'
+    '            PIPELINE_FAILED = True\n'
+    '            FAILURE_MESSAGE = (\n'
+    '                "FAIL_CLOSED_GATE: stage391_simulator_preflight\\n"\n'
+    '                + json.dumps({\n'
+    '                    "scores": scores,\n'
+    '                    "max_physical_nmse": MAX_SIMULATOR_PREFLIGHT_NMSE,\n'
+    '                    "min_gain": MIN_SIMULATOR_GAIN,\n'
+    '                    "evaluation_rows_used": 0,\n'
+    '                    "world_model_checkpoints_loaded": False,\n'
+    '                }, indent=2)\n'
+    '                + "\\n"\n'
+    '            )\n'
+    '            (OUT / "FAILURE_TRACE.txt").write_text(FAILURE_MESSAGE)\n'
+    '    except Exception:',
+)
+if "FAIL_CLOSED_GATE: stage391_simulator_preflight" not in simulator_preflight:
+    raise RuntimeError("Stage 39.1 failed-gate reporting patch did not apply")
 construction_and_paths = rename(BASE.construction_and_paths)
 construction_and_paths = replace_function(
     construction_and_paths,
@@ -495,8 +641,101 @@ construction_and_paths = construction_and_paths.replace(
     'stage391_mode_paths(\n                record, truth["contact_counts"][truth_index],\n                truth["path_states"][truth_index], length\n            )',
 )
 data_and_selection = rename(BASE.data_and_selection)
+data_and_selection = replace_function(
+    data_and_selection,
+    "load_stage391_sequences",
+    r'''
+def load_stage391_sequences(short, split, selected_names=None):
+    rows = {key: [] for key in [
+        "initial_carrier", "initial_physical", "simulator_initial_carrier",
+        "actions", "carrier", "native", "simulator", "simulator_carrier",
+        "mask", "source_mode", "target_mode", "word", "length", "group",
+        "record_id", "initial_mode",
+    ]}
+    wanted = None if selected_names is None else set(map(str, selected_names))
+    record_split = "evaluation" if str(split).startswith("evaluation_") else str(split)
+    for record in SELECTED_RECORDS[record_split]:
+        with np.load(stage391_path(short, record, split), allow_pickle=False) as payload:
+            words = [str(value) for value in payload["word_names"]]
+            indices = [
+                index for index, word in enumerate(words)
+                if wanted is None or word in wanted
+            ]
+            rows["initial_carrier"].extend(
+                np.repeat(payload["initial_carrier"][None], len(indices), axis=0)
+            )
+            initial_physical = np.asarray(payload["initial_physical"], dtype=np.float64)
+            rows["initial_physical"].extend(
+                np.repeat(initial_physical[None], len(indices), axis=0)
+            )
+            layout = np.asarray(
+                [record["wall_x"], record["door_y"]], dtype=np.float64
+            ) / WALL_IMAGE_SIZE
+            simulator_initial = np.concatenate([initial_physical, layout])
+            rows["simulator_initial_carrier"].extend(
+                np.repeat(simulator_initial[None], len(indices), axis=0)
+            )
+            mapping = {
+                "actions": "actions", "carrier": "carrier_paths",
+                "native": "native_grounded_paths", "simulator": "simulator_grounded_paths",
+                "mask": "path_mask", "source_mode": "source_modes",
+                "target_mode": "target_modes",
+            }
+            for key, payload_key in mapping.items():
+                rows[key].extend(payload[payload_key][indices])
+            simulator_paths = np.asarray(
+                payload["simulator_grounded_paths"][indices], dtype=np.float64
+            )
+            simulator_carrier = np.zeros(
+                (*simulator_paths.shape[:2], len(SIMULATOR_CARRIER_SCHEMA)),
+                dtype=np.float64,
+            )
+            simulator_carrier[:, :, :2] = simulator_paths
+            simulator_carrier[:, :, 2:] = layout
+            rows["simulator_carrier"].extend(simulator_carrier)
+            rows["word"].extend([words[index] for index in indices])
+            rows["length"].extend(payload["word_lengths"][indices].astype(int).tolist())
+            rows["group"].extend([int(record["trajectory_id"])] * len(indices))
+            rows["record_id"].extend([int(record["record_id"])] * len(indices))
+            rows["initial_mode"].extend([str(record["mode"])] * len(indices))
+    for key in [
+        "initial_carrier", "initial_physical", "simulator_initial_carrier",
+        "actions", "carrier", "native", "simulator", "simulator_carrier",
+    ]:
+        rows[key] = np.asarray(rows[key], dtype=np.float64)
+    rows["mask"] = np.asarray(rows["mask"], dtype=bool)
+    for key in ["source_mode", "target_mode", "word", "initial_mode"]:
+        rows[key] = np.asarray(rows[key]).astype(str)
+    for key in ["length", "group", "record_id"]:
+        rows[key] = np.asarray(rows[key], dtype=np.int64)
+    if not all(len(value) == len(rows["word"]) for value in rows.values()):
+        raise RuntimeError(f"Stage 39.1 {short}/{split} arrays are misaligned")
+    if rows["simulator_initial_carrier"].shape[1] != len(SIMULATOR_CARRIER_SCHEMA):
+        raise RuntimeError("Wall evaluation simulator carrier schema changed")
+    return rows
+''',
+)
 calibration = rename(BASE.calibration)
+calibration = calibration.replace(
+    'physical["initial"], physical["actions"], physical["targets"],\n'
+    '                physical["targets"], physical["mask"], history_length=1,',
+    'physical["initial_carrier"], physical["actions"],\n'
+    '                physical["carrier_targets"], physical["physical_targets"],\n'
+    '                physical["mask"], history_length=1,',
+).replace(
+    "latent_dim=FIXED_LATENT_DIM, dynamics=FIXED_DYNAMICS,\n"
+    "                epochs=ACTIVE_SIMULATOR_FINAL_EPOCHS,",
+    "latent_dim=SIMULATOR_LATENT_DIM, dynamics=FIXED_DYNAMICS,\n"
+    "                epochs=ACTIVE_SIMULATOR_FINAL_EPOCHS,",
+)
 locked_evaluation = rename(BASE.locked_evaluation)
+locked_evaluation = locked_evaluation.replace(
+    'SIMULATOR_FINAL, reference["initial_physical"], reference["actions"],\n'
+    '            reference["simulator"], reference["mask"],',
+    'SIMULATOR_FINAL, reference["simulator_initial_carrier"],\n'
+    '            reference["actions"], reference["simulator_carrier"],\n'
+    '            reference["mask"],',
+)
 locked_evaluation = locked_evaluation.replace(
     "fresh PushT bank", "fresh Wall bank"
 ).replace(
