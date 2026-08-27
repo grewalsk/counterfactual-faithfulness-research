@@ -13,6 +13,7 @@ REPOSITORY = ROOT.parent
 NOTEBOOKS = [
     ROOT / "39_fresh_coefficient_matched_replication.ipynb",
     ROOT / "39_1_wall_cross_environment_replication.ipynb",
+    ROOT / "39_2_contact_tail_qualified_replication.ipynb",
 ]
 
 
@@ -72,7 +73,11 @@ def validate_notebook(path: Path) -> dict:
     validate_protocol_digest(notebook, configuration)
     assert configuration["PLANNING_WORD_NAMES"] == []
     assert configuration["PRIMARY_VARIANTS"] == ["coefficient_matched", "full"]
-    expected_final_seed = 3903 if configuration["ENVIRONMENT"] == "PushT" else 3913
+    expected_final_seed = {
+        "stage39-fresh-coefficient-matched-replication-v1": 3903,
+        "stage39.1-wall-cross-environment-replication-v2": 3913,
+        "stage39.2-contact-tail-qualified-replication-v1": 3923,
+    }[configuration["PROTOCOL_ID"]]
     assert configuration["FINAL_TRAINING_SEEDS"][-1] == expected_final_seed
     assert configuration["EVALUATION_TRAJECTORIES"] == 48
     assert set(configuration["CONSTRUCTION_TRAJECTORY_POOL"]).isdisjoint(
@@ -114,8 +119,10 @@ def main() -> None:
     stage38_configuration = load_configuration(stage38)
     assert configurations[0]["ENVIRONMENT"] == "PushT"
     assert configurations[1]["ENVIRONMENT"] == "Wall"
+    assert configurations[2]["ENVIRONMENT"] == "PushT"
     assert configurations[0]["MODEL_NAMES"] == ["jepa_wm_pusht", "dino_wm_pusht"]
     assert configurations[1]["MODEL_NAMES"] == ["jepa_wm_wall", "dino_wm_wall"]
+    assert configurations[2]["MODEL_NAMES"] == ["jepa_wm_pusht", "dino_wm_pusht"]
     assert configurations[1]["PROTOCOL_ID"] == (
         "stage39.1-wall-cross-environment-replication-v2"
     )
@@ -125,6 +132,13 @@ def main() -> None:
     ]
     assert configurations[1]["SIMULATOR_PHYSICAL_SCHEMA"] == ["dot_x", "dot_y"]
     assert configurations[1]["DRIVE_OUTPUT_DIR"].endswith("stage39_1_wall_v2")
+    assert configurations[2]["PROTOCOL_ID"] == (
+        "stage39.2-contact-tail-qualified-replication-v1"
+    )
+    assert configurations[2]["DRIVE_OUTPUT_DIR"].endswith("stage39_2_ctqr")
+    assert configurations[2]["TAIL_QUALIFICATION_VARIANTS"] == [
+        "coefficient_matched", "full",
+    ]
     wall_text = "\n".join(
         source(cell) for cell in json.loads(NOTEBOOKS[1].read_text())["cells"]
     )
@@ -155,6 +169,15 @@ def main() -> None:
         ]
     ])
     assert first_words.isdisjoint(second_words)
+    third_words = set().union(*[
+        set(configurations[2][key])
+        for key in [
+            "CONSTRUCTION_WORD_NAMES", "MODEL_SELECTION_WORD_NAMES",
+            "CALIBRATION_WORD_NAMES", "CLOSURE_EVALUATION_WORD_NAMES",
+        ]
+    ])
+    assert first_words.isdisjoint(third_words)
+    assert second_words.isdisjoint(third_words)
     stage38_words = set().union(*[
         set(stage38_configuration[key])
         for key in [
@@ -164,6 +187,7 @@ def main() -> None:
     ])
     assert first_words.isdisjoint(stage38_words)
     assert second_words.isdisjoint(stage38_words)
+    assert third_words.isdisjoint(stage38_words)
     stage38_trajectories = set().union(*[
         set(stage38_configuration[key])
         for key in [
@@ -180,6 +204,32 @@ def main() -> None:
             ]
         ])
         assert new_trajectories.isdisjoint(stage38_trajectories)
+    trajectory_sets = [
+        set().union(*[
+            set(configuration[key])
+            for key in [
+                "CONSTRUCTION_TRAJECTORY_POOL", "MODEL_SELECTION_TRAJECTORY_POOL",
+                "CALIBRATION_TRAJECTORY_POOL", "EVALUATION_TRAJECTORY_POOL",
+            ]
+        ])
+        for configuration in configurations
+    ]
+    assert all(
+        trajectory_sets[left].isdisjoint(trajectory_sets[right])
+        for left in range(len(trajectory_sets))
+        for right in range(left + 1, len(trajectory_sets))
+    )
+    stage392_text = "\n".join(
+        source(cell) for cell in json.loads(NOTEBOOKS[2].read_text())["cells"]
+    )
+    for required in [
+        "stage39_evaluation_outcomes_consumed\": False",
+        "absolute_tail_qualification_passed",
+        "MAX_P95_PHYSICAL_NMSE",
+        "MAX_CATASTROPHIC_RATE",
+        "contact_post_contact_physical_nmse",
+    ]:
+        assert required in stage392_text
     print("STAGE39_NOTEBOOK_VALIDATION_PASS")
 
 

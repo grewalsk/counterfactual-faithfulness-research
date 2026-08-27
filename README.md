@@ -1,13 +1,14 @@
 # Counterfactual action faithfulness — Stage 0
 
-Stage 39 and Stage 39.1 add two prospective locked notebooks: a completely
-fresh three-seed PushT replication of the coefficient-matched result and an
-independent Wall-environment replication with separate decisions and no
-cross-environment pooling. See `STAGE39_RUN_GUIDE.md`,
-`STAGE39_1_RUN_GUIDE.md`, and the corresponding notebooks. Planning remains
-sealed in both experiments. Stage 39.1 protocol v2 conditions its simulator
-anchor on the varying wall and doorway coordinates while keeping the locked
-physical outcome two-dimensional.
+Stages 39, 39.1, and 39.2 add prospective locked notebooks: a completely fresh
+three-seed PushT replication of the coefficient-matched result, an independent
+Wall-environment replication, and a second fresh PushT replication that
+separates comparative mean equivalence from absolute contact-tail
+qualification. See `STAGE39_RUN_GUIDE.md`, `STAGE39_1_RUN_GUIDE.md`,
+`STAGE39_2_RUN_GUIDE.md`, and the corresponding notebooks. No experiment pools
+predictor or environment panels, and planning remains sealed. Stage 39.1
+protocol v2 conditions its simulator anchor on the varying wall and doorway
+coordinates while keeping the locked physical outcome two-dimensional.
 
 Stage 38.1 adds a development-only coefficient-matched audit and conditional
 event/reset diagnostic for the Stage 38 cross-model PSCD result. See
