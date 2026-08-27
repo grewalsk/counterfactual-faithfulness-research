@@ -1,5 +1,13 @@
 # Counterfactual action faithfulness — Stage 0
 
+Stage 40 adds a prospective contact-tail repair notebook after the Stage 39.2
+negative result. It compares simulator-grounded uniform and contact-risk
+training under the same coefficient-matched recursive architecture, selects
+the risk strength on non-evaluation data, and requires mean noninferiority,
+per-seed tail improvement, and unchanged absolute reliability gates on a new
+PushT bank. See `STAGE40_RUN_GUIDE.md` and
+`notebooks/40_contact_tail_risk_distillation.ipynb`.
+
 Stages 39, 39.1, and 39.2 add prospective locked notebooks: a completely fresh
 three-seed PushT replication of the coefficient-matched result, an independent
 Wall-environment replication, and a second fresh PushT replication that
