@@ -9,16 +9,16 @@ bound.
 The notebook mounts Drive, resumes only hash-bound incomplete runs, and writes
 under:
 
-`MyDrive/counterfactual_faithfulness_stage41_cerh_v2/`
+`MyDrive/counterfactual_faithfulness_stage41_cerh_v3/`
 
 On successful pipeline completion, including an honest negative scientific
 decision, it automatically downloads:
 
-`stage41_cerh_v2_result_bundle_<run-signature>.zip`
+`stage41_cerh_v3_result_bundle_<run-signature>.zip`
 
 The compact bundle excludes large truth, carrier-path, and paired-intervention
 shards; those remain in the resumable Drive directory with manifests and hash
-bindings. V2 downloads failed bundles too, clearly labeled by
+bindings. V3 downloads failed bundles too, clearly labeled by
 `INCONCLUSIVE_PIPELINE_FAILURE`, so `FAILURE_TRACE.txt`, `failure_report.json`,
 and the last stage receipt are never hidden behind the generic footer.
 
@@ -26,3 +26,8 @@ Stage 41 is development-only. Its oracle event/reset inputs are unavailable
 to a deployed predictor. A positive decision authorizes only the next
 label-free event-state identifiability experiment and does not authorize a
 causal or planning claim.
+
+V3 corrects the V2 false pipeline failure: paired truth is retained as
+float64, while model-path archives intentionally store it as float32. Their
+binding is now required to be bit-exact after the declared float32 cast rather
+than compared at an impossible float64 `1e-9` tolerance.

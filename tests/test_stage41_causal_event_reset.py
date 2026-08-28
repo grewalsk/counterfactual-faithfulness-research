@@ -12,6 +12,7 @@ from cf_faithfulness.stage41_causal_event_reset import (
     mean_scale,
     ridge_predict,
     select_ridge_penalty,
+    storage_equivalent,
     upper_tail_mean,
 )
 
@@ -51,6 +52,16 @@ def test_ridge_selection_and_prediction_recover_linear_target():
     assert selection["selected_penalty"] == 0.0
     artifact = fit_ridge(x, y, selection["selected_penalty"])
     np.testing.assert_allclose(ridge_predict(artifact, x), y, atol=1e-10)
+
+
+def test_storage_equivalence_respects_the_declared_float32_boundary():
+    reference = np.array([1.0 / 3.0, np.pi, -1e-4], dtype=np.float64)
+    stored = reference.astype(np.float32).astype(np.float64)
+    assert not np.array_equal(reference, stored)
+    assert storage_equivalent(reference, stored, storage_dtype=np.float32)
+    changed = stored.copy()
+    changed[1] = np.nextafter(changed[1].astype(np.float32), np.float32(np.inf))
+    assert not storage_equivalent(reference, changed, storage_dtype=np.float32)
 
 
 def test_causal_effect_score_rewards_correct_effect_and_tail_is_registered():

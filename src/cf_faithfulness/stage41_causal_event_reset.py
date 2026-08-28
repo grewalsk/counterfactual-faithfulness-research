@@ -45,6 +45,31 @@ def mean_scale(value: ArrayLike) -> tuple[np.ndarray, np.ndarray]:
     return mean, scale
 
 
+def storage_equivalent(
+    reference: ArrayLike,
+    stored: ArrayLike,
+    *,
+    storage_dtype: Any = np.float32,
+) -> bool:
+    """Check exact equality at a declared serialization precision boundary.
+
+    Stage 41 truth shards retain float64 simulator values, while the compact
+    model-path shards intentionally store the same grounded paths as float32.
+    Comparing those arrays at float64 precision creates a false mismatch from
+    ordinary float32 rounding.  This helper makes the storage contract explicit
+    and still requires bit-exact equality after the registered cast.
+    """
+
+    expected = np.asarray(reference)
+    observed = np.asarray(stored)
+    if expected.shape != observed.shape:
+        return False
+    if not np.all(np.isfinite(expected)) or not np.all(np.isfinite(observed)):
+        return False
+    dtype = np.dtype(storage_dtype)
+    return bool(np.array_equal(expected.astype(dtype), observed.astype(dtype)))
+
+
 def fixed_sham_projection(input_dim: int, width: int, seed: int) -> dict[str, np.ndarray]:
     """Create a frozen outcome-independent smooth feature projection."""
 

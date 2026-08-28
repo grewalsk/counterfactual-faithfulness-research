@@ -83,15 +83,15 @@ it does not authorize causal, planning, or deployment claims.
 
 configuration = BASE.configuration
 for name, value in {
-    "PROTOCOL_ID": '"stage41-causal-event-reset-headroom-v2"',
+    "PROTOCOL_ID": '"stage41-causal-event-reset-headroom-v3"',
     "NOTEBOOK_PROTOCOL_SHA256": '"__PROTOCOL_DIGEST__"',
     "EVIDENCE_STATUS": '"FRESH_DEVELOPMENT_ONLY_CAUSAL_HEADROOM_AUDIT"',
     "EXPERIMENT_NOTEBOOK_PATH": '"notebooks/41_causal_event_reset_headroom.ipynb"',
     "EXPERIMENT_BUILDER_PATH": '"notebooks/build_stage41_causal_event_reset_headroom_notebook.py"',
     "EXPERIMENT_NUMERICAL_PATH": '"src/cf_faithfulness/stage41_causal_event_reset.py"',
-    "OUTPUT_DIR": '"/content/counterfactual_faithfulness_stage41_cerh_v2"',
-    "DRIVE_OUTPUT_DIR": '"/content/drive/MyDrive/counterfactual_faithfulness_stage41_cerh_v2"',
-    "RUN_REQUEST_PATH": '"/content/drive/MyDrive/counterfactual_faithfulness_stage41_cerh_v2/stage41_run_request.json"',
+    "OUTPUT_DIR": '"/content/counterfactual_faithfulness_stage41_cerh_v3"',
+    "DRIVE_OUTPUT_DIR": '"/content/drive/MyDrive/counterfactual_faithfulness_stage41_cerh_v3"',
+    "RUN_REQUEST_PATH": '"/content/drive/MyDrive/counterfactual_faithfulness_stage41_cerh_v3/stage41_run_request.json"',
     "SEED": "410101",
     "DESIGN_SEED": "410141",
     "DECODER_SEED": "410183",
@@ -193,7 +193,7 @@ configuration += "\n\nPROTOCOL_CONFIG_KEYS = " + repr(
 
 
 installation = BASE.installation
-setup = BASE.setup.replace("stage40_ctrd", "stage41_cerh_v2")
+setup = BASE.setup.replace("stage40_ctrd", "stage41_cerh_v3")
 setup += r'''
 
 # V2 always leaves a machine-readable and visible exception receipt.  The
@@ -236,7 +236,7 @@ def record_failure(stage):
 analysis_helpers = BASE.analysis_helpers + "\n\n" + function_sources(
     NUMERICAL.read_text(),
     [
-        "_as_matrix", "mean_scale", "fixed_sham_projection",
+        "_as_matrix", "mean_scale", "storage_equivalent", "fixed_sham_projection",
         "deterministic_permutation", "causal_design_matrix", "fit_ridge",
         "ridge_predict", "select_ridge_penalty", "upper_tail_mean",
         "causal_effect_metrics", "Stage41PanelDecision",
@@ -467,8 +467,16 @@ def load_stage41_pairs(data, protocol_split):
         metadata[row_index] = payload["causal_metadata"][pair_index]
         normal[row_index] = payload["normal_observables"][pair_index]
         ghost[row_index] = payload["ghost_observables"][pair_index]
-    if not np.allclose(normal[data["mask"]], data["simulator"][data["mask"]], atol=1e-9, rtol=0):
-        raise RuntimeError(f"paired ordinary truth mismatch on {protocol_split}")
+    paired_truth = normal[data["mask"]]
+    archived_truth = data["simulator"][data["mask"]]
+    if not storage_equivalent(
+        paired_truth, archived_truth, storage_dtype=np.float32
+    ):
+        max_error = float(np.max(np.abs(paired_truth - archived_truth)))
+        raise RuntimeError(
+            f"paired ordinary truth mismatch at float32 storage boundary on "
+            f"{protocol_split}; max_float64_difference={max_error:.3e}"
+        )
     return {
         "metadata": metadata, "normal": normal, "ghost": ghost,
         "physical_effect": normal - ghost,
@@ -1132,7 +1140,7 @@ or deployment result.  Planning remained sealed.
 
 
 packaging = BASE.packaging
-packaging = packaging.replace("stage40_ctrd", "stage41_cerh_v2")
+packaging = packaging.replace("stage40_ctrd", "stage41_cerh_v3")
 packaging = packaging.replace(
     "contact_tail_risk_distillation", "causal_event_reset_headroom"
 )

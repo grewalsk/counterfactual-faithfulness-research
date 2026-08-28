@@ -78,7 +78,7 @@ def main() -> None:
             assert cell.get("outputs", []) == []
     config = configuration(notebook)
     protocol_digest(notebook, config)
-    assert config["PROTOCOL_ID"] == "stage41-causal-event-reset-headroom-v2"
+    assert config["PROTOCOL_ID"] == "stage41-causal-event-reset-headroom-v3"
     assert config["FINAL_TRAINING_SEEDS"] == [4101, 4102, 4103]
     assert config["PRIMARY_VARIANTS"] == ["uniform_grounded"]
     assert config["CAUSAL_VARIANTS"] == [
@@ -108,6 +108,8 @@ def main() -> None:
         "disable_stage41_agent_block_collision",
         "ordinary-vs-agent-block-collision-disabled-v1",
         "causal_design_matrix", "oracle_reset_ceiling",
+        "storage_equivalent",
+        "storage_dtype=np.float32",
         "equal_nominal_head_width", "MIN_CAUSAL_EFFECT_GAIN = 0.10",
         "MIN_CAUSAL_EFFECT_COSINE = 0.25",
         '"causal_claim_authorized": False',
