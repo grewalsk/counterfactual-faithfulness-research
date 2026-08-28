@@ -78,7 +78,7 @@ def main() -> None:
             assert cell.get("outputs", []) == []
     config = configuration(notebook)
     protocol_digest(notebook, config)
-    assert config["PROTOCOL_ID"] == "stage41-causal-event-reset-headroom-v1"
+    assert config["PROTOCOL_ID"] == "stage41-causal-event-reset-headroom-v2"
     assert config["FINAL_TRAINING_SEEDS"] == [4101, 4102, 4103]
     assert config["PRIMARY_VARIANTS"] == ["uniform_grounded"]
     assert config["CAUSAL_VARIANTS"] == [
@@ -88,6 +88,7 @@ def main() -> None:
     assert config["MIN_CONTACT_TAIL_RELATIVE_IMPROVEMENT"] == 0.25
     assert config["MIN_P95_RELATIVE_IMPROVEMENT"] == 0.10
     assert config["MAX_MEAN_RELATIVE_DEGRADATION"] == 0.02
+    assert config["MAX_INSTRUMENTATION_DRIFT"] == 1e-6
     assert config["DOWNLOAD_RESULTS"] is True
     assert config["EVALUATION_TRAJECTORIES"] == 48
     assert config["PLANNING_WORD_NAMES"] == []
@@ -114,7 +115,11 @@ def main() -> None:
         '"stage40_artifacts_read": False',
         '"stage40_evaluation_rows_consumed": False',
         "planning_permanently_sealed",
-        'if DOWNLOAD_RESULTS and not PIPELINE_FAILED and (OUT / "stage41_decision.json").is_file():',
+        'if DOWNLOAD_RESULTS:',
+        '"instrumentation_drifts"',
+        'STAGE41_FAILURE_TRACE_BEGIN',
+        'failure_report.json',
+        'stage41_phase.json',
     ]:
         assert required in text, required
     adaptive = "\n".join(source(notebook["cells"][index]) for index in [10, 11, 12])

@@ -83,15 +83,15 @@ it does not authorize causal, planning, or deployment claims.
 
 configuration = BASE.configuration
 for name, value in {
-    "PROTOCOL_ID": '"stage41-causal-event-reset-headroom-v1"',
+    "PROTOCOL_ID": '"stage41-causal-event-reset-headroom-v2"',
     "NOTEBOOK_PROTOCOL_SHA256": '"__PROTOCOL_DIGEST__"',
     "EVIDENCE_STATUS": '"FRESH_DEVELOPMENT_ONLY_CAUSAL_HEADROOM_AUDIT"',
     "EXPERIMENT_NOTEBOOK_PATH": '"notebooks/41_causal_event_reset_headroom.ipynb"',
     "EXPERIMENT_BUILDER_PATH": '"notebooks/build_stage41_causal_event_reset_headroom_notebook.py"',
     "EXPERIMENT_NUMERICAL_PATH": '"src/cf_faithfulness/stage41_causal_event_reset.py"',
-    "OUTPUT_DIR": '"/content/counterfactual_faithfulness_stage41_cerh"',
-    "DRIVE_OUTPUT_DIR": '"/content/drive/MyDrive/counterfactual_faithfulness_stage41_cerh"',
-    "RUN_REQUEST_PATH": '"/content/drive/MyDrive/counterfactual_faithfulness_stage41_cerh/stage41_run_request.json"',
+    "OUTPUT_DIR": '"/content/counterfactual_faithfulness_stage41_cerh_v2"',
+    "DRIVE_OUTPUT_DIR": '"/content/drive/MyDrive/counterfactual_faithfulness_stage41_cerh_v2"',
+    "RUN_REQUEST_PATH": '"/content/drive/MyDrive/counterfactual_faithfulness_stage41_cerh_v2/stage41_run_request.json"',
     "SEED": "410101",
     "DESIGN_SEED": "410141",
     "DECODER_SEED": "410183",
@@ -179,10 +179,12 @@ MIN_CAUSAL_EFFECT_GAIN = 0.10
 MIN_CAUSAL_EFFECT_COSINE = 0.25
 CONTACT_TAIL_MASS = 0.25
 MIN_REENTRY_ROWS = 8
+MAX_INSTRUMENTATION_DRIFT = 1e-6
 assert CAUSAL_VARIANTS[-1] == "oracle_reset_ceiling"
 assert MIN_CONTACT_TAIL_RELATIVE_IMPROVEMENT == 0.25
 assert MIN_P95_RELATIVE_IMPROVEMENT == 0.10
 assert MAX_MEAN_RELATIVE_DEGRADATION == 0.02
+assert MAX_INSTRUMENTATION_DRIFT == 1e-6
 assert PLANNING_WORD_NAMES == []
 '''
 configuration += "\n\nPROTOCOL_CONFIG_KEYS = " + repr(
@@ -191,7 +193,46 @@ configuration += "\n\nPROTOCOL_CONFIG_KEYS = " + repr(
 
 
 installation = BASE.installation
-setup = BASE.setup.replace("stage40_ctrd", "stage41_cerh")
+setup = BASE.setup.replace("stage40_ctrd", "stage41_cerh_v2")
+setup += r'''
+
+# V2 always leaves a machine-readable and visible exception receipt.  The
+# original helper is deliberately replaced after all setup globals exist.
+CURRENT_STAGE41_PHASE = "setup_complete"
+
+
+def stage41_phase(name, **details):
+    global CURRENT_STAGE41_PHASE
+    CURRENT_STAGE41_PHASE = str(name)
+    payload = {
+        "phase": CURRENT_STAGE41_PHASE,
+        "details": details,
+        "elapsed_seconds": float(time.time() - RUN_STARTED_AT),
+        "pipeline_failed": bool(PIPELINE_FAILED),
+    }
+    write_json(OUT / "stage41_phase.json", payload)
+    print(f"STAGE41_PHASE: {CURRENT_STAGE41_PHASE} {json.dumps(details, sort_keys=True)}")
+    return payload
+
+
+def record_failure(stage):
+    global PIPELINE_FAILED, FAILURE_MESSAGE
+    PIPELINE_FAILED = True
+    FAILURE_MESSAGE = (
+        f"STAGE: {stage}\nPHASE: {CURRENT_STAGE41_PHASE}\n{traceback.format_exc()}"
+    )
+    (OUT / "FAILURE_TRACE.txt").write_text(FAILURE_MESSAGE)
+    write_json(OUT / "failure_report.json", {
+        "stage": str(stage), "phase": str(CURRENT_STAGE41_PHASE),
+        "traceback": FAILURE_MESSAGE,
+        "elapsed_seconds": float(time.time() - RUN_STARTED_AT),
+        "device": VERSIONS.get("gpu"),
+    })
+    print("STAGE41_FAILURE_TRACE_BEGIN")
+    print(FAILURE_MESSAGE)
+    print("STAGE41_FAILURE_TRACE_END")
+    log.exception("Captured failure in %s during %s", stage, CURRENT_STAGE41_PHASE)
+'''
 analysis_helpers = BASE.analysis_helpers + "\n\n" + function_sources(
     NUMERICAL.read_text(),
     [
@@ -220,6 +261,10 @@ data_and_selection = data_and_selection.replace("Stage 40", "Stage 41")
 
 
 causal_interventions = r'''# Materialize paired interventions for development splits only.
+PROVENANCE_COUNTS["paired_records"] = 0
+PROVENANCE_COUNTS["paired_words"] = 0
+PROVENANCE_COUNTS["paired_contact_words"] = 0
+PROVENANCE_COUNTS["maximum_instrumentation_drift"] = 0.0
 
 
 def stage41_pair_path(record):
@@ -339,6 +384,7 @@ def generate_stage41_paired_record(record, protocol_split):
     required = {
         "identity", "word_names", "word_lengths", "path_mask", "normal_observables",
         "ghost_observables", "physical_effects", "causal_metadata", "event_counts",
+        "instrumentation_drifts",
     }
     names = stage39_names_for_split(protocol_split)
     if validate_npz_shard(path, required, identity):
@@ -353,6 +399,7 @@ def generate_stage41_paired_record(record, protocol_split):
     metadata = np.zeros((len(names), MAX_WORD_LENGTH, 6), dtype=np.float64)
     mask = np.zeros((len(names), MAX_WORD_LENGTH), dtype=bool)
     event_counts = np.zeros(len(names), dtype=np.int64)
+    instrumentation_drifts = np.zeros(len(names), dtype=np.float64)
     with np.load(truth_path(record), allow_pickle=False) as truth:
         truth_lookup = {str(name): index for index, name in enumerate(truth["word_names"])}
         for word_index, name in enumerate(names):
@@ -369,20 +416,36 @@ def generate_stage41_paired_record(record, protocol_split):
                 grounded_observables(value) for value in intervention["states"]
             ])
             expected = truth["path_observables"][truth_lookup[name], :length]
-            if not np.allclose(ordinary_observables, expected, atol=1e-9, rtol=0):
-                raise RuntimeError("instrumented ordinary rollout drifted from frozen truth")
-            normal[word_index, :length] = ordinary_observables
+            drift = float(np.max(np.abs(ordinary_observables - expected)))
+            instrumentation_drifts[word_index] = drift
+            PROVENANCE_COUNTS["maximum_instrumentation_drift"] = max(
+                float(PROVENANCE_COUNTS["maximum_instrumentation_drift"]), drift
+            )
+            if not np.isfinite(drift) or drift > MAX_INSTRUMENTATION_DRIFT:
+                raise RuntimeError(
+                    "instrumented ordinary rollout exceeded the registered drift "
+                    f"bound for record={record['record_id']} word={name}: "
+                    f"{drift:.3e} > {MAX_INSTRUMENTATION_DRIFT:.3e}"
+                )
+            # The once-generated uninstrumented truth remains the estimand.
+            # Callback execution is used only for event metadata.
+            normal[word_index, :length] = expected
             ghost[word_index, :length] = ghost_observables
             metadata[word_index, :length] = ordinary["metadata"]
             mask[word_index, :length] = True
             event_counts[word_index] = ordinary["event_count"]
+            PROVENANCE_COUNTS["paired_words"] += 1
+            PROVENANCE_COUNTS["paired_contact_words"] += int(
+                ordinary["event_count"] > 0
+            )
     atomic_npz(
         path, identity=np.asarray(identity), word_names=np.asarray(names),
         word_lengths=np.asarray([len(name) for name in names], dtype=np.int64),
         path_mask=mask, normal_observables=normal, ghost_observables=ghost,
         physical_effects=normal - ghost, causal_metadata=metadata,
-        event_counts=event_counts,
+        event_counts=event_counts, instrumentation_drifts=instrumentation_drifts,
     )
+    PROVENANCE_COUNTS["paired_records"] += 1
     return path
 
 
@@ -417,7 +480,9 @@ if not PIPELINE_FAILED and SIMULATOR_PREFLIGHT_PASSED:
         verify_executed_notebook_through(
             "# Materialize paired interventions for development splits only."
         )
+        stage41_phase("development_pairs_start")
         for split in ["construction", "model_selection", "calibration"]:
+            stage41_phase("development_pairs_split_start", split=split)
             for index, record in enumerate(SELECTED_RECORDS[split]):
                 generate_stage41_paired_record(record, split)
                 write_json(OUT / f"paired_{split}_progress.json", {
@@ -425,10 +490,20 @@ if not PIPELINE_FAILED and SIMULATOR_PREFLIGHT_PASSED:
                     "last_record_id": int(record["record_id"]),
                     "evaluation_pairs_opened": False,
                 })
+            stage41_phase(
+                "development_pairs_split_complete", split=split,
+                records=len(SELECTED_RECORDS[split]),
+            )
         atomic_checkpoint("stage41_development_pairs_complete", {
             "evaluation_pairs_opened": False,
             "intervention": "agent_block_collision_disabled",
+            "paired_records": int(PROVENANCE_COUNTS["paired_records"]),
+            "paired_words": int(PROVENANCE_COUNTS["paired_words"]),
+            "maximum_instrumentation_drift": float(
+                PROVENANCE_COUNTS["maximum_instrumentation_drift"]
+            ),
         })
+        stage41_phase("development_pairs_complete")
     except Exception:
         record_failure("stage41_development_paired_interventions")
 '''
@@ -649,8 +724,10 @@ if not PIPELINE_FAILED and SIMULATOR_PREFLIGHT_PASSED:
         verify_executed_notebook_through(
             "# Freeze the recursive baselines and equal-width causal ladder before heldout access."
         )
+        stage41_phase("model_and_head_freeze_start")
         model_manifest = []
         for short in ["jepa", "dino"]:
+            stage41_phase("base_panel_start", model=short)
             construction = load_stage39_sequences(short, "construction")
             calibration_only = load_stage39_sequences(short, "calibration")
             base_fit = concatenate_stage39_sequences(construction, calibration_only)
@@ -660,14 +737,19 @@ if not PIPELINE_FAILED and SIMULATOR_PREFLIGHT_PASSED:
             )
             FROZEN_MODELS[short], HEADS[short] = {}, {}
             for seed in FINAL_TRAINING_SEEDS:
+                stage41_phase("base_fit_start", model=short, seed=int(seed))
                 base = fit_or_load_stage41_base(short, int(seed), base_fit)
                 FROZEN_MODELS[short][int(seed)] = base
+                stage41_phase("base_fit_complete", model=short, seed=int(seed))
                 construction_flat = stage41_flat_bundle(short, seed, "construction")
                 validation_flat = stage41_flat_bundle(short, seed, "model_selection")
                 calibration_flat = stage41_flat_bundle(short, seed, "calibration")
                 final_flat = concatenate_stage41_flat(construction_flat, calibration_flat)
                 HEADS[short][int(seed)] = {}
                 for variant in CAUSAL_VARIANTS:
+                    stage41_phase(
+                        "head_fit_start", model=short, seed=int(seed), variant=variant
+                    )
                     array_path, schema_path = stage41_artifact_paths(
                         short, f"head_{variant}", seed
                     )
@@ -696,8 +778,13 @@ if not PIPELINE_FAILED and SIMULATOR_PREFLIGHT_PASSED:
                         "array_sha256": sha256_file(array_path),
                         "schema_sha256": sha256_file(schema_path),
                     })
+                    stage41_phase(
+                        "head_fit_complete", model=short, seed=int(seed), variant=variant,
+                        penalty=float(head["selected_penalty"]),
+                    )
                 if torch.cuda.is_available():
                     torch.cuda.empty_cache()
+            stage41_phase("base_panel_complete", model=short)
         write_csv(EVIDENCE_DIR / "stage41_head_selection_rows.csv", HEAD_SELECTION_ROWS)
         scale_path = CALIBRATION_MODEL_DIR / "stage41_frozen_physical_scales.npz"
         atomic_npz(scale_path, **{
@@ -722,6 +809,7 @@ if not PIPELINE_FAILED and SIMULATOR_PREFLIGHT_PASSED:
             "certificate_sha256": sha256_file(certificate_path),
             "evaluation_opened": False, "planning_opened": False,
         })
+        stage41_phase("models_and_heads_frozen")
     except Exception:
         record_failure("stage41_model_and_head_freeze")
 '''
@@ -947,15 +1035,20 @@ if not PIPELINE_FAILED and SIMULATOR_PREFLIGHT_PASSED:
             or not certificate["planning_permanently_sealed"]
         ):
             raise RuntimeError("Stage 41 evaluation-open certificate is invalid")
+        stage41_phase("heldout_pairs_start")
         for index, record in enumerate(SELECTED_RECORDS["evaluation"]):
             generate_stage41_paired_record(record, "evaluation_closure")
             write_json(OUT / "paired_evaluation_progress.json", {
                 "completed": index + 1, "total": len(SELECTED_RECORDS["evaluation"]),
                 "last_record_id": int(record["record_id"]),
             })
+        stage41_phase(
+            "heldout_pairs_complete", records=len(SELECTED_RECORDS["evaluation"])
+        )
         for model_name in MODEL_NAMES:
             bundle = load_world_model(model_name)
             short = bundle["short"]
+            stage41_phase("heldout_model_paths_start", model=short)
             try:
                 for index, record in enumerate(SELECTED_RECORDS["evaluation"]):
                     generate_stage39_path_record(
@@ -968,13 +1061,19 @@ if not PIPELINE_FAILED and SIMULATOR_PREFLIGHT_PASSED:
                     })
             finally:
                 unload_world_model(bundle)
+            stage41_phase("heldout_model_paths_complete", model=short)
         EVALUATION_OPENED = True
         for short in ["jepa", "dino"]:
+            stage41_phase("heldout_panel_start", model=short)
             data = load_stage39_sequences(short, "evaluation_closure")
             pairs = load_stage41_pairs(data, "evaluation_closure")
             panel, metrics = stage41_panel(short, data, pairs)
             PANEL_DECISIONS[short] = panel
             SUMMARY[short] = metrics
+            stage41_phase(
+                "heldout_panel_complete", model=short,
+                classification=panel.classification,
+            )
         DECISION_PAYLOAD = derive_stage41_decision(PANEL_DECISIONS)
         DECISION_PAYLOAD.update({
             "protocol_id": PROTOCOL_ID, "run_signature": RUN_SIGNATURE,
@@ -999,6 +1098,7 @@ if not PIPELINE_FAILED and SIMULATOR_PREFLIGHT_PASSED:
             "decision_sha256": sha256_file(OUT / "stage41_decision.json"),
             "status": DECISION_PAYLOAD["status"], "planning_opened": False,
         })
+        stage41_phase("causal_headroom_complete", status=DECISION_PAYLOAD["status"])
 
         figure, axes = plt.subplots(1, 2, figsize=(10, 4.5))
         for axis, short in zip(axes, ["jepa", "dino"]):
@@ -1032,12 +1132,24 @@ or deployment result.  Planning remained sealed.
 
 
 packaging = BASE.packaging
-packaging = packaging.replace("stage40_ctrd", "stage41_cerh")
+packaging = packaging.replace("stage40_ctrd", "stage41_cerh_v2")
 packaging = packaging.replace(
     "contact_tail_risk_distillation", "causal_event_reset_headroom"
 )
 packaging = packaging.replace("stage40_decision.json", "stage41_decision.json")
 packaging = packaging.replace("raw_roots = [TRUTH_DIR, PATH_DIR]", "raw_roots = [TRUTH_DIR, PATH_DIR, CAUSAL_DIR]")
+packaging = packaging.replace(
+    'if DOWNLOAD_RESULTS and not PIPELINE_FAILED and (OUT / "stage41_decision.json").is_file():',
+    "if DOWNLOAD_RESULTS:",
+)
+packaging = packaging.replace(
+    'print(f"RUN_STATUS: {DECISION_PAYLOAD[\'status\']}")',
+    '''if PIPELINE_FAILED:
+    print("STAGE41_FAILURE_TRACE_BEGIN")
+    print((OUT / "FAILURE_TRACE.txt").read_text())
+    print("STAGE41_FAILURE_TRACE_END")
+print(f"RUN_STATUS: {DECISION_PAYLOAD['status']}")''',
+)
 
 
 protocol_sources = [

@@ -9,16 +9,18 @@ bound.
 The notebook mounts Drive, resumes only hash-bound incomplete runs, and writes
 under:
 
-`MyDrive/counterfactual_faithfulness_stage41_cerh/`
+`MyDrive/counterfactual_faithfulness_stage41_cerh_v2/`
 
 On successful pipeline completion, including an honest negative scientific
 decision, it automatically downloads:
 
-`stage41_cerh_result_bundle_<run-signature>.zip`
+`stage41_cerh_v2_result_bundle_<run-signature>.zip`
 
 The compact bundle excludes large truth, carrier-path, and paired-intervention
 shards; those remain in the resumable Drive directory with manifests and hash
-bindings. A pipeline error does not download a misleading result bundle.
+bindings. V2 downloads failed bundles too, clearly labeled by
+`INCONCLUSIVE_PIPELINE_FAILURE`, so `FAILURE_TRACE.txt`, `failure_report.json`,
+and the last stage receipt are never hidden behind the generic footer.
 
 Stage 41 is development-only. Its oracle event/reset inputs are unavailable
 to a deployed predictor. A positive decision authorizes only the next
