@@ -457,3 +457,11 @@ subsets. The next authorized scientific step is therefore an entirely fresh,
 reader-only confirmation—not a causal or bundle claim. The evidence and
 frozen next-step boundary are in
 `audits/stage15/reader_failure_audit/AUDIT.md`.
+
+Stage 41 is a development-only causal headroom audit in
+`notebooks/41_causal_event_reset_headroom.ipynb`. It pairs ordinary PushT
+rollouts with exact collision-disabled counterfactuals and tests an equal-width
+oracle event/time/geometry/reset ladder on top of a frozen recursive baseline.
+Smooth and shuffled controls, cross-model/seed gates, causal-effect alignment,
+and leave-one-family-out tail checks determine whether a later label-free
+event-state model is justified. See `STAGE41_RUN_GUIDE.md` for execution.
