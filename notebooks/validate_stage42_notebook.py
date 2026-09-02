@@ -157,6 +157,9 @@ def main() -> None:
     )
     assert "pool[len(candidate_ids):]" in selection
     assert "selected Stage 42 family support changed on resume" in selection
+    assert "for name in EVALUATION_WORD_NAMES:" in selection
+    assert "specification = WORD_BY_NAME[name]" in selection
+    assert "for specification in EVALUATION_WORD_SPECS:" not in selection
     adaptive = "\n".join(source(notebook["cells"][index]) for index in [10, 11, 12])
     assert 'load_stage39_sequences(short, "evaluation_closure")' not in adaptive
     assert 'generate_stage42_paired_record(record, "evaluation_closure")' not in adaptive

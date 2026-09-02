@@ -232,7 +232,12 @@ support_selection = r'''
 def stage42_candidate_reentry_count(records):
     total = 0
     for record in records:
-        for specification in EVALUATION_WORD_SPECS:
+        # Use the canonical specifications constructed by canonical_word_specs().
+        # The configuration-level rows intentionally contain only the registered
+        # angles and magnitudes; WORD_BY_NAME is where derived invariants such as
+        # ``length`` are validated and attached for rollout helpers.
+        for name in EVALUATION_WORD_NAMES:
+            specification = WORD_BY_NAME[name]
             rollout = rollout_word(record, specification, retain_visual=False)
             pair = terminal_mode_pair_from_contacts(
                 rollout["contacts"], length=int(specification["length"]),
