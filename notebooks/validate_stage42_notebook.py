@@ -80,7 +80,9 @@ def main() -> None:
 
     config = configuration(notebook)
     protocol_digest(notebook, config)
-    assert config["PROTOCOL_ID"] == "stage42-action-conditioned-hybrid-defect-v1"
+    assert config["PROTOCOL_ID"] == "stage42-action-conditioned-hybrid-defect-v2"
+    assert config["EVIDENCE_STATUS"] == "FRESH_EVENT_EXCITATION_ORACLE_HEADROOM"
+    assert config["DRIVE_OUTPUT_DIR"].endswith("counterfactual_faithfulness_stage42_ecoh_v2")
     assert config["FINAL_TRAINING_SEEDS"] == [4201, 4202, 4203]
     assert config["PRIMARY_VARIANTS"] == ["uniform_grounded"]
     assert config["CAUSAL_VARIANTS"] == [
@@ -100,6 +102,31 @@ def main() -> None:
     assert config["PLANNING_WORD_NAMES"] == []
     assert config["DOWNLOAD_RESULTS"] is True
     assert len(banks(config)) == 32
+    assert config["CLOSURE_EVALUATION_WORD_NAMES"] == [
+        "LPPSSSPPP", "TPPSSSPPP",
+        "LPPSSS0PPP", "TPPSSS0PPP",
+        "LPPSSS00PPP", "TPPSSS00PPP",
+        "LPPSSS000PPP", "TPPSSS000PPP",
+    ]
+    assert config["EVENT_EXCITATION_TOKEN_NAMES"] == ["P", "Q", "L", "T", "S", "0"]
+    assert config["STAGE39_TOKEN_SPECS"]["P"] == (0.0, 0.20)
+    assert config["STAGE39_TOKEN_SPECS"]["Q"] == (0.0, 0.14)
+    assert config["STAGE39_TOKEN_SPECS"]["S"] == (180.0, 0.14)
+    assert config["STAGE39_TOKEN_SPECS"]["0"] == (0.0, 0.0)
+    assert config["SUPPORT_CHECKPOINT_INTERVAL"] == 64
+    assert config["STAGE42_V1_SUPPORT_AUDIT"] == {
+        "role": "development_support_falsification_only",
+        "result_bundle_sha256": "72c1b2c24495cfb189f9014a4a061897b582fe27ef12a2b95465145f30521ebd",
+        "evaluation_pool_start": 132000,
+        "evaluation_pool_stop": 148000,
+        "families_screened": 16000,
+        "event_rich_families": 0,
+        "model_outputs_read": False,
+    }
+    assert config["CONSTRUCTION_TRAJECTORY_POOL"] == list(range(148000, 150000))
+    assert config["MODEL_SELECTION_TRAJECTORY_POOL"] == list(range(150000, 152000))
+    assert config["CALIBRATION_TRAJECTORY_POOL"] == list(range(152000, 154000))
+    assert config["EVALUATION_TRAJECTORY_POOL"] == list(range(154000, 170000))
 
     for key in [
         "EXPERIMENT_NOTEBOOK_PATH", "EXPERIMENT_BUILDER_PATH",
@@ -116,6 +143,9 @@ def main() -> None:
     text = "\n".join(source(cell) for cell in notebook["cells"])
     for required in [
         "select_stage42_event_rich_evaluation",
+        "Prospective event-excitation support-qualified headroom test",
+        "zero re-entry-positive families",
+        "prospective_event_excitation_vocabulary",
         "earliest_complete_families_with_positive_reentry_incidence",
         "simulator_contact_incidence_only",
         "stage42_event_support_certificate.json",
@@ -160,6 +190,8 @@ def main() -> None:
     assert "for name in EVALUATION_WORD_NAMES:" in selection
     assert "specification = WORD_BY_NAME[name]" in selection
     assert "for specification in EVALUATION_WORD_SPECS:" not in selection
+    assert "SUPPORT_CHECKPOINT_INTERVAL" in selection
+    assert "if checkpoint_due:" in selection
     adaptive = "\n".join(source(notebook["cells"][index]) for index in [10, 11, 12])
     assert 'load_stage39_sequences(short, "evaluation_closure")' not in adaptive
     assert 'generate_stage42_paired_record(record, "evaluation_closure")' not in adaptive

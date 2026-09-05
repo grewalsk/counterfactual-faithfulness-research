@@ -48,17 +48,22 @@ def rename(value: str) -> str:
 
 introduction = r'''# Stage 42: action-conditioned hybrid defect decomposition
 
-## Prospective support-qualified headroom test
+## Prospective event-excitation support-qualified headroom test
 
 Stage 41 reached its first held-out panel but correctly stopped because the
 ordinary evaluation bank contained fewer than eight post-contact-to-contact
-re-entry rows.  Stage 42 does not lower that threshold or reuse the opened
-bank.  It registers fresh words and fresh trajectory pools, and changes the
-estimand explicitly to an event-rich finite PushT bank.
+re-entry rows.  Stage 42 v1 then screened all 16,000 registered evaluation
+families and found zero re-entry-positive families: its inward-biased A--D action
+vocabulary could not excite the leave--gap--return transition.  That negative
+support result is development evidence, not an oracle-head outcome.  Stage 42
+v2 does not lower the threshold, enlarge the failed pool, or reuse any of its
+evaluation identifiers.  It prospectively registers a fresh trajectory pool
+and an explicit event-excitation vocabulary with inward, transverse, outward,
+and zero-hold macros.  The estimand remains an event-rich finite PushT bank.
 
 Before either frozen checkpoint is loaded, candidate evaluation families are
-screened using only exact simulator contact incidence under the registered
-action words.  The deterministic rule retains the earliest 48 complete
+screened using only exact simulator contact incidence under the newly
+registered action words.  The deterministic rule retains the earliest 48 complete
 four-mode families having at least one terminal post-contact-to-contact
 re-entry.  It requires at least 32 qualifying rows in total.  Model outputs,
 prediction errors, intervention magnitudes, oracle-head outcomes, and planning
@@ -103,15 +108,15 @@ fixed correct mode path; guard/mode-sequence mistakes are reported separately.
 
 configuration = rename(BASE.configuration)
 for name, value in {
-    "PROTOCOL_ID": '"stage42-action-conditioned-hybrid-defect-v1"',
+    "PROTOCOL_ID": '"stage42-action-conditioned-hybrid-defect-v2"',
     "NOTEBOOK_PROTOCOL_SHA256": '"__PROTOCOL_DIGEST__"',
-    "EVIDENCE_STATUS": '"FRESH_EVENT_CONDITIONED_ORACLE_HEADROOM"',
+    "EVIDENCE_STATUS": '"FRESH_EVENT_EXCITATION_ORACLE_HEADROOM"',
     "EXPERIMENT_NOTEBOOK_PATH": '"notebooks/42_event_conditioned_oracle_hybrid.ipynb"',
     "EXPERIMENT_BUILDER_PATH": '"notebooks/build_stage42_event_conditioned_oracle_hybrid_notebook.py"',
     "EXPERIMENT_NUMERICAL_PATH": '"src/cf_faithfulness/stage42_event_conditioned_hybrid.py"',
-    "OUTPUT_DIR": '"/content/counterfactual_faithfulness_stage42_ecoh"',
-    "DRIVE_OUTPUT_DIR": '"/content/drive/MyDrive/counterfactual_faithfulness_stage42_ecoh"',
-    "RUN_REQUEST_PATH": '"/content/drive/MyDrive/counterfactual_faithfulness_stage42_ecoh/stage42_run_request.json"',
+    "OUTPUT_DIR": '"/content/counterfactual_faithfulness_stage42_ecoh_v2"',
+    "DRIVE_OUTPUT_DIR": '"/content/drive/MyDrive/counterfactual_faithfulness_stage42_ecoh_v2"',
+    "RUN_REQUEST_PATH": '"/content/drive/MyDrive/counterfactual_faithfulness_stage42_ecoh_v2/stage42_run_request.json"',
     "SEED": "420101",
     "DESIGN_SEED": "420141",
     "DECODER_SEED": "420183",
@@ -119,10 +124,10 @@ for name, value in {
     "CALIBRATION_SEED": "420253",
     "BOOTSTRAP_SEED": "420283",
     "CONTROL_SEED": "420351",
-    "CONSTRUCTION_TRAJECTORY_POOL": "list(range(126000, 128000))",
-    "MODEL_SELECTION_TRAJECTORY_POOL": "list(range(128000, 130000))",
-    "CALIBRATION_TRAJECTORY_POOL": "list(range(130000, 132000))",
-    "EVALUATION_TRAJECTORY_POOL": "list(range(132000, 148000))",
+    "CONSTRUCTION_TRAJECTORY_POOL": "list(range(148000, 150000))",
+    "MODEL_SELECTION_TRAJECTORY_POOL": "list(range(150000, 152000))",
+    "CALIBRATION_TRAJECTORY_POOL": "list(range(152000, 154000))",
+    "EVALUATION_TRAJECTORY_POOL": "list(range(154000, 170000))",
     "TASK_ID_OFFSET": "420000",
 }.items():
     configuration = replace_assignment(configuration, name, value)
@@ -132,20 +137,54 @@ configuration = replace_assignment(
 )
 configuration = replace_block(
     configuration,
+    "STAGE39_TOKEN_SPECS = {",
+    "\n\n\ndef stage39_word_spec",
+    r'''STAGE39_TOKEN_SPECS = {
+    # Original Stage 39 coefficient-matched development vocabulary.
+    "A": (-45.0, 0.16), "B": (45.0, 0.16),
+    "C": (-15.0, 0.20), "D": (15.0, 0.20),
+    # Stage 42 v2 prospective event-excitation additions. P approaches the
+    # block, L/T provide mirrored transverse approaches, S retreats, and 0
+    # holds the action at zero while the contact gap remains open.
+    "P": (0.0, 0.20), "Q": (0.0, 0.14),
+    "L": (-35.0, 0.18), "T": (35.0, 0.18),
+    "S": (180.0, 0.14), "0": (0.0, 0.0),
+}
+EVENT_EXCITATION_TOKEN_NAMES = ["P", "Q", "L", "T", "S", "0"]
+STAGE42_V1_SUPPORT_AUDIT = {
+    "role": "development_support_falsification_only",
+    "result_bundle_sha256": "72c1b2c24495cfb189f9014a4a061897b582fe27ef12a2b95465145f30521ebd",
+    "evaluation_pool_start": 132000,
+    "evaluation_pool_stop": 148000,
+    "families_screened": 16000,
+    "event_rich_families": 0,
+    "model_outputs_read": False,
+}
+SUPPORT_CHECKPOINT_INTERVAL = 64
+''',
+)
+configuration = replace_block(
+    configuration,
     "CANONICAL_RESPONSE_WORD_NAMES = [",
     "CALIBRATION_INTERCHANGE_PAIRS =",
     r'''CANONICAL_RESPONSE_WORD_NAMES = ["A", "B", "C", "D", "AB", "CD", "BA", "DC"]
 CONSTRUCTION_WORD_NAMES = [
-    "AACDABBCD", "BBACDDCAA", "CCBADADBBC", "DDACBCACDA",
-    "ABCDACBDABC", "BCADDBACDAC", "CDABACDBCDAB", "DABCBDACABCD",
+    "PPPSSSPPP", "PPQSSSPPP",
+    "PPPSSS0PPP", "PPQSSS0PPP",
+    "PPPSSS00PPP", "PPQSSS00PPP",
+    "PPPSSS000PPP", "PPQSSS000PPP",
 ]
 MODEL_SELECTION_WORD_NAMES = [
-    "ACDBBACDA", "BADCCABBD", "CBADACDABC", "DCABBDACCA",
-    "AADCBACDBAC", "BBCADACBDDA", "CCDBADACBADC", "DDABCDACBDCA",
+    "PPLSSSPPP", "PPTSSSPPP",
+    "PPLSSS0PPP", "PPTSSS0PPP",
+    "PPLSSS00PPP", "PPTSSS00PPP",
+    "PPLSSS000PPP", "PPTSSS000PPP",
 ]
 CALIBRATION_WORD_NAMES = [
-    "ADBCACDBA", "BDACABCDD", "CABDDACABC", "DBACCADBAD",
-    "ACBDDACABCD", "BCAADBCDDAC", "CDBACADBACDB", "DACBDACDBACA",
+    "PLPSSSPPP", "PTPSSSPPP",
+    "PLPSSS0PPP", "PTPSSS0PPP",
+    "PLPSSS00PPP", "PTPSSS00PPP",
+    "PLPSSS000PPP", "PTPSSS000PPP",
 ]
 STAGE39_CORE_WORD_NAMES = sorted(
     set(
@@ -162,8 +201,10 @@ configuration = replace_block(
     "CLOSURE_EVALUATION_WORD_NAMES = [",
     "EVALUATION_INTERCHANGE_PAIRS =",
     r'''CLOSURE_EVALUATION_WORD_NAMES = [
-    "ABDACCBDA", "BCDBAACAD", "CDACBBDACA", "DABACDCBDA",
-    "ACDBCADABCD", "BADACBCDDAB", "CBACDDABCADC", "DCBADACDBACD",
+    "LPPSSSPPP", "TPPSSSPPP",
+    "LPPSSS0PPP", "TPPSSS0PPP",
+    "LPPSSS00PPP", "TPPSSS00PPP",
+    "LPPSSS000PPP", "TPPSSS000PPP",
 ]
 PLANNING_WORD_NAMES = []
 EVALUATION_WORD_NAMES_REGISTERED = list(CLOSURE_EVALUATION_WORD_NAMES)
@@ -176,7 +217,9 @@ configuration = replace_assignment(configuration, "MIN_REENTRY_ROWS", "32")
 configuration = configuration.replace("assert MIN_REENTRY_ROWS == 32\n", "")
 configuration = configuration.replace(
     '"fresh_trajectory_ids_114000_to_125999",',
-    '"fresh_trajectory_ids_126000_to_147999",\n'
+    '"fresh_trajectory_ids_148000_to_169999",\n'
+    '    "stage42_v1_zero_of_16000_development_support",\n'
+    '    "prospective_event_excitation_vocabulary",\n'
     '    "evaluation_conditioned_on_reentry_incidence_only",',
 )
 configuration = re.sub(r"^PROTOCOL_CONFIG_KEYS = \[.*\]\n?", "", configuration, flags=re.M)
@@ -199,7 +242,7 @@ configuration += "\n\nPROTOCOL_CONFIG_KEYS = " + repr(
 
 
 installation = BASE.installation
-setup = rename(BASE.setup).replace("stage42_cerh_v3", "stage42_ecoh")
+setup = rename(BASE.setup).replace("stage42_cerh_v3", "stage42_ecoh_v2")
 analysis_helpers = rename(BASE.analysis_helpers)
 support_helpers = function_sources(
     NUMERICAL.read_text(),
@@ -310,12 +353,18 @@ def select_stage42_event_rich_evaluation(pool, target):
             records_by_id[int(trajectory_id)] = snapshots
         candidate_ids.append(int(trajectory_id))
         candidate_counts.append(int(count))
-        write_json(OUT / "physical_screen_evaluation_progress.json", {
-            "screened": len(candidate_ids), "pool": len(pool),
-            "event_rich_families": int(sum(value > 0 for value in candidate_counts)),
-            "target": int(target), "last_trajectory_id": int(trajectory_id),
-        })
-        if len(candidate_ids) % 16 == 0:
+        event_rich_families = int(sum(value > 0 for value in candidate_counts))
+        checkpoint_due = bool(
+            len(candidate_ids) % SUPPORT_CHECKPOINT_INTERVAL == 0
+            or event_rich_families >= int(target)
+            or len(candidate_ids) == len(pool)
+        )
+        if checkpoint_due:
+            write_json(OUT / "physical_screen_evaluation_progress.json", {
+                "screened": len(candidate_ids), "pool": len(pool),
+                "event_rich_families": event_rich_families,
+                "target": int(target), "last_trajectory_id": int(trajectory_id),
+            })
             write_json(partial_path, {
                 "protocol_id": PROTOCOL_ID, "run_signature": RUN_SIGNATURE,
                 "candidate_pool_sha256": pool_sha256,
@@ -325,7 +374,7 @@ def select_stage42_event_rich_evaluation(pool, target):
                 "complete": False,
                 "screening_observable": "simulator_contact_incidence_only",
             })
-        if sum(value > 0 for value in candidate_counts) >= int(target):
+        if event_rich_families >= int(target):
             break
     screen_rows = [
         {
@@ -733,7 +782,7 @@ heldout_evaluation = heldout_evaluation.replace(
     1,
 )
 
-packaging = rename(BASE.packaging).replace("stage42_cerh_v3", "stage42_ecoh")
+packaging = rename(BASE.packaging).replace("stage42_cerh_v3", "stage42_ecoh_v2")
 packaging = packaging.replace(
     "causal_event_reset_headroom", "event_conditioned_oracle_hybrid"
 )

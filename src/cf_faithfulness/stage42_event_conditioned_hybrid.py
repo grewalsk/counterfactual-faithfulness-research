@@ -126,7 +126,12 @@ def select_event_rich_families(
         if count > 0
     ][:target]
     if len(selected) != target:
-        raise RuntimeError("candidate pool contains too few event-rich families")
+        positive = int(sum(value > 0 for value in counts))
+        support = int(sum(value for value in counts if value > 0))
+        raise RuntimeError(
+            "candidate pool contains too few event-rich families: "
+            f"found {positive} of {target}; total qualifying rows={support}"
+        )
     support = int(sum(value for _, value in selected))
     if support < minimum:
         raise RuntimeError("selected event-rich families do not meet row support")

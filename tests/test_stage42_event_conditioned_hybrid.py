@@ -50,7 +50,10 @@ def test_event_rich_selection_is_earliest_and_never_uses_outcomes():
 
 
 def test_event_rich_selection_fails_closed_on_insufficient_support():
-    with pytest.raises(RuntimeError):
+    with pytest.raises(
+        RuntimeError,
+        match=r"found 1 of 2; total qualifying rows=1",
+    ):
         select_event_rich_families(
             [1, 2, 3], [0, 1, 0], target_families=2, minimum_total_rows=2
         )
