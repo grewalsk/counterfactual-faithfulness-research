@@ -465,3 +465,13 @@ oracle event/time/geometry/reset ladder on top of a frozen recursive baseline.
 Smooth and shuffled controls, cross-model/seed gates, causal-effect alignment,
 and leave-one-family-out tail checks determine whether a later label-free
 event-state model is justified. See `STAGE41_RUN_GUIDE.md` for execution.
+
+Stage 44 is the prospective visual--causal realization audit in
+`notebooks/44_visual_causal_realization_audit.ipynb`. It directly compares
+target-encoded, teacher-forced, and recursively predicted `16 x 16 x 384`
+visual fields; freezes construction-only physical and object-patch probes;
+measures local tangent/normal support geometry; and evaluates matched
+counterfactual effects and oracle object-versus-background feature swaps. The
+official JEPA-WMs image decoders produce calibrated RGB panels, but image
+appearance is explicitly excluded from the decision gates. See
+`STAGE44_RUN_GUIDE.md` for execution and artifact paths.

@@ -1028,6 +1028,19 @@ planner safety: the matched latent-fidelity constraint passed. See
 `../docs/RESEARCH_STATE_AFTER_STAGE11_AND_ICLR_ROADMAP.md` before designing a
 follow-up.
 
+## Stage 44 visual--causal realization audit
+
+Notebook: `44_visual_causal_realization_audit.ipynb`
+
+Stage 44 is the post-Stage-43 decision experiment. It preserves the native
+spatial visual fields, compares target, teacher-forced, and recursive states,
+fits split-safe physical and object-patch probes, and measures local
+tangent/normal support geometry and matched counterfactual effects. It also
+uses the official model-specific VM2M heads to export RGB panels, while keeping
+all reconstruction metrics outside the decision gate. Run all thirteen cells
+in order; see `../STAGE44_RUN_GUIDE.md` for compute, storage, checkpoint, and
+result-bundle details.
+
 ## Stage 1 historical instructions
 
 1. Open `01_model_and_environment_smoke_test.ipynb` in a fresh Colab runtime.
