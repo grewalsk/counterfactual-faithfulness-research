@@ -106,7 +106,7 @@ Koopman, deployment, or general-world-model claim is authorized here.
 
 configuration = rename(BASE.configuration)
 for name, value in {
-    "PROTOCOL_ID": '"stage44-visual-causal-realization-audit-v1"',
+    "PROTOCOL_ID": '"stage44-visual-causal-realization-audit-v2"',
     "NOTEBOOK_PROTOCOL_SHA256": '"__PROTOCOL_DIGEST__"',
     "EVIDENCE_STATUS": '"FRESH_VISUAL_CAUSAL_REALIZATION_AUDIT"',
     "EXPERIMENT_NOTEBOOK_PATH": '"notebooks/44_visual_causal_realization_audit.ipynb"',
@@ -350,8 +350,19 @@ def stage44_names_for_split(split):
 
 
 def stage39_truth_word_names(split):
+    split_name = str(split)
+    names = list(stage44_names_for_split(split_name))
+    if split_name in {"construction", "model_selection"}:
+        # The inherited simulator-only chart is a pre-model integrity gate. It
+        # requires the canonical response and order-control words, but never
+        # reads evaluation trajectories or prediction outcomes.
+        names.extend(CANONICAL_RESPONSE_WORD_NAMES)
+        names.extend(name for pair in CORE_ORDER_PAIRS for name in pair)
+    controls = {
+        ZERO_WORD_NAMES[int(WORD_BY_NAME[name]["length"])] for name in names
+    }
     return sorted(
-        set(stage44_names_for_split(split)),
+        set(names) | controls,
         key=lambda name: (int(WORD_BY_NAME[name]["length"]), name),
     )
 '''

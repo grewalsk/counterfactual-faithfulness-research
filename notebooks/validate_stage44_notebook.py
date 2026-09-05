@@ -82,7 +82,7 @@ def main() -> None:
 
     config = configuration(notebook)
     protocol_digest(notebook, config)
-    assert config["PROTOCOL_ID"] == "stage44-visual-causal-realization-audit-v1"
+    assert config["PROTOCOL_ID"] == "stage44-visual-causal-realization-audit-v2"
     assert config["EVIDENCE_STATUS"] == "FRESH_VISUAL_CAUSAL_REALIZATION_AUDIT"
     assert config["DRIVE_OUTPUT_DIR"].endswith("counterfactual_faithfulness_stage44_vcra")
     assert config["PRIMARY_MODEL"] == "jepa"
@@ -138,6 +138,8 @@ def main() -> None:
         "vm2m_lpips_dv2vits_vitldec_224_05norm.pth.tar",
         "target_summary", "teacher_summary", "recursive_summary",
         "stage44_teacher_forced_word", "stage44_patch_labels",
+        "names.extend(CANONICAL_RESPONSE_WORD_NAMES)",
+        "names.extend(name for pair in CORE_ORDER_PAIRS for name in pair)",
         "spatial_pyramid_summary", "local_support_geometry",
         "counterfactual_realization_metrics", "stage44_swap_diagnostics",
         "physical_probes_frozen", "support_references_frozen",
